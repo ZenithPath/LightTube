@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "525055281674",
+    "project_id": "firebase-lighttube"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525055281674:android:50b0db794f1ff523",
+        "android_client_info": {
+          "package_name": "com.example.scame.lighttube"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525055281674-nnfirr2b5pnp4npm5m1p5sp9jkrsr4tj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.scame.lighttube",
+            "certificate_hash": "8149FC63508ABB146F670D9D1EFACBBF33838E80"
+          }
+        },
+        {
+          "client_id": "525055281674-ule5laoijsa00r6tai1rmrhc38gl44nu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkJ1wIVLwjDGfRTzaedlti_bKNsEzfqio"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

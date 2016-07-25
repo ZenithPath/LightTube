@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LightTube</string>
+
+    <string name="disconnect">Disconnect</string>
+    <string name="sign_out">Sign out</string>
+
+    <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="signed_out">Signed out</string>
+</resources>
