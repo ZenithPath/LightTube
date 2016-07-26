@@ -1,5 +1,6 @@
-package com.example.scame.lighttube;
+package com.example.scame.lighttubex;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -13,5 +14,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
         ButterKnife.bind(this);
+
+        startActivity(new Intent(this, SignInActivity.class));
     }
 }

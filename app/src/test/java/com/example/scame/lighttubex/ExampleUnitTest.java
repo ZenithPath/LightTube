@@ -1,4 +1,4 @@
-package com.example.scame.lighttube;
+package com.example.scame.lighttubex;
 
 import org.junit.Test;
 

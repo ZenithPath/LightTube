@@ -3,14 +3,13 @@ apply plugin: 'android-apt'
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
 
     defaultConfig {
-        applicationId "com.example.scame.lighttube"
+        applicationId "com.example.scame.lighttubex"
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 1
@@ -53,3 +52,5 @@ dependencies {
 
     compile 'com.google.android.gms:play-services-auth:9.2.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
