@@ -1,6 +1,6 @@
 package com.example.scame.lighttubex.presentation.di.modules;
 
-import android.content.Context;
+import android.app.Application;
 
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
@@ -24,7 +24,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    Context provideAppContext() {
+    Application provideApplication() {
         return lightTubeApp;
     }
 
