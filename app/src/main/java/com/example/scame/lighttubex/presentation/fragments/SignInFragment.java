@@ -28,7 +28,6 @@ import butterknife.OnClick;
 
 public class SignInFragment extends BaseFragment implements SignInView, GoogleApiClient.OnConnectionFailedListener {
 
-
     private static final int RC_SIGN_IN = 1000;
 
     private static final String SIGN_IN_TAG = "sign_in_log";
