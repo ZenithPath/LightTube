@@ -1,9 +1,7 @@
 package com.example.scame.lighttubex.data.di;
 
-import android.app.Application;
-
-import com.example.scame.lighttubex.data.repository.SharedPrefsManager;
-import com.example.scame.lighttubex.data.repository.SharedPrefsManagerImp;
+import com.example.scame.lighttubex.data.repository.ISignInDataManager;
+import com.example.scame.lighttubex.data.repository.SignInDataManagerImp;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,12 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class DataModule {
-
-    @Singleton
-    @Provides
-    SharedPrefsManager provideSharedPrefManager(Application application) {
-        return new SharedPrefsManagerImp(application);
-    }
 
     @Singleton
     @Provides
@@ -48,5 +40,11 @@ public class DataModule {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+    }
+
+    @Singleton
+    @Provides
+    ISignInDataManager provideSignInDataManager() {
+        return new SignInDataManagerImp();
     }
 }

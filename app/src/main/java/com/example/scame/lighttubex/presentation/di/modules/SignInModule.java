@@ -1,6 +1,10 @@
 package com.example.scame.lighttubex.presentation.di.modules;
 
 import com.example.scame.lighttubex.PrivateValues;
+import com.example.scame.lighttubex.data.repository.ISignInDataManager;
+import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
+import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttubex.domain.usecases.SignInUseCase;
 import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.di.PerActivity;
 import com.example.scame.lighttubex.presentation.fragments.SignInFragment;
@@ -37,5 +41,12 @@ public class SignInModule {
                 .requestServerAuthCode(PrivateValues.CLIENT_ID, true)
                 .requestEmail()
                 .build();
+    }
+
+    @PerActivity
+    @Provides
+    SignInUseCase provideSignInUseCase(ISignInDataManager dataManager,
+                                       ObserveOn observeOn, SubscribeOn subscribeOn) {
+        return new SignInUseCase(dataManager, subscribeOn, observeOn);
     }
 }

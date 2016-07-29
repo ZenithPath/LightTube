@@ -10,11 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.presentation.di.components.SignInComponent;
-import com.example.scame.lighttubex.presentation.presenters.SignInPresenter;
-import com.example.scame.lighttubex.presentation.view.SignInView;
+import com.example.scame.lighttubex.presentation.presenters.ISignInPresenter;
+import com.example.scame.lighttubex.presentation.presenters.SignInPresenterImp;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -26,7 +27,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SignInFragment extends BaseFragment implements SignInView, GoogleApiClient.OnConnectionFailedListener {
+public class SignInFragment extends BaseFragment implements ISignInPresenter.SignInView,
+                                    GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN = 1000;
 
@@ -41,7 +43,8 @@ public class SignInFragment extends BaseFragment implements SignInView, GoogleAp
 
     @BindView(R.id.status_tv) TextView statusTextView;
 
-    @Inject SignInPresenter<SignInFragment> signInPresenter;
+    @Inject
+    SignInPresenterImp<SignInFragment> signInPresenter;
 
     @Inject GoogleApiClient.Builder googleApiClientBuilder;
     private GoogleApiClient googleApiClient;
@@ -145,5 +148,10 @@ public class SignInFragment extends BaseFragment implements SignInView, GoogleAp
         super.onDestroy();
 
         signInPresenter.destroy();
+    }
+
+    @Override
+    public void showError(String error) {
+        Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_LONG).show();
     }
 }

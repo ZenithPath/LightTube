@@ -32,6 +32,7 @@ public class SignInActivity extends BaseActivity implements SignInFragment.SignU
     @Override
     protected void inject(ApplicationComponent appComponent) {
         signInComponent = DaggerSignInComponent.builder()
+                .applicationComponent(getAppComponent())
                 .signInModule(new SignInModule(this))
                 .build();
 

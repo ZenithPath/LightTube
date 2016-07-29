@@ -22,5 +22,4 @@
         android:layout_height="wrap_content"
         android:text="@string/signed_out"
         android:textSize="14sp" />
-
 </LinearLayout>

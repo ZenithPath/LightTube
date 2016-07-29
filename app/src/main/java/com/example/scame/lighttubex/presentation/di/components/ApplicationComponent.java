@@ -1,7 +1,11 @@
 package com.example.scame.lighttubex.presentation.di.components;
 
+import android.app.Application;
+
 import com.example.scame.lighttubex.data.di.DataModule;
-import com.example.scame.lighttubex.data.repository.SharedPrefsManager;
+import com.example.scame.lighttubex.data.repository.ISignInDataManager;
+import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
+import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttubex.presentation.di.modules.ApplicationModule;
 
 import javax.inject.Singleton;
@@ -13,7 +17,13 @@ import retrofit2.Retrofit;
 @Component(modules = {ApplicationModule.class, DataModule.class})
 public interface ApplicationComponent {
 
-    SharedPrefsManager getSharedPrefsManager();
+    Application getApp();
 
     Retrofit getRetrofit();
+
+    ObserveOn getObserveOn();
+
+    SubscribeOn getSubscribeOn();
+
+    ISignInDataManager provideSignInDataManager();
 }
