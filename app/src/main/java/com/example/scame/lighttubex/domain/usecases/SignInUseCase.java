@@ -33,7 +33,7 @@ public class SignInUseCase extends UseCase<TokenEntity> {
         }
 
         return signInDataManager.fetchWithServerAuthCode(serverAuthCode)
-                .doOnNext(tokenEntity -> signInDataManager.saveTokens(tokenEntity));
+                .doOnNext(tokenEntity -> signInDataManager.saveTokens(tokenEntity, true));
     }
 
     public void setServerAuthCode(String serverAuthCode) {

@@ -25,5 +25,5 @@ public interface ApplicationComponent {
 
     SubscribeOn getSubscribeOn();
 
-    ISignInDataManager provideSignInDataManager();
+    ISignInDataManager getSignInDataManager();
 }

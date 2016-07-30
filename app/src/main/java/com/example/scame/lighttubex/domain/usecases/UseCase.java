@@ -1,7 +1,5 @@
 package com.example.scame.lighttubex.domain.usecases;
 
-import android.util.Log;
-
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
 
@@ -23,7 +21,7 @@ public abstract class UseCase<T> {
     }
 
     public void execute(Subscriber<T> subscriber) {
-        Log.e("subscription", "subscribe " + observable);
+
         if (observable == null)
             observable = getUseCaseObservable()
                     .subscribeOn(subscribeOn.getScheduler())

@@ -3,6 +3,7 @@ package com.example.scame.lighttubex.data.repository;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.scame.lighttubex.PrivateValues;
 import com.example.scame.lighttubex.R;
@@ -10,6 +11,7 @@ import com.example.scame.lighttubex.data.enteties.TokenEntity;
 import com.example.scame.lighttubex.data.rest.TokenApi;
 import com.example.scame.lighttubex.presentation.LightTubeApp;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,18 +36,40 @@ public class SignInDataManagerImp implements  ISignInDataManager {
     }
 
     @Override
-    public void saveTokens(TokenEntity tokenEntity) {
+    public void saveTokens(TokenEntity tokenEntity, boolean saveRefreshToken) {
         SharedPreferences.Editor editor = sp.edit();
+        Log.i("savedToken: ", tokenEntity.getAccessToken());
         editor.putString(accessTokenKey, tokenEntity.getAccessToken());
-        editor.putString(refreshTokenKey, tokenEntity.getRefreshToken());
+        if (saveRefreshToken) {
+            editor.putString(refreshTokenKey, tokenEntity.getRefreshToken());
+        }
         editor.apply();
     }
 
     @Override
     public void refreshToken(TokenEntity tokenEntity) {
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(accessTokenKey, tokenEntity.getAccessToken());
-        editor.apply();
+        TokenApi tokenApi = retrofit.create(TokenApi.class);
+        TokenEntity newEntity = new TokenEntity();
+        try {
+            newEntity = tokenApi
+                    .getRefreshedToken(buildRefreshRequestBody(tokenEntity.getRefreshToken()))
+                    .execute()
+                    .body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        saveTokens(newEntity, false);
+    }
+
+    private Map<String, String> buildRefreshRequestBody(String refreshToken) {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("client_id", PrivateValues.CLIENT_ID);
+        params.put("client_secret", PrivateValues.SECRET_KEY);
+        params.put("refresh_token", refreshToken);
+        params.put("grant_type", "refresh_token");
+
+        return params;
     }
 
     @Override

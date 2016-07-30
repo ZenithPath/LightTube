@@ -6,7 +6,7 @@ import rx.Observable;
 
 public interface ISignInDataManager {
 
-    void saveTokens(TokenEntity tokenEntity);
+    void saveTokens(TokenEntity tokenEntity, boolean saveRefreshToken);
 
     void refreshToken(TokenEntity tokenEntity);
 

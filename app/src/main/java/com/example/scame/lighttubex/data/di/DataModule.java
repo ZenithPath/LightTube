@@ -1,5 +1,7 @@
 package com.example.scame.lighttubex.data.di;
 
+import com.example.scame.lighttubex.data.interceptors.AccessTokenInterceptor;
+import com.example.scame.lighttubex.data.interceptors.TokenAuthenticator;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
 import com.example.scame.lighttubex.data.repository.SignInDataManagerImp;
 
@@ -27,7 +29,8 @@ public class DataModule {
         return new OkHttpClient.Builder()
                 .readTimeout(10, TimeUnit.SECONDS)
                 .addInterceptor(interceptor)
-        //        .authenticator(new Authentificator()) TODO: implement Authentificator class
+                .addInterceptor(new AccessTokenInterceptor())
+                .authenticator(new TokenAuthenticator())
                 .build();
     }
 
