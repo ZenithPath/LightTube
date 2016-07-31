@@ -8,6 +8,8 @@ import com.example.scame.lighttubex.domain.usecases.SignInUseCase;
 import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.di.PerActivity;
 import com.example.scame.lighttubex.presentation.fragments.SignInFragment;
+import com.example.scame.lighttubex.presentation.presenters.ISignInPresenter;
+import com.example.scame.lighttubex.presentation.presenters.SignInPresenterImp;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,5 +50,11 @@ public class SignInModule {
     SignInUseCase provideSignInUseCase(ISignInDataManager dataManager,
                                        ObserveOn observeOn, SubscribeOn subscribeOn) {
         return new SignInUseCase(dataManager, subscribeOn, observeOn);
+    }
+
+    @PerActivity
+    @Provides
+    ISignInPresenter<ISignInPresenter.SignInView> provideSignInPresenter(SignInUseCase useCase) {
+        return new SignInPresenterImp<>(useCase);
     }
 }

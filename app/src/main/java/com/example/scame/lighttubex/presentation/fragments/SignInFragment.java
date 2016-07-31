@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.presentation.di.components.SignInComponent;
 import com.example.scame.lighttubex.presentation.presenters.ISignInPresenter;
-import com.example.scame.lighttubex.presentation.presenters.SignInPresenterImp;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,7 +43,7 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
     @BindView(R.id.status_tv) TextView statusTextView;
 
     @Inject
-    SignInPresenterImp<SignInFragment> signInPresenter;
+    ISignInPresenter<ISignInPresenter.SignInView> signInPresenter;
 
     @Inject GoogleApiClient.Builder googleApiClientBuilder;
     private GoogleApiClient googleApiClient;
