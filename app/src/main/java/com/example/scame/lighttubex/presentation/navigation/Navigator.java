@@ -3,6 +3,7 @@ package com.example.scame.lighttubex.presentation.navigation;
 import android.content.Context;
 import android.content.Intent;
 
+import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.activities.VideoListActivity;
 import com.example.scame.lighttubex.presentation.di.PerActivity;
 
@@ -17,6 +18,13 @@ public class Navigator {
     public void navigateToVideoList(Context context) {
         if (context != null) {
             Intent intentToLaunch = new Intent(context, VideoListActivity.class);
+            context.startActivity(intentToLaunch);
+        }
+    }
+
+    public void navigateToSignIn(Context context){
+        if (context != null) {
+            Intent intentToLaunch = new Intent(context, SignInActivity.class);
             context.startActivity(intentToLaunch);
         }
     }

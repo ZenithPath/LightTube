@@ -1,5 +1,7 @@
 package com.example.scame.lighttubex.presentation.di.modules;
 
+import android.app.Activity;
+
 import com.example.scame.lighttubex.PrivateValues;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
@@ -21,7 +23,7 @@ import dagger.Provides;
 @Module
 public class SignInModule {
 
-    private SignInActivity activity;
+    private Activity activity;
 
     public SignInModule(SignInActivity activity) {
         this.activity = activity;
