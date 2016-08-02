@@ -24,7 +24,7 @@ public class VideoListActivity extends BaseActivity implements HasComponent<Vide
         setContentView(R.layout.video_list_activity);
 
         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-            replaceFragment(R.layout.video_list_fragment,
+            replaceFragment(R.id.videolist_activity_fl,
                     new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
         }
     }
