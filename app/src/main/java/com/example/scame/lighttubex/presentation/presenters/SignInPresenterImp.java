@@ -1,6 +1,6 @@
 package com.example.scame.lighttubex.presentation.presenters;
 
-import com.example.scame.lighttubex.data.enteties.TokenEntity;
+import com.example.scame.lighttubex.data.entities.TokenEntity;
 import com.example.scame.lighttubex.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttubex.domain.usecases.SignInUseCase;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

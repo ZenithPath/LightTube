@@ -8,6 +8,8 @@ public class VideoItemModel {
 
     private String id;
 
+    public VideoItemModel() { }
+
     public VideoItemModel(String thumbnails, String title, String id) {
         this.thumbnails = thumbnails;
         this.title = title;

@@ -1,6 +1,6 @@
 package com.example.scame.lighttubex.data.repository;
 
-import com.example.scame.lighttubex.data.enteties.TokenEntity;
+import com.example.scame.lighttubex.data.entities.TokenEntity;
 
 import rx.Observable;
 

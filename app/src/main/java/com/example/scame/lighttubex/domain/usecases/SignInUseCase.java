@@ -1,6 +1,6 @@
 package com.example.scame.lighttubex.domain.usecases;
 
-import com.example.scame.lighttubex.data.enteties.TokenEntity;
+import com.example.scame.lighttubex.data.entities.TokenEntity;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;

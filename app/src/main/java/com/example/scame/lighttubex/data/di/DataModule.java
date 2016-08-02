@@ -3,7 +3,9 @@ package com.example.scame.lighttubex.data.di;
 import com.example.scame.lighttubex.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttubex.data.interceptors.TokenAuthenticator;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
+import com.example.scame.lighttubex.data.repository.IVideoListDataManager;
 import com.example.scame.lighttubex.data.repository.SignInDataManagerImp;
+import com.example.scame.lighttubex.data.repository.VideoListDataManagerImp;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +40,7 @@ public class DataModule {
     @Provides
     Retrofit provideRetrofit(OkHttpClient client) {
         return new Retrofit.Builder()
-                .baseUrl("https://www.temp.com/")
+                .baseUrl("https://www.googleapis.com/")
                 .client(client)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -50,4 +52,11 @@ public class DataModule {
     ISignInDataManager provideSignInDataManager() {
         return new SignInDataManagerImp();
     }
+
+    @Singleton
+    @Provides
+    IVideoListDataManager provideVideoListDataManager() {
+        return new VideoListDataManagerImp();
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.example.scame.lighttubex.data.rest;
 
 
-import com.example.scame.lighttubex.data.enteties.TokenEntity;
+import com.example.scame.lighttubex.data.entities.TokenEntity;
 
 import java.util.Map;
 
@@ -14,10 +14,10 @@ import rx.Observable;
 public interface TokenApi {
 
     @FormUrlEncoded
-    @POST("https://www.googleapis.com/oauth2/v4/token")
+    @POST("oauth2/v4/token")
     Observable<TokenEntity> getAccessToken(@FieldMap Map<String, String> params);
 
     @FormUrlEncoded
-    @POST("https://www.googleapis.com/oauth2/v4/token")
+    @POST("oauth2/v4/token")
     Call<TokenEntity> getRefreshedToken(@FieldMap Map<String, String> params);
 }

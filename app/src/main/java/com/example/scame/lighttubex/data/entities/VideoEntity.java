@@ -1,4 +1,4 @@
-package com.example.scame.lighttubex.data.enteties;
+package com.example.scame.lighttubex.data.entities;
 
 
 public class VideoEntity {

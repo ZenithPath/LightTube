@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.example.scame.lighttubex.data.di.DataModule;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
+import com.example.scame.lighttubex.data.repository.IVideoListDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttubex.presentation.di.modules.ApplicationModule;
@@ -26,4 +27,6 @@ public interface ApplicationComponent {
     SubscribeOn getSubscribeOn();
 
     ISignInDataManager getSignInDataManager();
+
+    IVideoListDataManager getVideoListDataManager();
 }

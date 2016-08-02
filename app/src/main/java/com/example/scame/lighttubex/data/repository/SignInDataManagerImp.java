@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.scame.lighttubex.PrivateValues;
 import com.example.scame.lighttubex.R;
-import com.example.scame.lighttubex.data.enteties.TokenEntity;
+import com.example.scame.lighttubex.data.entities.TokenEntity;
 import com.example.scame.lighttubex.data.rest.TokenApi;
 import com.example.scame.lighttubex.presentation.LightTubeApp;
 

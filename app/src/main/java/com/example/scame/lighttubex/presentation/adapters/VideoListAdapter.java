@@ -2,6 +2,7 @@ package com.example.scame.lighttubex.presentation.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View videoItemView = inflater.inflate(R.layout.videolist_item, parent, false);
+        Log.i("onCreateViewHolder", "times");
 
         return new ViewHolder(videoItemView);
     }
@@ -56,7 +58,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         ImageView imageView = holder.thumbnailsIv;
         TextView textView = holder.titleTv;
 
-        Picasso.with(context).load("https://i.ytimg.com/vi/3AZHowhxM0U/hqdefault.jpg").into(imageView);
+        Picasso.with(context).load(item.getThumbnails()).resize(650, 400).centerCrop().into(imageView);
         textView.setText(item.getTitle());
     }
 
