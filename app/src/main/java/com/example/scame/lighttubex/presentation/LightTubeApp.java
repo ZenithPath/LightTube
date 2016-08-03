@@ -7,6 +7,8 @@ import com.example.scame.lighttubex.data.di.DataModule;
 import com.example.scame.lighttubex.presentation.di.components.ApplicationComponent;
 import com.example.scame.lighttubex.presentation.di.components.DaggerApplicationComponent;
 import com.example.scame.lighttubex.presentation.di.modules.ApplicationModule;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 
 
 public class LightTubeApp extends Application {
@@ -21,6 +23,7 @@ public class LightTubeApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        enablePicassoCache();
         buildAppComponent();
     }
 
@@ -29,6 +32,15 @@ public class LightTubeApp extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .dataModule(new DataModule())
                 .build();
+    }
+
+    private void enablePicassoCache() {
+        Picasso.Builder builder = new Picasso.Builder(this);
+        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
+        Picasso built = builder.build();
+        built.setIndicatorsEnabled(true);
+        built.setLoggingEnabled(true);
+        Picasso.setSingletonInstance(built);
     }
 
     public static ApplicationComponent getAppComponent() {
