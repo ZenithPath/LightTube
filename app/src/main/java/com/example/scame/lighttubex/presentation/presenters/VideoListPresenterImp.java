@@ -12,6 +12,8 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
 
     private V view;
 
+    private int page;
+
     private VideoListUseCase useCase;
 
     public VideoListPresenterImp(VideoListUseCase useCase) {
@@ -24,9 +26,20 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
     }
 
     @Override
-    public void fetchVideos() {
+    public void fetchVideos(int page) {
+        this.page = page;
+        useCase.setPage(page);
         useCase.execute(new VideoListSubscriber());
     }
+
+    @Override
+    public void resume() { }
+
+    @Override
+    public void pause() { }
+
+    @Override
+    public void destroy() { }
 
     private final class VideoListSubscriber extends DefaultSubscriber<List<VideoItemModel>> {
 
@@ -34,32 +47,11 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
         public void onNext(List<VideoItemModel> list) {
             super.onNext(list);
 
-            view.populateAdapter(list);
+            if (page == 0) {
+                view.populateAdapter(list);
+            } else {
+                view.updateAdapter(list);
+            }
         }
-
-        @Override
-        public void onError(Throwable e) {
-            super.onError(e);
-        }
-
-        @Override
-        public void onCompleted() {
-            super.onCompleted();
-        }
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void destroy() {
-
     }
 }

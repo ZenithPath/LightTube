@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttubex.R;
+import com.example.scame.lighttubex.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttubex.presentation.adapters.VideoListAdapter;
 import com.example.scame.lighttubex.presentation.di.components.VideoListComponent;
 import com.example.scame.lighttubex.presentation.model.VideoItemModel;
@@ -28,6 +30,10 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     @Inject
     IVideoListPresenter<IVideoListPresenter.VideoListView> presenter;
 
+    private List<VideoItemModel> items;
+
+    private VideoListAdapter adapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +49,29 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
-        presenter.fetchVideos();
+        presenter.fetchVideos(0);
 
         return fragmentView;
     }
 
     @Override
     public void populateAdapter(List<VideoItemModel> items) {
-        VideoListAdapter adapter = new VideoListAdapter(items, getContext());
+        this.items = items;
+        this.adapter = new VideoListAdapter(items, getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollingListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                presenter.fetchVideos(page);
+            }
+        });
+    }
+
+    @Override
+    public void updateAdapter(List<VideoItemModel> items) {
+        this.items.addAll(items);
+        adapter.notifyItemRangeInserted(adapter.getItemCount(), items.size());
     }
 }

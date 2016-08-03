@@ -9,5 +9,5 @@ import rx.Observable;
 
 public interface IVideoListDataManager {
 
-    Observable<List<VideoItemModel>> getVideoItemsList();
+    Observable<List<VideoItemModel>> getVideoItemsList(int page);
 }

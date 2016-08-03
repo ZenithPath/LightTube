@@ -14,6 +14,8 @@ public class VideoListUseCase extends UseCase<List<VideoItemModel>> {
 
     private IVideoListDataManager dataManager;
 
+    private int page;
+
     public VideoListUseCase(IVideoListDataManager dataManager, SubscribeOn subscribeOn, ObserveOn observeOn) {
         super(subscribeOn, observeOn);
 
@@ -22,6 +24,14 @@ public class VideoListUseCase extends UseCase<List<VideoItemModel>> {
 
     @Override
     protected Observable<List<VideoItemModel>> getUseCaseObservable() {
-        return dataManager.getVideoItemsList();
+        return dataManager.getVideoItemsList(page);
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getPage() {
+        return page;
     }
 }
