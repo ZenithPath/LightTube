@@ -2,6 +2,7 @@ package com.example.scame.lighttubex.presentation.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.presentation.LightTubeApp;
@@ -12,7 +13,8 @@ import com.example.scame.lighttubex.presentation.di.components.VideoListComponen
 import com.example.scame.lighttubex.presentation.di.modules.VideoListModule;
 import com.example.scame.lighttubex.presentation.fragments.VideoListFragment;
 
-public class VideoListActivity extends BaseActivity implements HasComponent<VideoListComponent> {
+public class VideoListActivity extends BaseActivity implements HasComponent<VideoListComponent>,
+                                                               VideoListFragment.VideoListActivityListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
 
@@ -40,5 +42,10 @@ public class VideoListActivity extends BaseActivity implements HasComponent<Vide
     @Override
     public VideoListComponent getComponent() {
         return videoListComponent;
+    }
+
+    @Override
+    public void onVideoClick(String id) {
+        Log.i("videoId", id);
     }
 }
