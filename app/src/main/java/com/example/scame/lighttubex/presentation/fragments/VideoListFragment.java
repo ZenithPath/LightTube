@@ -1,5 +1,6 @@
 package com.example.scame.lighttubex.presentation.fragments;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,6 +36,21 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     private int currentPage;
 
     private VideoListAdapter adapter;
+
+    private VideoListActivityListener listActivityListener;
+
+    public interface VideoListActivityListener {
+        void onVideoClick(String id);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof VideoListActivityListener) {
+            listActivityListener = (VideoListActivityListener) context;
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,14 +94,10 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     public void initializeAdapter(List<VideoItemModel> items) {
         this.items = items;
         this.adapter = new VideoListAdapter(items, getContext());
+        adapter.setupOnItemClickListener((itemView, position) ->
+                listActivityListener.onVideoClick(items.get(position).getId()));
 
-        LinearLayoutManager layoutManager;
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-           layoutManager = new LinearLayoutManager(getContext(),
-                    LinearLayoutManager.HORIZONTAL, false);
-        } else {
-            layoutManager = new LinearLayoutManager(getContext());
-        }
+        LinearLayoutManager layoutManager = buildLayoutManager();
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
@@ -110,5 +122,13 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         listener.setCurrentPage(currentPage);
 
         return listener;
+    }
+
+    private LinearLayoutManager buildLayoutManager() {
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        } else {
+            return new LinearLayoutManager(getContext());
+        }
     }
 }

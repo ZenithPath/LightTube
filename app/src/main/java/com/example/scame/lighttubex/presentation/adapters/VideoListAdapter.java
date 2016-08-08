@@ -22,9 +22,19 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     private List<VideoItemModel> items;
     private Context context;
 
+    private static OnItemClickListener listener;
+
     public VideoListAdapter(List<VideoItemModel> items, Context context) {
         this.items = items;
         this.context = context;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+
+    public void setupOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -36,6 +46,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(view -> {
+                if (listener != null) {
+                    listener.onItemClick(view, getLayoutPosition());
+                }
+            });
         }
     }
 
