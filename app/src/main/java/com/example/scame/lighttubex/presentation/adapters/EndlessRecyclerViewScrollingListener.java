@@ -90,5 +90,9 @@ public abstract class EndlessRecyclerViewScrollingListener extends RecyclerView.
         return maxSize;
     }
 
+    public void setCurrentPage(int page) {
+        currentPage = page;
+    }
+
     public abstract void onLoadMore(int page, int totalItemsCount);
 }

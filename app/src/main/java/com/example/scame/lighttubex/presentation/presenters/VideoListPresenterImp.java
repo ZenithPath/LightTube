@@ -26,10 +26,15 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
     }
 
     @Override
-    public void fetchVideos(int page) {
-        this.page = page;
-        useCase.setPage(page);
-        useCase.execute(new VideoListSubscriber());
+    public void fetchVideos(int page, List<VideoItemModel> savedItems) {
+
+        if (savedItems == null || savedItems.isEmpty()) {
+            this.page = page;
+            useCase.setPage(page);
+            useCase.execute(new VideoListSubscriber());
+        } else {
+            view.initializeAdapter(savedItems);
+        }
     }
 
     @Override
@@ -48,7 +53,7 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
             super.onNext(list);
 
             if (page == 0) {
-                view.populateAdapter(list);
+                view.initializeAdapter(list);
             } else {
                 view.updateAdapter(list);
             }

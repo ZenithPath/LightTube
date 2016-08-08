@@ -1,10 +1,10 @@
 package com.example.scame.lighttubex.presentation.fragments;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import com.example.scame.lighttubex.presentation.di.components.VideoListComponen
 import com.example.scame.lighttubex.presentation.model.VideoItemModel;
 import com.example.scame.lighttubex.presentation.presenters.IVideoListPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     IVideoListPresenter<IVideoListPresenter.VideoListView> presenter;
 
     private List<VideoItemModel> items;
+    private int currentPage;
 
     private VideoListAdapter adapter;
 
@@ -49,29 +51,64 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
-        presenter.fetchVideos(0);
+        List<VideoItemModel> savedItems = null;
+        if (savedInstanceState != null) {
+            savedItems = savedInstanceState
+                    .getParcelableArrayList(getString(R.string.video_items_list));
+            currentPage = savedInstanceState
+                    .getInt(getString(R.string.page_number));
+        }
+
+        presenter.fetchVideos(currentPage, savedItems);
 
         return fragmentView;
     }
 
+
     @Override
-    public void populateAdapter(List<VideoItemModel> items) {
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(items));
+        outState.putInt(getString(R.string.page_number), currentPage);
+    }
+
+
+    @Override
+    public void initializeAdapter(List<VideoItemModel> items) {
         this.items = items;
         this.adapter = new VideoListAdapter(items, getContext());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+
+        LinearLayoutManager layoutManager;
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+           layoutManager = new LinearLayoutManager(getContext(),
+                    LinearLayoutManager.HORIZONTAL, false);
+        } else {
+            layoutManager = new LinearLayoutManager(getContext());
+        }
+
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollingListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                presenter.fetchVideos(page);
-            }
-        });
+        recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
     }
 
     @Override
     public void updateAdapter(List<VideoItemModel> items) {
         this.items.addAll(items);
         adapter.notifyItemRangeInserted(adapter.getItemCount(), items.size());
+    }
+
+    private EndlessRecyclerViewScrollingListener buildScrollingListener(LinearLayoutManager manager) {
+        EndlessRecyclerViewScrollingListener listener = new EndlessRecyclerViewScrollingListener(manager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                currentPage = page;
+                presenter.fetchVideos(page, null);
+            }
+        };
+
+        listener.setCurrentPage(currentPage);
+
+        return listener;
     }
 }

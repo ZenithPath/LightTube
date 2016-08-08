@@ -20,16 +20,18 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        inject(getAppComponent()); // to avoid NPE from fragments after config changes
         super.onCreate(savedInstanceState);
 
         ButterKnife.bind(this);
-        inject(getAppComponent());
     }
 
     protected void replaceFragment(int containerViewId, Fragment fragment, String TAG) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(containerViewId, fragment, TAG);
-        ft.commit();
+        if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(containerViewId, fragment, TAG);
+            ft.commit();
+        }
     }
 
     protected ApplicationComponent getAppComponent() {

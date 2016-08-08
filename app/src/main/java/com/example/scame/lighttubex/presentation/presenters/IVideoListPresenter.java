@@ -9,10 +9,10 @@ public interface IVideoListPresenter<V> extends Presenter<V>{
 
     interface VideoListView {
 
-        void populateAdapter(List<VideoItemModel> items);
+        void initializeAdapter(List<VideoItemModel> items);
 
         void updateAdapter(List<VideoItemModel> items);
     }
 
-    void fetchVideos(int page);
+    void fetchVideos(int page, List<VideoItemModel> savedItems);
 }

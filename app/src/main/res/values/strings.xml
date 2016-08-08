@@ -9,4 +9,7 @@
     <string name="refresh_token">refreshToken</string>
     <string name="access_token">accessToken</string>
 
+    <string name="video_items_list">videoItems</string>
+    <string name="page_number">pageNumber</string>
+
 </resources>

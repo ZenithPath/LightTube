@@ -23,9 +23,7 @@ public class SignInActivity extends BaseActivity implements SignInFragment.SignU
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_activity);
 
-        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-            replaceFragment(R.id.signin_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
-        }
+        replaceFragment(R.id.signin_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
     }
 
 

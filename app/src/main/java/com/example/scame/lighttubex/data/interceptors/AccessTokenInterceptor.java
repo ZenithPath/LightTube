@@ -26,6 +26,7 @@ public class AccessTokenInterceptor implements Interceptor {
             authorisedRequest = originalRequest.newBuilder()
                     .header("Authorization", "Bearer " + accessToken)
                     .build();
+
         } else {
             authorisedRequest = originalRequest;
         }
