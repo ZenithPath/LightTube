@@ -23,6 +23,10 @@
 
         <activity android:name=".presentation.activities.VideoListActivity" />
 
+        <activity
+            android:name=".presentation.activities.PlayVideoActivity"
+            android:screenOrientation="landscape" />
+
     </application>
 
 </manifest>

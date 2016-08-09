@@ -2,7 +2,6 @@ package com.example.scame.lighttubex.presentation.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.presentation.LightTubeApp;
@@ -45,7 +44,7 @@ public class VideoListActivity extends BaseActivity implements HasComponent<Vide
     }
 
     @Override
-    public void onVideoClick(String id) {
-        Log.i("videoId", id);
+    public void onVideoClick(String videoId) {
+        navigator.navigateToPlayVideo(this, videoId);
     }
 }

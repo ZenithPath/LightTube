@@ -12,4 +12,6 @@
     <string name="video_items_list">videoItems</string>
     <string name="page_number">pageNumber</string>
 
+    <string name="video_id">videoId</string>
+
 </resources>
