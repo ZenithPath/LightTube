@@ -12,8 +12,6 @@ import com.example.scame.lighttubex.presentation.navigation.Navigator;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
-
 public abstract class BaseActivity extends AppCompatActivity {
 
     @Inject Navigator navigator;
@@ -23,7 +21,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         inject(getAppComponent()); // to avoid NPE from fragments after config changes
         super.onCreate(savedInstanceState);
 
-        ButterKnife.bind(this);
     }
 
     protected void replaceFragment(int containerViewId, Fragment fragment, String TAG) {

@@ -11,7 +11,6 @@ public class PlayVideoActivity extends BaseActivity {
 
     public static final String PLAY_VIDEO_FRAG_TAG = "playVideo";
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
