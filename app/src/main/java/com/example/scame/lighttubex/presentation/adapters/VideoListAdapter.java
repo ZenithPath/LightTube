@@ -72,7 +72,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         ImageView imageView = holder.thumbnailsIv;
         TextView textView = holder.titleTv;
 
-        Picasso.with(context).load(item.getThumbnails()).resize(650, 400).centerCrop().into(imageView);
+        Picasso.with(context).load(item.getImageUrl()).resize(650, 400).centerCrop().into(imageView);
         textView.setText(item.getTitle());
     }
 

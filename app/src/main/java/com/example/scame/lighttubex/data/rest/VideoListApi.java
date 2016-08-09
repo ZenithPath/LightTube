@@ -1,7 +1,7 @@
 package com.example.scame.lighttubex.data.rest;
 
 
-import com.example.scame.lighttubex.data.entities.VideoEntityList;
+import com.example.scame.lighttubex.data.entities.videolist.VideoEntityList;
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;

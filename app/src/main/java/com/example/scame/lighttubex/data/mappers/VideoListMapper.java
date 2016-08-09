@@ -1,7 +1,7 @@
 package com.example.scame.lighttubex.data.mappers;
 
-import com.example.scame.lighttubex.data.entities.VideoEntity;
-import com.example.scame.lighttubex.data.entities.VideoEntityList;
+import com.example.scame.lighttubex.data.entities.videolist.VideoEntity;
+import com.example.scame.lighttubex.data.entities.videolist.VideoEntityList;
 import com.example.scame.lighttubex.presentation.model.VideoItemModel;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class VideoListMapper {
 
         for (VideoEntity entity : entities) {
             VideoItemModel itemModel = new VideoItemModel();
-            itemModel.setThumbnails(entity.getSnippet().getThumbnails().getMedium().getUrl());
+            itemModel.setImageUrl(entity.getSnippet().getThumbnails().getMedium().getUrl());
             itemModel.setTitle(entity.getSnippet().getTitle());
             itemModel.setId(entity.getId());
 

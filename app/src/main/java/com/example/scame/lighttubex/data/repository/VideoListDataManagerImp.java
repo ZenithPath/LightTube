@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.example.scame.lighttubex.PrivateValues;
-import com.example.scame.lighttubex.data.entities.VideoEntityList;
+import com.example.scame.lighttubex.data.entities.videolist.VideoEntityList;
 import com.example.scame.lighttubex.data.mappers.VideoListMapper;
 import com.example.scame.lighttubex.data.rest.VideoListApi;
 import com.example.scame.lighttubex.presentation.LightTubeApp;

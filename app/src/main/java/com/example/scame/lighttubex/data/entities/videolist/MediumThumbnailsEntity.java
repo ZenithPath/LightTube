@@ -1,4 +1,4 @@
-package com.example.scame.lighttubex.data.entities;
+package com.example.scame.lighttubex.data.entities.videolist;
 
 
 public class MediumThumbnailsEntity {

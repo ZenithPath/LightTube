@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class VideoItemModel implements Parcelable {
 
-    private String thumbnails;
+    private String imageUrl;
 
     private String title;
 
@@ -13,14 +13,14 @@ public class VideoItemModel implements Parcelable {
 
     public VideoItemModel() { }
 
-    public VideoItemModel(String thumbnails, String title, String id) {
-        this.thumbnails = thumbnails;
+    public VideoItemModel(String imageUrl, String title, String id) {
+        this.imageUrl = imageUrl;
         this.title = title;
         this.id = id;
     }
 
-    public void setThumbnails(String thumbnails) {
-        this.thumbnails = thumbnails;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setTitle(String title) {
@@ -31,8 +31,8 @@ public class VideoItemModel implements Parcelable {
         this.id = id;
     }
 
-    public String getThumbnails() {
-        return thumbnails;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public String getTitle() {
@@ -51,13 +51,13 @@ public class VideoItemModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.thumbnails);
+        dest.writeString(this.imageUrl);
         dest.writeString(this.title);
         dest.writeString(this.id);
     }
 
     protected VideoItemModel(Parcel in) {
-        this.thumbnails = in.readString();
+        this.imageUrl = in.readString();
         this.title = in.readString();
         this.id = in.readString();
     }
