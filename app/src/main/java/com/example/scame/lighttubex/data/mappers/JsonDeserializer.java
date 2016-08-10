@@ -12,7 +12,7 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 
-// TODO: replace with okhttp deserializer
+// TODO: replace with gson deserializer
 
 public class JsonDeserializer {
 

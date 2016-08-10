@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.scame.lighttubex.R;
+import com.example.scame.lighttubex.presentation.activities.AutocompleteActivity;
 import com.example.scame.lighttubex.presentation.activities.PlayVideoActivity;
 import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.activities.VideoListActivity;
@@ -35,6 +36,13 @@ public class Navigator {
         if (context != null) {
             Intent intentToLaunch = new Intent(context, PlayVideoActivity.class);
             intentToLaunch.putExtra(context.getString(R.string.video_id), videoId);
+            context.startActivity(intentToLaunch);
+        }
+    }
+
+    public void navigateToAutocompleteActivity(Context context) {
+        if (context != null) {
+            Intent intentToLaunch = new Intent(context, AutocompleteActivity.class);
             context.startActivity(intentToLaunch);
         }
     }

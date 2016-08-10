@@ -3,6 +3,7 @@ package com.example.scame.lighttubex.presentation.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.presentation.LightTubeApp;
@@ -15,6 +16,7 @@ import com.example.scame.lighttubex.presentation.fragments.VideoListFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class VideoListActivity extends BaseActivity implements HasComponent<VideoListComponent>,
                                                                VideoListFragment.VideoListActivityListener {
@@ -55,5 +57,10 @@ public class VideoListActivity extends BaseActivity implements HasComponent<Vide
     @Override
     public void onVideoClick(String videoId) {
         navigator.navigateToPlayVideo(this, videoId);
+    }
+
+    @OnClick(R.id.fab)
+    public void onClick(View view) {
+        navigator.navigateToAutocompleteActivity(this);
     }
 }
