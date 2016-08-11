@@ -28,7 +28,7 @@
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".presentation.activities.AutocompleteActivity" >
+            android:name=".presentation.activities.SearchActivity" >
 
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>

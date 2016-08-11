@@ -16,11 +16,11 @@ import dagger.Provides;
 import static com.example.scame.lighttubex.presentation.presenters.IAutocompletePresenter.AutocompleteView;
 
 @Module
-public class AutocompleteModule {
+public class SearchModule {
 
     private Activity activity;
 
-    public AutocompleteModule(Activity activity) {
+    public SearchModule(Activity activity) {
         this.activity = activity;
     }
 

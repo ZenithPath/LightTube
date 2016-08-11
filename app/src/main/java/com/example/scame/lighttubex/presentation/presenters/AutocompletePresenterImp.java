@@ -1,5 +1,7 @@
 package com.example.scame.lighttubex.presentation.presenters;
 
+import android.util.Log;
+
 import com.example.scame.lighttubex.domain.usecases.AutocompleteListUseCase;
 import com.example.scame.lighttubex.domain.usecases.DefaultSubscriber;
 

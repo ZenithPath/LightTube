@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.scame.lighttubex.R;
-import com.example.scame.lighttubex.presentation.activities.AutocompleteActivity;
+import com.example.scame.lighttubex.presentation.activities.SearchActivity;
 import com.example.scame.lighttubex.presentation.activities.PlayVideoActivity;
 import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.activities.VideoListActivity;
@@ -42,7 +42,7 @@ public class Navigator {
 
     public void navigateToAutocompleteActivity(Context context) {
         if (context != null) {
-            Intent intentToLaunch = new Intent(context, AutocompleteActivity.class);
+            Intent intentToLaunch = new Intent(context, SearchActivity.class);
             context.startActivity(intentToLaunch);
         }
     }
