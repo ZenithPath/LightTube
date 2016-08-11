@@ -14,6 +14,7 @@ public interface SearchApi {
                                          @Query("q") String q,
                                          @Query("key") String key); // replace with interceptor
 
+
     @GET("http://suggestqueries.google.com/complete/search")
     Observable<ResponseBody> autocomplete(@Query("q") String q,
                                     @Query("client") String client,

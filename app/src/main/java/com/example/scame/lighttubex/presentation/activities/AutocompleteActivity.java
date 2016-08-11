@@ -11,24 +11,31 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.example.scame.lighttubex.R;
-import com.example.scame.lighttubex.data.repository.ISearchDataManager;
-import com.example.scame.lighttubex.data.repository.SearchDataManagerImp;
 import com.example.scame.lighttubex.presentation.adapters.AutocompleteAdapter;
 import com.example.scame.lighttubex.presentation.di.components.ApplicationComponent;
+import com.example.scame.lighttubex.presentation.di.components.DaggerAutocompleteComponent;
+import com.example.scame.lighttubex.presentation.di.modules.AutocompleteModule;
+import com.example.scame.lighttubex.presentation.presenters.IAutocompletePresenter;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class AutocompleteActivity extends BaseActivity {
+import static com.example.scame.lighttubex.presentation.presenters.IAutocompletePresenter.AutocompleteView;
+
+public class AutocompleteActivity extends BaseActivity implements AutocompleteView {
 
     private AutocompleteAdapter adapter;
 
     @BindView(R.id.autocomplete_toolbar) Toolbar toolbar;
     @BindView(R.id.autocomplete_lv) ListView autocompleteLv;
+
+    @Inject
+    IAutocompletePresenter<AutocompleteView> presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +43,7 @@ public class AutocompleteActivity extends BaseActivity {
         setContentView(R.layout.autocomplete_activity);
 
         ButterKnife.bind(this);
+        presenter.setView(this);
 
         configureToolbar();
         configureListView();
@@ -54,7 +62,13 @@ public class AutocompleteActivity extends BaseActivity {
     }
 
     @Override
-    protected void inject(ApplicationComponent appComponent) { }
+    protected void inject(ApplicationComponent appComponent) {
+        DaggerAutocompleteComponent.builder()
+                .applicationComponent(appComponent)
+                .autocompleteModule(new AutocompleteModule(this))
+                .build()
+                .inject(this);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,33 +80,33 @@ public class AutocompleteActivity extends BaseActivity {
         searchView.setQueryHint(getString(R.string.search_hint));
         MenuItemCompat.expandActionView(menuItem);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (!s.isEmpty()) search(s);
-                return true;
-            }
-        });
+        searchView.setOnQueryTextListener(buildOnQueryTextListener());
 
         return super.onCreateOptionsMenu(menu);
     }
 
-    // TODO: refactor this hardcoded trash
+    @Override
+    public void updateAutocompleteList(List<String> strings) {
+        adapter.clear();
+        adapter.addAll(strings);
+        adapter.notifyDataSetChanged();
+    }
 
-    private void search(String query) {
-        ISearchDataManager dataManager = new SearchDataManagerImp();
-        dataManager.autocomplete(query)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(autocompleteEntity -> {
-                    adapter.clear();
-                    adapter.addAll(autocompleteEntity.getItems());
-                    adapter.notifyDataSetChanged();
-                });
+    private SearchView.OnQueryTextListener buildOnQueryTextListener() {
+        return new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (!newText.isEmpty()) {
+                    presenter.updateAutocompleteList(newText);
+                }
+
+                return true;
+            }
+        };
     }
 }

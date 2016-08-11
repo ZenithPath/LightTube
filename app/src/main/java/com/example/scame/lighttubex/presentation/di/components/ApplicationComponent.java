@@ -3,6 +3,7 @@ package com.example.scame.lighttubex.presentation.di.components;
 import android.app.Application;
 
 import com.example.scame.lighttubex.data.di.DataModule;
+import com.example.scame.lighttubex.data.repository.ISearchDataManager;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
 import com.example.scame.lighttubex.data.repository.IVideoListDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
@@ -29,4 +30,6 @@ public interface ApplicationComponent {
     ISignInDataManager getSignInDataManager();
 
     IVideoListDataManager getVideoListDataManager();
+
+    ISearchDataManager getSearchDataManager();
 }

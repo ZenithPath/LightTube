@@ -26,6 +26,7 @@ public class SearchDataManagerImp implements ISearchDataManager {
                 .map(deserializer::convert);
     }
 
+
     @Override
     public Observable<SearchEntity> search(String query) {
         retrofit = LightTubeApp.getAppComponent().getRetrofit();

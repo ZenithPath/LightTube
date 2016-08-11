@@ -22,13 +22,15 @@ public abstract class UseCase<T> {
 
     public void execute(Subscriber<T> subscriber) {
 
-        if (observable == null)
+        if (observable == null) {
             observable = getUseCaseObservable()
                     .subscribeOn(subscribeOn.getScheduler())
                     .observeOn(observeOn.getScheduler())
                     .cache()
                     .doOnError((t) -> observable = null)
                     .doOnCompleted(() -> observable = null);
+        }
+
         subscription = observable.subscribe(subscriber);
     }
 

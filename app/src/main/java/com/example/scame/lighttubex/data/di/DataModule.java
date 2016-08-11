@@ -2,8 +2,10 @@ package com.example.scame.lighttubex.data.di;
 
 import com.example.scame.lighttubex.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttubex.data.interceptors.TokenAuthenticator;
+import com.example.scame.lighttubex.data.repository.ISearchDataManager;
 import com.example.scame.lighttubex.data.repository.ISignInDataManager;
 import com.example.scame.lighttubex.data.repository.IVideoListDataManager;
+import com.example.scame.lighttubex.data.repository.SearchDataManagerImp;
 import com.example.scame.lighttubex.data.repository.SignInDataManagerImp;
 import com.example.scame.lighttubex.data.repository.VideoListDataManagerImp;
 
@@ -59,4 +61,7 @@ public class DataModule {
         return new VideoListDataManagerImp();
     }
 
+    @Singleton
+    @Provides
+    ISearchDataManager provideSearchDataManager() { return new SearchDataManagerImp(); }
 }

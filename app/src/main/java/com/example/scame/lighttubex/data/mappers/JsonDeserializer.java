@@ -12,6 +12,7 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 
+
 // TODO: replace with gson deserializer
 
 public class JsonDeserializer {
@@ -31,7 +32,7 @@ public class JsonDeserializer {
             }
 
             entity.setItems(strings);
-        } catch (IOException | JSONException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
 
