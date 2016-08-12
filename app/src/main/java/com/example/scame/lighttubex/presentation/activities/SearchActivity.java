@@ -1,6 +1,7 @@
 package com.example.scame.lighttubex.presentation.activities;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -8,6 +9,8 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.presentation.di.HasComponent;
@@ -16,14 +19,17 @@ import com.example.scame.lighttubex.presentation.di.components.DaggerSearchCompo
 import com.example.scame.lighttubex.presentation.di.components.SearchComponent;
 import com.example.scame.lighttubex.presentation.di.modules.SearchModule;
 import com.example.scame.lighttubex.presentation.fragments.AutocompleteFragment;
+import com.example.scame.lighttubex.presentation.fragments.SearchResultsFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SearchActivity extends BaseActivity implements HasComponent<SearchComponent>,
-                                                               AutocompleteFragment.AutocompleteFragmentListener {
+                                                               AutocompleteFragment.AutocompleteFragmentListener,
+                                                                SearchResultsFragment.SearchResultsListener {
 
     private static final String AUTOCOMPLETE_FRAG_TAG = "autocomplete";
+    private static final String SEARCH_FRAG_TAG = "searchFragment";
 
     @BindView(R.id.autocomplete_toolbar) Toolbar toolbar;
 
@@ -37,6 +43,7 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         setContentView(R.layout.search_activity);
 
         replaceFragment(R.id.search_activity_fl, new AutocompleteFragment(), AUTOCOMPLETE_FRAG_TAG);
+
         ButterKnife.bind(this);
 
         configureToolbar();
@@ -90,5 +97,31 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
     @Override
     public void updateSearchView(String query) {
         searchView.setQuery(query, true);
+    }
+
+    @Override
+    public void onQueryTextSubmit(String query) {
+        SearchResultsFragment fragment = new SearchResultsFragment();
+
+        Bundle args = new Bundle();
+        args.putString(getString(R.string.search_query), query);
+        fragment.setArguments(args);
+
+        hideKeyboard();
+
+        replaceFragment(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG);
+    }
+
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public void onVideoClick(String id) {
+        navigator.navigateToPlayVideo(this, id);
     }
 }

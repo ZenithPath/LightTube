@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,8 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
     private AutocompleteAdapter adapter;
 
+    private List<String> autocompleteList;
+
     @Inject
     IAutocompletePresenter<AutocompleteView> presenter;
 
@@ -40,6 +41,8 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
     public interface AutocompleteFragmentListener {
 
         void updateSearchView(String query);
+
+        void onQueryTextSubmit(String query);
     }
 
     @Override
@@ -50,6 +53,7 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
             listener = (AutocompleteFragmentListener) context;
         }
     }
+
 
     @Nullable
     @Override
@@ -62,6 +66,10 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
         presenter.setView(this);
 
         configureListView();
+
+        if (savedInstanceState != null) {
+            updateAutocompleteList(savedInstanceState.getStringArrayList(getString(R.string.autocomplete_list)));
+        }
 
         return fragmentView;
     }
@@ -77,18 +85,28 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
     @Override
     public void updateAutocompleteList(List<String> strings) {
+        autocompleteList = strings;
+
         adapter.clear();
         adapter.addAll(strings);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putStringArrayList(getString(R.string.autocomplete_list),
+                new ArrayList<>(autocompleteList));
     }
 
     public SearchView.OnQueryTextListener buildOnQueryTextListener() {
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.i("goSearch", "true");
+                listener.onQueryTextSubmit(query);
 
-                return false;
+                return true;
             }
 
             @Override

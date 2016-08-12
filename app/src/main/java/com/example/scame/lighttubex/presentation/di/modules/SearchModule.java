@@ -6,14 +6,18 @@ import com.example.scame.lighttubex.data.repository.ISearchDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttubex.domain.usecases.AutocompleteListUseCase;
+import com.example.scame.lighttubex.domain.usecases.SearchUseCase;
 import com.example.scame.lighttubex.presentation.di.PerActivity;
 import com.example.scame.lighttubex.presentation.presenters.AutocompletePresenterImp;
 import com.example.scame.lighttubex.presentation.presenters.IAutocompletePresenter;
+import com.example.scame.lighttubex.presentation.presenters.ISearchResultsPresenter;
+import com.example.scame.lighttubex.presentation.presenters.SearchResultsPresenterImp;
 
 import dagger.Module;
 import dagger.Provides;
 
 import static com.example.scame.lighttubex.presentation.presenters.IAutocompletePresenter.AutocompleteView;
+import static com.example.scame.lighttubex.presentation.presenters.ISearchResultsPresenter.SearchResultsView;
 
 @Module
 public class SearchModule {
@@ -36,5 +40,19 @@ public class SearchModule {
     @Provides
     IAutocompletePresenter<AutocompleteView> provideAutocompletePresenter(AutocompleteListUseCase useCase) {
         return new AutocompletePresenterImp<>(useCase);
+    }
+
+    @PerActivity
+    @Provides
+    SearchUseCase provideSearchUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                       ISearchDataManager dataManager) {
+
+        return new SearchUseCase(subscribeOn, observeOn, dataManager);
+    }
+
+    @PerActivity
+    @Provides
+    ISearchResultsPresenter<SearchResultsView> provideSearchResultsPresenter(SearchUseCase useCase) {
+        return new SearchResultsPresenterImp<>(useCase);
     }
 }

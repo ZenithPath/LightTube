@@ -11,7 +11,7 @@ public class VideoSnippetEntity {
 
     private String description;
 
-    private ThumbnailsEntity thumbnails;
+    private ThumbnailsGroup thumbnails;
 
     public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
@@ -29,7 +29,7 @@ public class VideoSnippetEntity {
         this.description = description;
     }
 
-    public void setThumbnails(ThumbnailsEntity thumbnails) {
+    public void setThumbnails(ThumbnailsGroup thumbnails) {
         this.thumbnails = thumbnails;
     }
 
@@ -49,7 +49,7 @@ public class VideoSnippetEntity {
         return description;
     }
 
-    public ThumbnailsEntity getThumbnails() {
+    public ThumbnailsGroup getThumbnails() {
         return thumbnails;
     }
 }

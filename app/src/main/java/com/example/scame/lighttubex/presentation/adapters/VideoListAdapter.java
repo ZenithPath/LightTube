@@ -60,7 +60,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View videoItemView = inflater.inflate(R.layout.videolist_item, parent, false);
+        View videoItemView = inflater.inflate(R.layout.video_list_item, parent, false);
 
         return new ViewHolder(videoItemView);
     }

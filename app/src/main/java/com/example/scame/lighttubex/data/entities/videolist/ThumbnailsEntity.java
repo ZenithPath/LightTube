@@ -1,14 +1,35 @@
 package com.example.scame.lighttubex.data.entities.videolist;
 
+
 public class ThumbnailsEntity {
 
-    private MediumThumbnailsEntity medium;
+    private String url;
 
-    public void setMedium(MediumThumbnailsEntity medium) {
-        this.medium = medium;
+    private int width;
+
+    private int height;
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public MediumThumbnailsEntity getMedium() {
-        return medium;
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }
