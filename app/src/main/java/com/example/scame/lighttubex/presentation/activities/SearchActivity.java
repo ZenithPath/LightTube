@@ -109,7 +109,10 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
 
         hideKeyboard();
 
-        replaceFragment(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG)
+                .commit();
     }
 
     private void hideKeyboard() {

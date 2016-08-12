@@ -12,6 +12,8 @@ public interface SearchApi {
     @GET("youtube/v3/search")
     Observable<SearchEntity> searchVideo(@Query("part") String part,
                                          @Query("q") String q,
+                                         @Query("maxResults") Integer maxResults,
+                                         @Query("pageToken") String pageToken,
                                          @Query("key") String key); // replace with interceptor
 
 

@@ -11,10 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttubex.R;
-import com.example.scame.lighttubex.data.entities.search.SearchEntity;
-import com.example.scame.lighttubex.data.entities.search.SearchItem;
+import com.example.scame.lighttubex.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttubex.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttubex.presentation.di.components.SearchComponent;
+import com.example.scame.lighttubex.presentation.model.SearchItemModel;
 import com.example.scame.lighttubex.presentation.presenters.ISearchResultsPresenter;
 
 import java.util.List;
@@ -34,7 +34,9 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     private SearchResultsAdapter adapter;
 
-    private List<SearchItem> searchItems;
+    private List<SearchItemModel> searchItems;
+
+    private int currentPage;
 
     private SearchResultsListener listener;
 
@@ -54,7 +56,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         }
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,29 +66,30 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         query = getQuery();
 
         presenter.setView(this);
-        presenter.fetchVideos(0, null, query);
+        presenter.fetchVideos(currentPage, null, query);
 
         return fragmentView;
     }
 
 
-
     @Override
-    public void initializeAdapter(SearchEntity searchEntity) {
-        searchItems = searchEntity.getItems();
-        adapter = new SearchResultsAdapter(searchItems, getContext());
+    public void initializeAdapter(List<SearchItemModel> items) {
+        searchItems = items;
+        adapter = new SearchResultsAdapter(items, getContext());
         adapter.setupOnItemClickListener((itemView, position) ->
-                listener.onVideoClick(searchItems.get(position).getId().getVideoId()));
+                listener.onVideoClick(searchItems.get(position).getId()));
 
         LinearLayoutManager layoutManager = buildLayoutManager();
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
     }
 
     @Override
-    public void updateAdapter(SearchEntity searchEntity) {
-        // TODO: implement endless scrolling
+    public void updateAdapter(List<SearchItemModel> items) {
+        searchItems.addAll(items);
+        adapter.notifyItemRangeInserted(adapter.getItemCount(), items.size());
     }
 
 
@@ -102,5 +104,19 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         } else {
             return new LinearLayoutManager(getContext());
         }
+    }
+
+    private EndlessRecyclerViewScrollingListener buildScrollingListener(LinearLayoutManager manager) {
+        EndlessRecyclerViewScrollingListener listener = new EndlessRecyclerViewScrollingListener(manager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                currentPage = page;
+                presenter.fetchVideos(page, null, query);
+            }
+        };
+
+        listener.setCurrentPage(currentPage);
+
+        return listener;
     }
 }

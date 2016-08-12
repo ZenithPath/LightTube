@@ -10,6 +10,8 @@ import java.util.List;
 public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
                                                 implements IVideoListPresenter<V> {
 
+    private static final int FIRST_PAGE = 0;
+
     private V view;
 
     private int page;
@@ -52,7 +54,7 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
         public void onNext(List<VideoItemModel> list) {
             super.onNext(list);
 
-            if (page == 0) {
+            if (page == FIRST_PAGE) {
                 view.initializeAdapter(list);
             } else {
                 view.updateAdapter(list);

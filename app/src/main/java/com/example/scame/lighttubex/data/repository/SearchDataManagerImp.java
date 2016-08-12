@@ -1,6 +1,11 @@
 package com.example.scame.lighttubex.data.repository;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.example.scame.lighttubex.PrivateValues;
+import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.data.entities.search.AutocompleteEntity;
 import com.example.scame.lighttubex.data.entities.search.SearchEntity;
 import com.example.scame.lighttubex.data.mappers.JsonDeserializer;
@@ -28,10 +33,42 @@ public class SearchDataManagerImp implements ISearchDataManager {
 
 
     @Override
-    public Observable<SearchEntity> search(String query) {
+    public Observable<SearchEntity> search(String query, int page) {
         retrofit = LightTubeApp.getAppComponent().getRetrofit();
         SearchApi searchApi = retrofit.create(SearchApi.class);
 
-        return searchApi.searchVideo("snippet", query, PrivateValues.API_KEY);
+        return searchApi.searchVideo("snippet", query, 25, getNextPageToken(page), PrivateValues.API_KEY)
+                .doOnNext(searchEntity -> {
+                    saveNextPageToken(searchEntity.getNextPageToken());
+                    savePageNumber(page);
+                });
+    }
+
+    private String getNextPageToken(int page) {
+        String nextPageToken = getSharedPrefs()
+                .getString(getContext().getString(R.string.next_page_token_search), null);
+        int prevPageNumber = getSharedPrefs()
+                .getInt(getContext().getString(R.string.search_page_number), 0);
+
+        return page < prevPageNumber ? null : nextPageToken;
+    }
+
+    private void saveNextPageToken(String token) {
+        getSharedPrefs().edit()
+                .putString(getContext().getString(R.string.next_page_token_search), token)
+                .apply();
+    }
+
+    private void savePageNumber(int page) {
+        getSharedPrefs().edit().putInt(getContext().getString(R.string.search_page_number), page).apply();
+    }
+
+    private SharedPreferences getSharedPrefs() {
+        Context context = LightTubeApp.getAppComponent().getApp();
+        return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    private Context getContext() {
+        return LightTubeApp.getAppComponent().getApp();
     }
 }

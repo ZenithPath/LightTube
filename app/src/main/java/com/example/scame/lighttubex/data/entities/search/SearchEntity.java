@@ -8,6 +8,8 @@ public class SearchEntity {
 
     private List<SearchItem> items;
 
+    private String nextPageToken;
+
     public SearchEntity() {
         items = new ArrayList<>();
     }
@@ -18,5 +20,13 @@ public class SearchEntity {
 
     public List<SearchItem> getItems() {
         return items;
+    }
+
+    public void setNextPageToken(String nextPageToken) {
+        this.nextPageToken = nextPageToken;
+    }
+
+    public String getNextPageToken() {
+        return nextPageToken;
     }
 }

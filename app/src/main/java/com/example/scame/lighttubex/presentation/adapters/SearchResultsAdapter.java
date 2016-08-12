@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttubex.R;
-import com.example.scame.lighttubex.data.entities.search.SearchItem;
+import com.example.scame.lighttubex.presentation.model.SearchItemModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdapter.ViewHolder> {
 
     private Context context;
-    private List<SearchItem> searchItems;
+    private List<SearchItemModel> searchItems;
 
     private static OnItemClickListener listener;
 
@@ -47,7 +47,7 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         void onItemClick(View itemView, int position);
     }
 
-    public SearchResultsAdapter(List<SearchItem> items, Context context) {
+    public SearchResultsAdapter(List<SearchItemModel> items, Context context) {
         this.searchItems = items;
         this.context = context;
     }
@@ -68,16 +68,13 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        SearchItem searchItem = searchItems.get(position);
+        SearchItemModel searchItem = searchItems.get(position);
 
         ImageView imageView = holder.searchIv;
         TextView textView = holder.titleTv;
 
-        String url = searchItem.getSnippet().getThumbnails().getSmall().getUrl();
-        String title = searchItem.getSnippet().getTitle();
-
-        Picasso.with(context).load(url).resize(400, 200).centerCrop().into(imageView);
-        textView.setText(title);
+        Picasso.with(context).load(searchItem.getImageUrl()).resize(400, 200).centerCrop().into(imageView);
+        textView.setText(searchItem.getTitle());
     }
 
     @Override

@@ -1,16 +1,18 @@
 package com.example.scame.lighttubex.presentation.presenters;
 
 
-import com.example.scame.lighttubex.data.entities.search.SearchEntity;
+import com.example.scame.lighttubex.presentation.model.SearchItemModel;
+
+import java.util.List;
 
 public interface ISearchResultsPresenter<V> extends Presenter<V> {
 
     interface SearchResultsView {
 
-        void initializeAdapter(SearchEntity searchEntity);
+        void initializeAdapter(List<SearchItemModel> searchItems);
 
-        void updateAdapter(SearchEntity searchEntity);
+        void updateAdapter(List<SearchItemModel> searchItems);
     }
 
-    void fetchVideos(int page, SearchEntity searchEntity, String query);
+    void fetchVideos(int page, List<SearchItemModel> savedItems, String query);
 }
