@@ -28,8 +28,8 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
                                                                AutocompleteFragment.AutocompleteFragmentListener,
                                                                 SearchResultsFragment.SearchResultsListener {
 
-    private static final String AUTOCOMPLETE_FRAG_TAG = "autocomplete";
-    private static final String SEARCH_FRAG_TAG = "searchFragment";
+    public static final String AUTOCOMPLETE_FRAG_TAG = "autocomplete";
+    public static final String SEARCH_FRAG_TAG = "searchFragment";
 
     @BindView(R.id.autocomplete_toolbar) Toolbar toolbar;
 
@@ -37,12 +37,18 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
 
     private SearchComponent component;
 
+    private Bundle state;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
 
-        replaceFragment(R.id.search_activity_fl, new AutocompleteFragment(), AUTOCOMPLETE_FRAG_TAG);
+        state = savedInstanceState;
+
+        if (getSupportFragmentManager().findFragmentByTag(AUTOCOMPLETE_FRAG_TAG) == null) {
+            addAutocompleteFragment();
+        }
 
         ButterKnife.bind(this);
 
@@ -54,6 +60,20 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (isSearchFragmentActive()) {
+            getSupportFragmentManager().popBackStack();
+        }
+
+        super.onBackPressed();
+    }
+
+    public boolean isSearchFragmentActive() {
+        return getSupportFragmentManager().getBackStackEntryCount() == 1;
     }
 
     @Override
@@ -72,12 +92,17 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         getMenuInflater().inflate(R.menu.videolist_menu, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.action_search);
+
         searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
 
         searchView.setQueryHint(getString(R.string.search_hint));
-        MenuItemCompat.expandActionView(menuItem);
+
+        if (state == null) {
+            MenuItemCompat.expandActionView(menuItem);
+        }
 
         searchView.setOnQueryTextListener(buildOnQueryTextListener());
+        searchView.setOnSearchClickListener(view -> addAutocompleteFragment());
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -109,9 +134,18 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
 
         hideKeyboard();
 
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG)
+                .add(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void addAutocompleteFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.search_activity_fl, new AutocompleteFragment(), AUTOCOMPLETE_FRAG_TAG)
                 .commit();
     }
 

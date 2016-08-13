@@ -5,6 +5,7 @@
     android:layout_width="300dp"
     android:layout_height="300dp"
     android:layout_margin="16dp"
+    android:background="@color/gray"
     android:elevation="12dp" >
 
     <ImageView

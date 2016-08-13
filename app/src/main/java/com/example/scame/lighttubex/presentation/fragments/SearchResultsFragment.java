@@ -17,6 +17,7 @@ import com.example.scame.lighttubex.presentation.di.components.SearchComponent;
 import com.example.scame.lighttubex.presentation.model.SearchItemModel;
 import com.example.scame.lighttubex.presentation.presenters.ISearchResultsPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,11 +67,25 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         query = getQuery();
 
         presenter.setView(this);
-        presenter.fetchVideos(currentPage, null, query);
+
+        if (savedInstanceState == null) {
+            presenter.fetchVideos(currentPage, null, query);
+        } else {
+            currentPage = savedInstanceState.getInt(getString(R.string.page_number), 0);
+            presenter.fetchVideos(currentPage,
+                    savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)), query);
+        }
 
         return fragmentView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(getString(R.string.search_items_list), new ArrayList<>(searchItems));
+        outState.putInt(getString(R.string.page_number), currentPage);
+    }
 
     @Override
     public void initializeAdapter(List<SearchItemModel> items) {

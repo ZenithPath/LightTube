@@ -24,4 +24,6 @@
     <string name="next_page_token_search">searchNextPage</string>
     <string name="search_page_number">searchPageNumber</string>
 
+    <string name="search_items_list">searchItems</string>
+
 </resources>

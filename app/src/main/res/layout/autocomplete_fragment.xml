@@ -6,6 +6,7 @@
 
     <ListView
         android:id="@+id/autocomplete_lv"
+        android:background="#F0FFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

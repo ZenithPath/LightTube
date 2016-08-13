@@ -54,7 +54,6 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
         }
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -101,6 +100,7 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
     }
 
     public SearchView.OnQueryTextListener buildOnQueryTextListener() {
+
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -111,12 +111,23 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
                 if (!newText.isEmpty()) {
+                    enableAutocomplete();
                     presenter.updateAutocompleteList(newText);
                 }
 
                 return true;
             }
         };
+    }
+
+    private void enableAutocomplete() {
+
+        // if there's a search results fragment in backstack - remove it,
+        // so autocomplete fragment is on top and visible
+        if (getFragmentManager().getBackStackEntryCount() == 1) {
+            getFragmentManager().popBackStack();
+        }
     }
 }
