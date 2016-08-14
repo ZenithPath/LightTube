@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,8 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
         void updateSearchView(String query);
 
         void onQueryTextSubmit(String query);
+
+        void enableAutocomplete();
     }
 
     @Override
@@ -113,21 +116,12 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
             public boolean onQueryTextChange(String newText) {
 
                 if (!newText.isEmpty()) {
-                    enableAutocomplete();
+                    listener.enableAutocomplete();
                     presenter.updateAutocompleteList(newText);
                 }
 
                 return true;
             }
         };
-    }
-
-    private void enableAutocomplete() {
-
-        // if there's a search results fragment in backstack - remove it,
-        // so autocomplete fragment is on top and visible
-        if (getFragmentManager().getBackStackEntryCount() == 1) {
-            getFragmentManager().popBackStack();
-        }
     }
 }

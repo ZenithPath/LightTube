@@ -73,7 +73,7 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         ImageView imageView = holder.searchIv;
         TextView textView = holder.titleTv;
 
-        Picasso.with(context).load(searchItem.getImageUrl()).resize(400, 200).centerCrop().into(imageView);
+        Picasso.with(context).load(searchItem.getImageUrl()).resize(500, 275).centerCrop().into(imageView);
         textView.setText(searchItem.getTitle());
     }
 

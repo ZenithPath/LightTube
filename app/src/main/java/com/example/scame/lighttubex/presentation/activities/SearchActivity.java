@@ -4,6 +4,7 @@ package com.example.scame.lighttubex.presentation.activities;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -47,7 +48,7 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         state = savedInstanceState;
 
         if (getSupportFragmentManager().findFragmentByTag(AUTOCOMPLETE_FRAG_TAG) == null) {
-            addAutocompleteFragment();
+            addFragment(R.id.search_activity_fl, new AutocompleteFragment(), AUTOCOMPLETE_FRAG_TAG);
         }
 
         ButterKnife.bind(this);
@@ -60,20 +61,6 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (isSearchFragmentActive()) {
-            getSupportFragmentManager().popBackStack();
-        }
-
-        super.onBackPressed();
-    }
-
-    public boolean isSearchFragmentActive() {
-        return getSupportFragmentManager().getBackStackEntryCount() == 1;
     }
 
     @Override
@@ -102,9 +89,19 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         }
 
         searchView.setOnQueryTextListener(buildOnQueryTextListener());
-        searchView.setOnSearchClickListener(view -> addAutocompleteFragment());
+        searchView.setOnSearchClickListener(view -> enableAutocomplete());
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void enableAutocomplete() {
+
+        // if there's a search results fragment in activity manager - remove it,
+        // so an autocomplete fragment is on top and visible
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(SearchActivity.SEARCH_FRAG_TAG);
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        }
     }
 
     private SearchView.OnQueryTextListener buildOnQueryTextListener() {
@@ -131,21 +128,15 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
         Bundle args = new Bundle();
         args.putString(getString(R.string.search_query), query);
         fragment.setArguments(args);
+        addFragment(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG);
 
         hideKeyboard();
-
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.search_activity_fl, fragment, SEARCH_FRAG_TAG)
-                .addToBackStack(null)
-                .commit();
     }
 
-    private void addAutocompleteFragment() {
+    private void addFragment(int layoutId, Fragment fragment, String TAG) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.search_activity_fl, new AutocompleteFragment(), AUTOCOMPLETE_FRAG_TAG)
+                .add(layoutId, fragment, TAG)
                 .commit();
     }
 
