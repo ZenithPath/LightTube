@@ -9,6 +9,8 @@ public class ThumbnailsGroup {
 
     private ThumbnailsEntity medium;
 
+    private ThumbnailsEntity high;
+
     public void setMedium(ThumbnailsEntity medium) {
         this.medium = medium;
     }
@@ -23,5 +25,13 @@ public class ThumbnailsGroup {
 
     public ThumbnailsEntity getSmall() {
         return small;
+    }
+
+    public void setHigh(ThumbnailsEntity high) {
+        this.high = high;
+    }
+
+    public ThumbnailsEntity getHigh() {
+        return high;
     }
 }

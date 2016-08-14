@@ -8,7 +8,7 @@ import com.example.scame.lighttubex.presentation.model.SearchItemModel;
 import java.util.List;
 
 public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchResultsView>
-                                            implements ISearchResultsPresenter<V> {
+        implements ISearchResultsPresenter<V> {
 
     private static final int FIRST_PAGE = 0;
 
@@ -23,16 +23,11 @@ public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchR
     }
 
     @Override
-    public void fetchVideos(int page, List<SearchItemModel> searchItems, String query) {
-
-        if (searchItems == null) {
-            this.page = page;
-            useCase.setQuery(query);
-            useCase.setPage(page);
-            useCase.execute(new SearchResultsSubscriber());
-        } else {
-            view.initializeAdapter(searchItems);
-        }
+    public void fetchVideos(int page, String query) {
+        this.page = page;
+        useCase.setQuery(query);
+        useCase.setPage(page);
+        useCase.execute(new SearchResultsSubscriber());
     }
 
     @Override

@@ -10,12 +10,12 @@ import java.util.List;
 public class VideoListMapper {
 
     public List<VideoItemModel> convert(VideoEntityList entitiesList) {
-        List<VideoEntity> entities = entitiesList.getItems();
         List<VideoItemModel> modelList = new ArrayList<>();
 
-        for (VideoEntity entity : entities) {
+        for (VideoEntity entity : entitiesList.getItems()) {
             VideoItemModel itemModel = new VideoItemModel();
-            itemModel.setImageUrl(entity.getSnippet().getThumbnails().getMedium().getUrl());
+
+            itemModel.setImageUrl(entity.getSnippet().getThumbnails().getHigh().getUrl());
             itemModel.setTitle(entity.getSnippet().getTitle());
             itemModel.setId(entity.getId());
 

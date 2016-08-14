@@ -67,15 +67,12 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
-        List<VideoItemModel> savedItems = null;
         if (savedInstanceState != null) {
-            savedItems = savedInstanceState
-                    .getParcelableArrayList(getString(R.string.video_items_list));
-            currentPage = savedInstanceState
-                    .getInt(getString(R.string.page_number));
+            currentPage = savedInstanceState.getInt(getString(R.string.page_number));
+            initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list)));
+        } else {
+            presenter.fetchVideos(currentPage);
         }
-
-        presenter.fetchVideos(currentPage, savedItems);
 
         return fragmentView;
     }
@@ -115,7 +112,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 currentPage = page;
-                presenter.fetchVideos(page, null);
+                presenter.fetchVideos(page);
             }
         };
 

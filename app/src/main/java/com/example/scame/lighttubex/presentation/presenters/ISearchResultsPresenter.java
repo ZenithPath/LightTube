@@ -14,5 +14,5 @@ public interface ISearchResultsPresenter<V> extends Presenter<V> {
         void updateAdapter(List<SearchItemModel> searchItems);
     }
 
-    void fetchVideos(int page, List<SearchItemModel> savedItems, String query);
+    void fetchVideos(int page, String query);
 }

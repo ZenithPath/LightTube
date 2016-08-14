@@ -19,7 +19,13 @@ public class SearchDataManagerImp implements ISearchDataManager {
 
     private Retrofit retrofit;
 
-    // TODO: refactor with dagger
+    private static final String CLIENT = "firefox";
+    private static final String RESTRICT_TO = "yt";
+    private static final String LANGUAGE = "en";
+
+    private static final String PART = "snippet";
+    private static final int MAX_RESULTS = 25;
+
 
     @Override
     public Observable<AutocompleteEntity> autocomplete(String query) {
@@ -27,7 +33,7 @@ public class SearchDataManagerImp implements ISearchDataManager {
         SearchApi searchApi = retrofit.create(SearchApi.class);
         JsonDeserializer deserializer = new JsonDeserializer();
 
-        return searchApi.autocomplete(query, "firefox", "yt", "en")
+        return searchApi.autocomplete(query, CLIENT, RESTRICT_TO, LANGUAGE)
                 .map(deserializer::convert);
     }
 
@@ -37,7 +43,7 @@ public class SearchDataManagerImp implements ISearchDataManager {
         retrofit = LightTubeApp.getAppComponent().getRetrofit();
         SearchApi searchApi = retrofit.create(SearchApi.class);
 
-        return searchApi.searchVideo("snippet", query, 25, getNextPageToken(page), PrivateValues.API_KEY)
+        return searchApi.searchVideo(PART, query, MAX_RESULTS, getNextPageToken(page), PrivateValues.API_KEY)
                 .doOnNext(searchEntity -> {
                     saveNextPageToken(searchEntity.getNextPageToken());
                     savePageNumber(page);

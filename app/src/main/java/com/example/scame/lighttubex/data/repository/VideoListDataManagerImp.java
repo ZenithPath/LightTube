@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.example.scame.lighttubex.PrivateValues;
+import com.example.scame.lighttubex.R;
 import com.example.scame.lighttubex.data.entities.videolist.VideoEntityList;
 import com.example.scame.lighttubex.data.mappers.VideoListMapper;
 import com.example.scame.lighttubex.data.rest.VideoListApi;
@@ -19,48 +20,52 @@ import rx.Observable;
 
 public class VideoListDataManagerImp implements IVideoListDataManager {
 
-    private Retrofit retrofit;
-    private VideoListMapper mapper;
-    private SharedPreferences sp;
-
-    public VideoListDataManagerImp() {
-        retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        mapper = new VideoListMapper();
-        Context context = LightTubeApp.getAppComponent().getApp();
-        sp = PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
+    private static final String CHART = "mostPopular";
+    private static final String PART = "snippet";
+    private static final int MAX_RESULTS = 25;
 
     @Override
     public Observable<List<VideoItemModel>> getVideoItemsList(int page) {
         String nextPageToken = getNextPageToken(page);
-        savePageNumber(page);
+        Retrofit retrofit = LightTubeApp.getAppComponent().getRetrofit();
+        VideoListMapper mapper = new VideoListMapper();
 
-        // temporary solution
         VideoListApi videoListApi = retrofit.create(VideoListApi.class);
         return videoListApi
-                .getVideoList(nextPageToken, "mostPopular", PrivateValues.API_KEY, "snippet", 25)
-                .doOnNext(this::saveNextPageToken)
-                .map(mapper::convert);
+                .getVideoList(nextPageToken, CHART, PrivateValues.API_KEY, PART, MAX_RESULTS)
+                .doOnNext(videoEntityList -> {
+                    saveNextPageToken(videoEntityList);
+                    savePageNumber(page);
+                }).map(mapper::convert);
     }
 
+
     private void saveNextPageToken(VideoEntityList entityList) {
-        String nextPage = entityList.getNextPageToken();
-        sp.edit().putString("nextPageToken", nextPage).apply();
+        getSharedPrefs().edit()
+                .putString(getContext().getString(R.string.next_page_token_list),
+                        entityList.getNextPageToken()).apply();
+    }
+
+
+    private String getNextPageToken(int page) {
+        String nextPageToken = getSharedPrefs()
+                .getString(getContext().getString(R.string.next_page_token_list), null);
+        int prevPageNumber = getSharedPrefs()
+                .getInt(getContext().getString(R.string.list_page_number), 0);
+
+        return page < prevPageNumber ? null : nextPageToken;
     }
 
     private void savePageNumber(int page) {
-        sp.edit().putInt("pageNumber", page).apply();
+        getSharedPrefs().edit().putInt(getContext().getString(R.string.list_page_number), page).apply();
     }
 
-    private String getNextPageToken(int page) {
-        if (getPageNumber() > page) {
-            return null;
-        }
-        return sp.getString("nextPageToken", null);
+    private SharedPreferences getSharedPrefs() {
+        Context context = LightTubeApp.getAppComponent().getApp();
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    private int getPageNumber() {
-        return sp.getInt("pageNumber", 0);
+    private Context getContext() {
+        return LightTubeApp.getAppComponent().getApp();
     }
 }

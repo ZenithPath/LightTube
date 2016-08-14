@@ -14,5 +14,5 @@ public interface IVideoListPresenter<V> extends Presenter<V>{
         void updateAdapter(List<VideoItemModel> items);
     }
 
-    void fetchVideos(int page, List<VideoItemModel> savedItems);
+    void fetchVideos(int page);
 }

@@ -68,12 +68,11 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
         presenter.setView(this);
 
-        if (savedInstanceState == null) {
-            presenter.fetchVideos(currentPage, null, query);
-        } else {
+        if (savedInstanceState != null) {
             currentPage = savedInstanceState.getInt(getString(R.string.page_number), 0);
-            presenter.fetchVideos(currentPage,
-                    savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)), query);
+            initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)));
+        } else {
+            presenter.fetchVideos(currentPage, query);
         }
 
         return fragmentView;
@@ -126,7 +125,7 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 currentPage = page;
-                presenter.fetchVideos(page, null, query);
+                presenter.fetchVideos(page, query);
             }
         };
 
