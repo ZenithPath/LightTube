@@ -7,7 +7,6 @@ import com.example.scame.lighttubex.data.repository.ISignInDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttubex.domain.usecases.SignInUseCase;
-import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.di.PerActivity;
 import com.example.scame.lighttubex.presentation.fragments.SignInFragment;
 import com.example.scame.lighttubex.presentation.presenters.ISignInPresenter;
@@ -25,7 +24,7 @@ public class SignInModule {
 
     private Activity activity;
 
-    public SignInModule(SignInActivity activity) {
+    public SignInModule(Activity activity) {
         this.activity = activity;
     }
 

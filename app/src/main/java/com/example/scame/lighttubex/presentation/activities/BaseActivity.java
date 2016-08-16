@@ -10,11 +10,9 @@ import com.example.scame.lighttubex.presentation.LightTubeApp;
 import com.example.scame.lighttubex.presentation.di.components.ApplicationComponent;
 import com.example.scame.lighttubex.presentation.navigation.Navigator;
 
-import javax.inject.Inject;
-
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @Inject Navigator navigator;
+    protected Navigator navigator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

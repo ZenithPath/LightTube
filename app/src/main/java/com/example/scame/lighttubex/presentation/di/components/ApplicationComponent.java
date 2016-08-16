@@ -9,6 +9,7 @@ import com.example.scame.lighttubex.data.repository.IVideoListDataManager;
 import com.example.scame.lighttubex.domain.schedulers.ObserveOn;
 import com.example.scame.lighttubex.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttubex.presentation.di.modules.ApplicationModule;
+import com.example.scame.lighttubex.presentation.navigation.Navigator;
 
 import javax.inject.Singleton;
 
@@ -26,6 +27,8 @@ public interface ApplicationComponent {
     ObserveOn getObserveOn();
 
     SubscribeOn getSubscribeOn();
+
+    Navigator getNavigator();
 
     ISignInDataManager getSignInDataManager();
 

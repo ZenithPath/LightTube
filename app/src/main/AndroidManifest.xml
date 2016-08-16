@@ -21,8 +21,6 @@
 
         <activity android:name=".presentation.activities.SignInActivity" />
 
-        <activity android:name=".presentation.activities.VideoListActivity" />
-
         <activity
             android:name=".presentation.activities.PlayVideoActivity"
             android:screenOrientation="landscape" />

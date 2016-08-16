@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttubex.R;
+import com.example.scame.lighttubex.presentation.activities.TabActivity;
 import com.example.scame.lighttubex.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttubex.presentation.adapters.VideoListAdapter;
-import com.example.scame.lighttubex.presentation.di.components.VideoListComponent;
 import com.example.scame.lighttubex.presentation.model.VideoItemModel;
 import com.example.scame.lighttubex.presentation.presenters.IVideoListPresenter;
 
@@ -56,8 +56,15 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getComponent(VideoListComponent.class).inject(this);
+        inject();
         presenter.setView(this);
+    }
+
+    private void inject() {
+        if (getActivity() instanceof TabActivity) {
+            TabActivity tabActivity = (TabActivity) getActivity();
+            tabActivity.getVideoListComponent().inject(this);
+        }
     }
 
     @Nullable
@@ -76,7 +83,6 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         return fragmentView;
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -127,5 +133,9 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         } else {
             return new LinearLayoutManager(getContext());
         }
+    }
+
+    public void scrollToTop() {
+        recyclerView.smoothScrollToPosition(0);
     }
 }
