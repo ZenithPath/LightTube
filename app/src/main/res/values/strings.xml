@@ -29,4 +29,9 @@
     
     <string name="search_items_list">searchItems</string>
 
+    <string name="home_item">Home</string>
+    <string name="channels_item">Channels</string>
+    <string name="discover_item">Discover</string>
+    <string name="account_item">Account</string>
+
 </resources>
