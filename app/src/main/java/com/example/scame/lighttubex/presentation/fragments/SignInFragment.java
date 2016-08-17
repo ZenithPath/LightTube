@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.scame.lighttubex.R;
-import com.example.scame.lighttubex.presentation.di.components.SignInComponent;
+import com.example.scame.lighttubex.presentation.activities.TabActivity;
 import com.example.scame.lighttubex.presentation.presenters.ISignInPresenter;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -65,12 +65,20 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getComponent(SignInComponent.class).inject(this);
+        inject();
         signInPresenter.setView(this);
 
         googleApiClient = googleApiClientBuilder
                 .enableAutoManage(getActivity(), this)
                 .build();
+        googleApiClient.connect();
+    }
+
+    private void inject() {
+        if (getActivity() instanceof TabActivity) {
+            TabActivity tabActivity = (TabActivity) getActivity();
+            tabActivity.getSignInComponent().inject(this);
+        }
     }
 
     @Override
@@ -145,6 +153,9 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        googleApiClient.stopAutoManage(getActivity());
+        googleApiClient.disconnect();
 
         signInPresenter.destroy();
     }

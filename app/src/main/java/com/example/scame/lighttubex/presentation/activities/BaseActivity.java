@@ -22,11 +22,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void replaceFragment(int containerViewId, Fragment fragment, String TAG) {
-        if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(containerViewId, fragment, TAG);
-            ft.commit();
-        }
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(containerViewId, fragment, TAG);
+        ft.commit();
+
     }
 
     protected ApplicationComponent getAppComponent() {

@@ -2,9 +2,11 @@ package com.example.scame.lighttubex.presentation.activities;
 
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.scame.lighttubex.R;
@@ -13,11 +15,10 @@ import com.example.scame.lighttubex.presentation.di.components.ComponentsManager
 import com.example.scame.lighttubex.presentation.di.components.SearchComponent;
 import com.example.scame.lighttubex.presentation.di.components.SignInComponent;
 import com.example.scame.lighttubex.presentation.di.components.VideoListComponent;
+import com.example.scame.lighttubex.presentation.fragments.SignInFragment;
 import com.example.scame.lighttubex.presentation.fragments.VideoListFragment;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,10 @@ import butterknife.ButterKnife;
 public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
+
+    public static final String SIGN_IN_FRAG_TAG = "signInFragment";
+
+    private MenuItem searchItem;
 
     @BindView(R.id.videolist_toolbar) Toolbar toolbar;
 
@@ -46,8 +51,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
-
         configureBottomBar(savedInstanceState);
     }
 
@@ -60,14 +63,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
             public void onMenuTabSelected(@IdRes int menuItemId) {
                 switch (menuItemId) {
                     case R.id.home_menu_item:
-                        detachOldFragment();
-
-                        VideoListFragment videoListFragment = (VideoListFragment) getSupportFragmentManager()
-                                .findFragmentByTag(VIDEO_LIST_FRAG_TAG);
-                        if (videoListFragment == null) {
-                            addFragment(VIDEO_LIST_FRAG_TAG, new VideoListFragment());
-                        } else {
-                            attachNewFragment(videoListFragment);
+                        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
+                            replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
                         }
 
                         break;
@@ -77,8 +74,12 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                     case R.id.discover_menu_item:
                         Toast.makeText(getApplicationContext(), "Discover", Toast.LENGTH_SHORT).show();
                         break;
+
                     case R.id.account_menu_item:
-                        Toast.makeText(getApplicationContext(), "Account", Toast.LENGTH_SHORT).show();
+                        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
+                            replaceFragment(R.id.videolist_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                        }
+
                         break;
                 }
             }
@@ -108,13 +109,39 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         });
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        searchItem.collapseActionView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.videolist_menu, menu);
+
+        searchItem = menu.findItem(R.id.action_search);
+
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnSearchClickListener(view -> navigator.navigateToAutocompleteActivity(this));
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
     public VideoListComponent getVideoListComponent() {
         if (videoListComponent == null) {
             videoListComponent = componentsManager.provideVideoListComponent();
-            return videoListComponent;
-        } else {
-            return videoListComponent;
         }
+
+        return videoListComponent;
+    }
+
+    public SignInComponent getSignInComponent() {
+        if (signInComponent == null) {
+            signInComponent = componentsManager.provideSignInComponent();
+        }
+
+        return signInComponent;
     }
 
     @Override
@@ -132,41 +159,5 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     @Override
     protected void inject(ApplicationComponent appComponent) {
         navigator = appComponent.getNavigator();
-    }
-
-    private void detachOldFragment() {
-        Fragment oldFragment = getVisibleFragment();
-        if (oldFragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .detach(oldFragment)
-                    .commit();
-        }
-    }
-
-    private void attachNewFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .attach(fragment)
-                .commit();
-    }
-
-    private void addFragment(String TAG, Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.videolist_activity_fl, fragment, TAG)
-                .commit();
-    }
-
-    private Fragment getVisibleFragment(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments != null) {
-            for (Fragment fragment : fragments) {
-                if (fragment != null && fragment.isVisible())
-                    return fragment;
-            }
-        }
-        return null;
     }
 }

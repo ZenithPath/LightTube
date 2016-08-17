@@ -1,7 +1,6 @@
 package com.example.scame.lighttubex.presentation.di.components;
 
 
-import com.example.scame.lighttubex.presentation.activities.SignInActivity;
 import com.example.scame.lighttubex.presentation.di.PerActivity;
 import com.example.scame.lighttubex.presentation.di.modules.SignInModule;
 import com.example.scame.lighttubex.presentation.fragments.SignInFragment;
@@ -13,6 +12,4 @@ import dagger.Component;
 public interface SignInComponent {
 
     void inject(SignInFragment fragment);
-
-    void inject(SignInActivity activity);
 }
