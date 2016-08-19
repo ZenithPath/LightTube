@@ -50,6 +50,8 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
 
     public interface SignUpListener {
         void signedIn();
+
+        void signedOut();
     }
 
     @Override
@@ -91,6 +93,7 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.signin_fragment, container, false);
 
+        signInPresenter.isSignedIn();
         ButterKnife.bind(this, fragmentView);
         return fragmentView;
     }
@@ -108,7 +111,6 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             signInPresenter.handleSignInResult(result);
-            //signUpListener.signedIn();
         }
     }
 
@@ -134,6 +136,16 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
     @Override
     public void setStatusTextView(String serverAuthCode) {
         statusTextView.setText(getString(R.string.signed_in_fmt, serverAuthCode));
+    }
+
+    @Override
+    public void signOut() {
+        signUpListener.signedOut();
+    }
+
+    @Override
+    public void signIn() {
+        signUpListener.signedIn();
     }
 
     @Override

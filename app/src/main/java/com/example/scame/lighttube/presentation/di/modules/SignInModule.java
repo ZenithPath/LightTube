@@ -6,6 +6,7 @@ import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttube.domain.usecases.SignInCheckUseCase;
 import com.example.scame.lighttube.domain.usecases.SignInUseCase;
 import com.example.scame.lighttube.domain.usecases.SignOutUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
@@ -63,8 +64,16 @@ public class SignInModule {
 
     @PerActivity
     @Provides
+    SignInCheckUseCase provideSignInCheckUseCase(IAccountDataManager dataManager,
+                                                 ObserveOn observeOn, SubscribeOn subscribeOn) {
+        return new SignInCheckUseCase(subscribeOn, observeOn, dataManager);
+    }
+
+    @PerActivity
+    @Provides
     ISignInPresenter<ISignInPresenter.SignInView> provideSignInPresenter(SignInUseCase signInUseCase,
-                                                                         SignOutUseCase signOutUseCase) {
-        return new SignInPresenterImp<>(signInUseCase, signOutUseCase);
+                                                                         SignOutUseCase signOutUseCase,
+                                                                         SignInCheckUseCase signInCheckUseCase) {
+        return new SignInPresenterImp<>(signInUseCase, signOutUseCase, signInCheckUseCase);
     }
 }

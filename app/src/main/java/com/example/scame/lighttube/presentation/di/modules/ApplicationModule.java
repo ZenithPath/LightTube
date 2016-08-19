@@ -5,7 +5,6 @@ import android.app.Application;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.presentation.LightTubeApp;
-import com.example.scame.lighttube.presentation.navigation.Navigator;
 
 import javax.inject.Singleton;
 
@@ -39,11 +38,5 @@ public class ApplicationModule {
     @Provides
     SubscribeOn provideSubscribeOn() {
         return Schedulers::newThread;
-    }
-
-    @Singleton
-    @Provides
-    Navigator provideNavigator() {
-        return new Navigator();
     }
 }

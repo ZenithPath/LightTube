@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.presentation.activities;
 
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -9,38 +8,56 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ashokvarma.bottomnavigation.BottomNavigationBar;
+import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.di.components.ApplicationComponent;
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
+import com.example.scame.lighttube.presentation.di.components.DaggerTabComponent;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
 import com.example.scame.lighttube.presentation.di.components.SignInComponent;
 import com.example.scame.lighttube.presentation.di.components.VideoListComponent;
+import com.example.scame.lighttube.presentation.di.modules.TabModule;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
 import com.example.scame.lighttube.presentation.fragments.VideoListFragment;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
+import com.example.scame.lighttube.presentation.presenters.ITabActivityPresenter;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener {
+public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener,
+                                                    ITabActivityPresenter.ITabActivityView,
+                                                    SignInFragment.SignUpListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
 
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
 
-    private MenuItem searchItem;
+    private static final int HOME_TAB = 0;
+    private static final int CHANNELS_TAB = 1;
+    private static final int DISCOVER_TAB_SIGN_IN = 2;
+    private static final int DISCOVER_TAB_SIGN_OUT = 1;
+    private static final int ACCOUNT_TAB_SIGN_IN = 3;
+    private static final int ACCOUNT_TAB_SIGN_OUT = 2;
 
     @BindView(R.id.videolist_toolbar) Toolbar toolbar;
 
-    private BottomBar bottomBar;
+    @BindView(R.id.bottom_navigation_bar) BottomNavigationBar bottomNavigationBar;
+
+    @Inject
+    ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> presenter;
+
+    private MenuItem searchItem;
+
+    private BottomNavigationItem[] bottomBarItems;
 
     private ComponentsManager componentsManager;
 
     private VideoListComponent videoListComponent;
     private SignInComponent signInComponent;
     private SearchComponent searchComponent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,32 +67,92 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        presenter.setView(this);
 
-        configureBottomBar(savedInstanceState);
+        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
+            replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+        }
+
+        presenter.checkLogin();
+
+        bottomBarItems = new BottomNavigationItem[] {
+                new BottomNavigationItem(R.drawable.ic_home_black_24dp, getString(R.string.home_item)),
+                new BottomNavigationItem(R.drawable.ic_video_library_black_24dp, getString(R.string.channels_item)),
+                new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.discover_item)),
+                new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, getString(R.string.account_item))
+        };
+    }
+
+    @Override
+    public void setBottomBarItems(boolean isSignedIn) {
+        if (isSignedIn) {
+            initSignInBottomBar();
+        } else {
+            initSignOutBottomBar();
+        }
+    }
+
+    @Override
+    public void signedIn() {
+        bottomNavigationBar.clearAll();
+        bottomNavigationBar.setTabSelectedListener(signInListener());
+        addSignInItems();
+        bottomNavigationBar.setFirstSelectedPosition(ACCOUNT_TAB_SIGN_IN).initialise();
+    }
+
+    @Override
+    public void signedOut() {
+        bottomNavigationBar.clearAll();
+        bottomNavigationBar.setTabSelectedListener(signOutListener());
+        addSignOutItems();
+        bottomNavigationBar.setFirstSelectedPosition(ACCOUNT_TAB_SIGN_OUT).initialise();
     }
 
 
-    private void configureBottomBar(Bundle savedInstanceState) {
-        bottomBar = BottomBar.attach(this, savedInstanceState);
-        bottomBar.setItems(R.menu.bottom_tabs_menu);
-        bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
+    private void initSignInBottomBar() {
+        bottomNavigationBar.setTabSelectedListener(signInListener());
+        addSignInItems();
+        bottomNavigationBar.initialise();
+    }
+
+    private void initSignOutBottomBar() {
+        bottomNavigationBar.setTabSelectedListener(signOutListener());
+        addSignOutItems();
+        bottomNavigationBar.initialise();
+    }
+
+    private void addSignInItems() {
+        for (BottomNavigationItem item : bottomBarItems) {
+            bottomNavigationBar.addItem(item);
+        }
+    }
+
+    private void addSignOutItems() {
+        bottomNavigationBar
+                .addItem(bottomBarItems[HOME_TAB])
+                .addItem(bottomBarItems[DISCOVER_TAB_SIGN_IN])
+                .addItem(bottomBarItems[ACCOUNT_TAB_SIGN_IN]);
+    }
+
+    private BottomNavigationBar.OnTabSelectedListener signInListener() {
+        return new BottomNavigationBar.OnTabSelectedListener() {
             @Override
-            public void onMenuTabSelected(@IdRes int menuItemId) {
-                switch (menuItemId) {
-                    case R.id.home_menu_item:
+            public void onTabSelected(int position) {
+                switch (position) {
+                    case HOME_TAB:
                         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
                             replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
                         }
 
                         break;
-                    case R.id.channels_menu_item:
+                    case CHANNELS_TAB:
                         Toast.makeText(getApplicationContext(), "Channels", Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.discover_menu_item:
+                    case DISCOVER_TAB_SIGN_IN:
                         Toast.makeText(getApplicationContext(), "Discover", Toast.LENGTH_SHORT).show();
                         break;
 
-                    case R.id.account_menu_item:
+                    case ACCOUNT_TAB_SIGN_IN:
                         if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
                             replaceFragment(R.id.videolist_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
                         }
@@ -85,31 +162,53 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
             }
 
             @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-                switch (menuItemId) {
-                    case R.id.home_menu_item:
-                        VideoListFragment fragment = (VideoListFragment) getSupportFragmentManager()
-                                .findFragmentByTag(VIDEO_LIST_FRAG_TAG);
-                        if (fragment != null) {
-                            fragment.scrollToTop();
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        };
+    }
+
+    private BottomNavigationBar.OnTabSelectedListener signOutListener() {
+        return new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                switch (position) {
+                    case HOME_TAB:
+                        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
+                            replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
                         }
+
+                        break;
+                    case DISCOVER_TAB_SIGN_OUT:
+                        Toast.makeText(getApplicationContext(), "Discover", Toast.LENGTH_SHORT).show();
                         break;
 
-                    case R.id.channels_menu_item:
-                        Toast.makeText(getApplicationContext(), "ChannelsReselected", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.discover_menu_item:
-                        Toast.makeText(getApplicationContext(), "DiscoverReselected", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.account_menu_item:
-                        Toast.makeText(getApplicationContext(), "AccountReselected", Toast.LENGTH_SHORT).show();
+                    case ACCOUNT_TAB_SIGN_OUT:
+                        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
+                            replaceFragment(R.id.videolist_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                        }
+
                         break;
                 }
             }
-        });
+
+            @Override
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        };
     }
 
-    @Override
     protected void onRestart() {
         super.onRestart();
 
@@ -144,12 +243,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         return signInComponent;
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        bottomBar.onSaveInstanceState(outState);
-    }
 
     @Override
     public void onVideoClick(String id) {
@@ -158,6 +251,10 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     @Override
     protected void inject(ApplicationComponent appComponent) {
-        navigator = appComponent.getNavigator();
+        DaggerTabComponent.builder()
+                .applicationComponent(appComponent)
+                .tabModule(new TabModule())
+                .build()
+                .inject(this);
     }
 }

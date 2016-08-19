@@ -2,6 +2,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.data.entities.TokenEntity;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
+import com.example.scame.lighttube.domain.usecases.SignInCheckUseCase;
 import com.example.scame.lighttube.domain.usecases.SignInUseCase;
 import com.example.scame.lighttube.domain.usecases.SignOutUseCase;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -14,11 +15,16 @@ public class SignInPresenterImp<V extends ISignInPresenter.SignInView> implement
 
     private SignOutUseCase signOutUseCase;
 
+    private SignInCheckUseCase signInCheckUseCase;
+
     private V signInView;
 
-    public SignInPresenterImp(SignInUseCase signInUseCase, SignOutUseCase signOutUseCase) {
+    public SignInPresenterImp(SignInUseCase signInUseCase, SignOutUseCase signOutUseCase,
+                              SignInCheckUseCase signInCheckUseCase) {
+
         this.signInUseCase = signInUseCase;
         this.signOutUseCase = signOutUseCase;
+        this.signInCheckUseCase = signInCheckUseCase;
     }
 
     @Override
@@ -44,10 +50,54 @@ public class SignInPresenterImp<V extends ISignInPresenter.SignInView> implement
         signInView.updateUI(false);
     }
 
-    private final class SignInSubscriber extends DefaultSubscriber<TokenEntity> {
+    @Override
+    public void isSignedIn() {
+        signInCheckUseCase.execute(new SignInCheckSubscriber());
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void destroy() {
+        signInUseCase.unsubscribe();
+        signOutUseCase.unsubscribe();
+        signInCheckUseCase.unsubscribe();
+        signInView = null;
+    }
+
+    private final class SignOutSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+
+            signInView.showError(e.toString());
+        }
+
         @Override
         public void onCompleted() {
             super.onCompleted();
+
+            signInView.signOut();
+            signInView.setStatusTextView("signed out!");
+        }
+    }
+
+    private final class SignInSubscriber extends DefaultSubscriber<TokenEntity> {
+
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+
+            signInView.signIn();
         }
 
         @Override
@@ -65,37 +115,13 @@ public class SignInPresenterImp<V extends ISignInPresenter.SignInView> implement
         }
     }
 
-    private final class SignOutSubscriber extends DefaultSubscriber<Void> {
+    private final class SignInCheckSubscriber extends DefaultSubscriber<Boolean> {
 
         @Override
-        public void onError(Throwable e) {
-            super.onError(e);
+        public void onNext(Boolean isSignedIn) {
+            super.onNext(isSignedIn);
 
-            signInView.showError(e.toString());
+            signInView.updateUI(isSignedIn);
         }
-
-        @Override
-        public void onCompleted() {
-            super.onCompleted();
-
-            signInView.setStatusTextView("signed out!");
-        }
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void destroy() {
-        signInUseCase.unsubscribe();
-        signOutUseCase.unsubscribe();
-        signInView = null;
     }
 }

@@ -6,9 +6,14 @@ import android.content.Intent;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayVideoActivity;
 import com.example.scame.lighttube.presentation.activities.SearchActivity;
+import com.example.scame.lighttube.presentation.di.PerActivity;
 
+import javax.inject.Inject;
+
+@PerActivity
 public class Navigator {
 
+    @Inject
     public Navigator() {}
 
     public void navigateToPlayVideo(Context context, String videoId) {

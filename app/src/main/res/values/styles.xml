@@ -5,11 +5,10 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="custom_toolbar" parent="@style/Widget.AppCompat.Toolbar">
-        <item name="titleTextColor">@android:color/holo_green_dark</item>
+        <item name="titleTextColor">@color/textPrimary</item>
     </style>
 
 </resources>
