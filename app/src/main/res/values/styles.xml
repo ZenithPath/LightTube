@@ -5,6 +5,11 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorSecondary">@color/textSecondary</item>
+        <item name="android:textColorPrimary">@color/textPrimary</item>
+        <item name="android:divider">@color/dividerColor</item>
     </style>
 
     <style name="custom_toolbar" parent="@style/Widget.AppCompat.Toolbar">

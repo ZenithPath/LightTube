@@ -88,8 +88,10 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(items));
-        outState.putInt(getString(R.string.page_number), currentPage);
+        if (items != null ) {
+            outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(items));
+            outState.putInt(getString(R.string.page_number), currentPage);
+        }
     }
 
 

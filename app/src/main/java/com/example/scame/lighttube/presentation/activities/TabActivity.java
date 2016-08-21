@@ -134,6 +134,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 .addItem(bottomBarItems[ACCOUNT_TAB_SIGN_IN]);
     }
 
+
     private BottomNavigationBar.OnTabSelectedListener signInListener() {
         return new BottomNavigationBar.OnTabSelectedListener() {
             @Override
