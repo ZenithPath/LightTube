@@ -83,8 +83,10 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         };
     }
 
+    // called by presenter after checkLogin method in onCreate
     @Override
     public void setBottomBarItems(boolean isSignedIn) {
+
         if (isSignedIn) {
             initSignInBottomBar();
         } else {
@@ -92,33 +94,47 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         }
     }
 
+    // called by SignInFragment after user signed in
     @Override
     public void signedIn() {
-        bottomNavigationBar.clearAll();
-        bottomNavigationBar.setTabSelectedListener(signInListener());
-        addSignInItems();
+        configSignInBottomBar();
         bottomNavigationBar.setFirstSelectedPosition(ACCOUNT_TAB_SIGN_IN).initialise();
     }
 
+    // called by SignInFragment after user signed out
     @Override
     public void signedOut() {
-        bottomNavigationBar.clearAll();
-        bottomNavigationBar.setTabSelectedListener(signOutListener());
-        addSignOutItems();
+        configSignOutBottomBar();
         bottomNavigationBar.setFirstSelectedPosition(ACCOUNT_TAB_SIGN_OUT).initialise();
     }
 
-
     private void initSignInBottomBar() {
-        bottomNavigationBar.setTabSelectedListener(signInListener());
-        addSignInItems();
+        setBottomNavigationColors(); // workaround for navigationBar colors problem
+        configSignInBottomBar();
         bottomNavigationBar.initialise();
     }
 
     private void initSignOutBottomBar() {
+        configSignOutBottomBar();
+        bottomNavigationBar.initialise();
+    }
+
+    private void configSignInBottomBar() {
+        bottomNavigationBar.clearAll();
+        bottomNavigationBar.setTabSelectedListener(signInListener());
+        addSignInItems();
+    }
+
+    private void configSignOutBottomBar() {
+        bottomNavigationBar.clearAll();
         bottomNavigationBar.setTabSelectedListener(signOutListener());
         addSignOutItems();
-        bottomNavigationBar.initialise();
+    }
+
+    private void setBottomNavigationColors() {
+        bottomNavigationBar.setBarBackgroundColor(R.color.colorAccent);
+        bottomNavigationBar.setActiveColor(R.color.colorPrimary);
+        bottomNavigationBar.setInActiveColor(R.color.colorPrimaryDark);
     }
 
     private void addSignInItems() {

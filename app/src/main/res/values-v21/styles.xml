@@ -10,6 +10,6 @@
         <item name="android:textColorSecondary">@color/textSecondary</item>
         <item name="android:textColorPrimary">@color/textPrimary</item>
         <item name="android:divider">@color/dividerColor</item>
-        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 </resources>
