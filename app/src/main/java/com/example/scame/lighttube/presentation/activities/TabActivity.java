@@ -19,6 +19,7 @@ import com.example.scame.lighttube.presentation.di.components.SignInComponent;
 import com.example.scame.lighttube.presentation.di.components.VideoListComponent;
 import com.example.scame.lighttube.presentation.di.modules.TabModule;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
+import com.example.scame.lighttube.presentation.fragments.SurpriseMeFragment;
 import com.example.scame.lighttube.presentation.fragments.VideoListFragment;
 import com.example.scame.lighttube.presentation.presenters.ITabActivityPresenter;
 
@@ -29,11 +30,14 @@ import butterknife.ButterKnife;
 
 public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener,
                                                     ITabActivityPresenter.ITabActivityView,
-                                                    SignInFragment.SignUpListener {
+                                                    SignInFragment.SignUpListener,
+                                                    SurpriseMeFragment.SurpriseMeListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
 
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
+
+    public static final String SURPRISE_ME_FRAG_TAG = "surpriseMeFragment";
 
     private static final int HOME_TAB = 0;
     private static final int CHANNELS_TAB = 1;
@@ -166,9 +170,11 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                         Toast.makeText(getApplicationContext(), "Channels", Toast.LENGTH_SHORT).show();
                         break;
                     case DISCOVER_TAB_SIGN_IN:
-                        Toast.makeText(getApplicationContext(), "Discover", Toast.LENGTH_SHORT).show();
-                        break;
+                        if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
+                            replaceFragment(R.id.videolist_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
+                        }
 
+                        break;
                     case ACCOUNT_TAB_SIGN_IN:
                         if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
                             replaceFragment(R.id.videolist_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
@@ -202,7 +208,9 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
                         break;
                     case DISCOVER_TAB_SIGN_OUT:
-                        Toast.makeText(getApplicationContext(), "Discover", Toast.LENGTH_SHORT).show();
+                        if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
+                            replaceFragment(R.id.videolist_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
+                        }
                         break;
 
                     case ACCOUNT_TAB_SIGN_OUT:
@@ -264,6 +272,11 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     @Override
     public void onVideoClick(String id) {
         navigator.navigateToPlayVideo(this, id);
+    }
+
+    @Override
+    public void onCategoryItemClick(String category) {
+
     }
 
     @Override

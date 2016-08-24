@@ -33,5 +33,28 @@
     <string name="channels_item">Channels</string>
     <string name="discover_item">Discover</string>
     <string name="account_item">Account</string>
+    
+    <string name="category_header">You want to see something about…</string>
+    <string name="news_politics_category">News &amp; Politics</string>
+    <string name="films_animations_category">Films &amp; Animations</string>
+    <string name="comedy_category">Comedies</string>
+    <string name="games_category">Games</string>
+    <string name="musics_category">Music</string>
+    <string name="science_technology_category">Science &amp; Technology</string>
+    <string name="travel_events_category">Travel &amp; Events</string>
+    <string name="people_blogs_category">People &amp; Blogs</string>
+    <string name="sport_category">Sport</string>
+
+    <string-array name="category_items">
+        <item>@string/news_politics_category</item>
+        <item>@string/films_animations_category</item>
+        <item>@string/comedy_category</item>
+        <item>@string/games_category</item>
+        <item>@string/musics_category</item>
+        <item>@string/science_technology_category</item>
+        <item>@string/travel_events_category</item>
+        <item>@string/people_blogs_category</item>
+        <item>@string/sport_category</item>
+    </string-array>
 
 </resources>

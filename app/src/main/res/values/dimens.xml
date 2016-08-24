@@ -4,4 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
+    <dimen name="headers">20sp</dimen>
+    <dimen name="regular_text">16sp</dimen>
+
 </resources>

@@ -16,4 +16,13 @@
         <item name="titleTextColor">@color/textPrimary</item>
     </style>
 
+    <style name="category_item_style">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/regular_text</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_margin">16dp</item>
+    </style>
+
 </resources>
