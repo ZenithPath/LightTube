@@ -3,7 +3,7 @@ package com.example.scame.lighttube.presentation.activities;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -46,8 +46,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private static final int ACCOUNT_TAB_SIGN_IN = 3;
     private static final int ACCOUNT_TAB_SIGN_OUT = 2;
 
-    @BindView(R.id.videolist_toolbar) Toolbar toolbar;
-
     @BindView(R.id.bottom_navigation_bar) BottomNavigationBar bottomNavigationBar;
 
     @Inject
@@ -67,15 +65,15 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     protected void onCreate(Bundle savedInstanceState) {
         componentsManager = new ComponentsManager(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.video_list_activity);
+        setContentView(R.layout.tab_activity);
 
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        presenter.setView(this);
 
         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-            replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
         }
+
+        ButterKnife.bind(this);
+        presenter.setView(this);
 
         presenter.checkLogin();
 
@@ -162,7 +160,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 switch (position) {
                     case HOME_TAB:
                         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-                            replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
                         }
 
                         break;
@@ -171,13 +169,13 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                         break;
                     case DISCOVER_TAB_SIGN_IN:
                         if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
-                            replaceFragment(R.id.videolist_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
                         }
 
                         break;
                     case ACCOUNT_TAB_SIGN_IN:
                         if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-                            replaceFragment(R.id.videolist_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
                         }
 
                         break;
@@ -203,19 +201,19 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 switch (position) {
                     case HOME_TAB:
                         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-                            replaceFragment(R.id.videolist_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
                         }
 
                         break;
                     case DISCOVER_TAB_SIGN_OUT:
                         if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
-                            replaceFragment(R.id.videolist_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
                         }
                         break;
 
                     case ACCOUNT_TAB_SIGN_OUT:
                         if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-                            replaceFragment(R.id.videolist_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
                         }
 
                         break;
@@ -276,7 +274,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     @Override
     public void onCategoryItemClick(String category) {
-
+        Log.i("clicked", category);
     }
 
     @Override

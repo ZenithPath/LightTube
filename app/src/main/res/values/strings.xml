@@ -45,6 +45,8 @@
     <string name="people_blogs_category">People &amp; Blogs</string>
     <string name="sport_category">Sport</string>
 
+    <string name="category_key">categoryKey</string>
+
     <string-array name="category_items">
         <item>@string/news_politics_category</item>
         <item>@string/films_animations_category</item>
@@ -55,6 +57,19 @@
         <item>@string/travel_events_category</item>
         <item>@string/people_blogs_category</item>
         <item>@string/sport_category</item>
+    </string-array>
+
+    <string name="movie_length">Desired video duration?</string>
+    <string name="any_duration">Any</string>
+    <string name="short_duration">Short</string>
+    <string name="medium_duration">Medium</string>
+    <string name="long_duration">Long</string>
+    
+    <string-array name="video_durations_array">
+        <item>@string/any_duration</item>
+        <item>@string/short_duration</item>
+        <item>@string/medium_duration</item>
+        <item>@string/long_duration</item>
     </string-array>
 
 </resources>

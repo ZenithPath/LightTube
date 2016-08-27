@@ -5,20 +5,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.widget.Space
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/categories_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary">
+
+    </android.support.v7.widget.Toolbar>
 
     <TextView
         android:id="@+id/header_category_tv"
-        android:text="@string/category_header"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textColor="@color/textPrimary"
-        android:textSize="@dimen/headers"
         android:layout_margin="18dp"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:text="@string/category_header"
+        android:textColor="@color/textPrimary"
+        android:textSize="@dimen/headers" />
 
     <ListView
         android:id="@+id/categories_lv"

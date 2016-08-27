@@ -3,6 +3,10 @@ package com.example.scame.lighttube.presentation.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +22,13 @@ public class SurpriseMeFragment extends BaseFragment {
 
     @BindView(R.id.categories_lv) ListView categoriesListView;
 
+    @BindView(R.id.categories_toolbar) Toolbar toolbar;
+
     private ArrayAdapter<String> arrayAdapter;
 
     private SurpriseMeListener listener;
+
+    private String chosenCategory;
 
     public interface SurpriseMeListener {
 
@@ -47,9 +55,18 @@ public class SurpriseMeFragment extends BaseFragment {
         arrayAdapter.addAll(getResources().getStringArray(R.array.category_items));
         categoriesListView.setAdapter(arrayAdapter);
 
-        categoriesListView.setOnItemClickListener((adapterView, view, position, id) ->
-                listener.onCategoryItemClick(arrayAdapter.getItem(position)));
+        categoriesListView.setOnItemClickListener((adapterView, view, position, id) -> {
+            chosenCategory = arrayAdapter.getItem(position);
+            listener.onCategoryItemClick(chosenCategory);
+        });
 
         return fragmentView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
     }
 }
