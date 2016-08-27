@@ -69,5 +69,8 @@
         <item>@string/medium_duration</item>
         <item>@string/long_duration</item>
     </string-array>
+    
+    <string name="duration_key">durationKey</string>
+    <string name="category_key">categoryKey</string>
 
 </resources>

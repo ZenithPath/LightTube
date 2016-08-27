@@ -13,10 +13,11 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.di.components.ApplicationComponent;
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
 import com.example.scame.lighttube.presentation.di.components.DaggerTabComponent;
-import com.example.scame.lighttube.presentation.di.components.SearchComponent;
+import com.example.scame.lighttube.presentation.di.components.GridComponent;
 import com.example.scame.lighttube.presentation.di.components.SignInComponent;
 import com.example.scame.lighttube.presentation.di.components.VideoListComponent;
 import com.example.scame.lighttube.presentation.di.modules.TabModule;
+import com.example.scame.lighttube.presentation.fragments.GridFragment;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
 import com.example.scame.lighttube.presentation.fragments.SurpriseMeFragment;
 import com.example.scame.lighttube.presentation.fragments.VideoListFragment;
@@ -38,7 +39,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     public static final String SURPRISE_ME_FRAG_TAG = "surpriseMeFragment";
 
-    public static final String SEARCH_RESULTS_FRAG_TAG = "searchResults";
+    public static final String GRID_FRAG_TAG = "gridFragment";
 
     private static final int HOME_TAB = 0;
     private static final int CHANNELS_TAB = 1;
@@ -60,7 +61,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     private VideoListComponent videoListComponent;
     private SignInComponent signInComponent;
-    private SearchComponent searchComponent;
+    private GridComponent gridComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,6 +268,13 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         return signInComponent;
     }
 
+    public GridComponent getGridComponent() {
+        if (gridComponent == null) {
+            gridComponent = componentsManager.provideGridComponent();
+        }
+
+        return gridComponent;
+    }
 
     @Override
     public void onVideoClick(String id) {
@@ -275,7 +283,14 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     @Override
     public void onCategoryItemClick(String category, String duration) {
-        // TODO: open grid layout with search results
+        GridFragment gridFragment = new GridFragment();
+        Bundle args = new Bundle();
+
+        args.putString(getString(R.string.duration_key), duration);
+        args.putString(getString(R.string.category_key), category);
+        gridFragment.setArguments(args);
+
+        replaceFragment(R.id.tab_activity_fl, gridFragment, GRID_FRAG_TAG);
     }
 
     @Override

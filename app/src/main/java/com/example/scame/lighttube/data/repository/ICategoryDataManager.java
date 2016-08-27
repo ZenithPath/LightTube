@@ -3,7 +3,7 @@ package com.example.scame.lighttube.data.repository;
 
 import rx.Observable;
 
-public interface ICategoriesDataManager {
+public interface ICategoryDataManager {
 
     Observable<String> getCategoryId(String category);
 }

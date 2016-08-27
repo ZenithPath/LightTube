@@ -18,19 +18,32 @@ import rx.Observable;
 public class SearchDataManagerImp implements ISearchDataManager {
 
     private Retrofit retrofit;
+    private SearchApi searchApi;
 
     private static final String CLIENT = "firefox";
     private static final String RESTRICT_TO = "yt";
     private static final String LANGUAGE = "en";
 
     private static final String PART = "snippet";
-    private static final int MAX_RESULTS = 25;
+    private static final int MAX_RESULTS = 15;
 
+    private static final String TYPE = "video";
+
+    public SearchDataManagerImp() {
+        retrofit = LightTubeApp.getAppComponent().getRetrofit();
+        searchApi = retrofit.create(SearchApi.class);
+    }
+
+    @Override
+    public Observable<SearchEntity> searchByCategory(String categoryId, String duration) {
+
+        return searchApi.searchVideoWithCategory(PART, categoryId, matchDuration(duration),
+                TYPE, MAX_RESULTS, null, PrivateValues.API_KEY);
+    }
 
     @Override
     public Observable<AutocompleteEntity> autocomplete(String query) {
-        retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        SearchApi searchApi = retrofit.create(SearchApi.class);
+
         JsonDeserializer deserializer = new JsonDeserializer();
 
         return searchApi.autocomplete(query, CLIENT, RESTRICT_TO, LANGUAGE)
@@ -40,8 +53,6 @@ public class SearchDataManagerImp implements ISearchDataManager {
 
     @Override
     public Observable<SearchEntity> search(String query, int page) {
-        retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        SearchApi searchApi = retrofit.create(SearchApi.class);
 
         return searchApi.searchVideo(PART, query, MAX_RESULTS, getNextPageToken(page), PrivateValues.API_KEY)
                 .doOnNext(searchEntity -> {
@@ -76,5 +87,20 @@ public class SearchDataManagerImp implements ISearchDataManager {
 
     private Context getContext() {
         return LightTubeApp.getAppComponent().getApp();
+    }
+
+    private String matchDuration(String duration) {
+
+        if (duration.equals(getContext().getString(R.string.any_duration))) {
+            return "any";
+        } else if (duration.equals(getContext().getString(R.string.short_duration))) {
+            return "short";
+        } else if (duration.equals(getContext().getString(R.string.medium_duration))) {
+            return "medium";
+        } else if (duration.equals(getContext().getString(R.string.long_duration))) {
+            return "long";
+        }
+
+        return null;
     }
 }

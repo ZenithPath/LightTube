@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.di.components;
 import android.app.Activity;
 
 import com.example.scame.lighttube.presentation.LightTubeApp;
+import com.example.scame.lighttube.presentation.di.modules.GridModule;
 import com.example.scame.lighttube.presentation.di.modules.SearchModule;
 import com.example.scame.lighttube.presentation.di.modules.SignInModule;
 import com.example.scame.lighttube.presentation.di.modules.VideoListModule;
@@ -34,6 +35,13 @@ public class ComponentsManager {
         return DaggerSignInComponent.builder()
                 .applicationComponent(LightTubeApp.getAppComponent())
                 .signInModule(new SignInModule(activity))
+                .build();
+    }
+
+    public GridComponent provideGridComponent() {
+        return DaggerGridComponent.builder()
+                .applicationComponent(LightTubeApp.getAppComponent())
+                .gridModule(new GridModule())
                 .build();
     }
 }

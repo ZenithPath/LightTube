@@ -18,7 +18,7 @@ import java.util.Map;
 import retrofit2.Retrofit;
 import rx.Observable;
 
-public class CategoryDataManagerImp implements ICategoriesDataManager {
+public class CategoryDataManagerImp implements ICategoryDataManager {
 
     // TODO: implement dynamic regions
     private static final String REGION_CODE = "US";

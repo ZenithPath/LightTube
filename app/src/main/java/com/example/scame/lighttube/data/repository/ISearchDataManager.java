@@ -10,4 +10,6 @@ public interface ISearchDataManager {
     Observable<AutocompleteEntity> autocomplete(String query);
 
     Observable<SearchEntity> search(String query, int page);
+
+    Observable<SearchEntity> searchByCategory(String categoryId, String duration);
 }
