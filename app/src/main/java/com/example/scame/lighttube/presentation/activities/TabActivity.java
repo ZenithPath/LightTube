@@ -3,7 +3,6 @@ package com.example.scame.lighttube.presentation.activities;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -38,6 +37,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
 
     public static final String SURPRISE_ME_FRAG_TAG = "surpriseMeFragment";
+
+    public static final String SEARCH_RESULTS_FRAG_TAG = "searchResults";
 
     private static final int HOME_TAB = 0;
     private static final int CHANNELS_TAB = 1;
@@ -273,8 +274,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     }
 
     @Override
-    public void onCategoryItemClick(String category) {
-        Log.i("clicked", category);
+    public void onCategoryItemClick(String category, String duration) {
+        // TODO: open grid layout with search results
     }
 
     @Override

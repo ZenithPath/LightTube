@@ -3,15 +3,14 @@ package com.example.scame.lighttube.presentation.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.example.scame.lighttube.R;
 
@@ -24,15 +23,17 @@ public class SurpriseMeFragment extends BaseFragment {
 
     @BindView(R.id.categories_toolbar) Toolbar toolbar;
 
-    private ArrayAdapter<String> arrayAdapter;
+    @BindView(R.id.durations_spinner) Spinner spinner;
+
+    private ArrayAdapter<String> categoriesArrayAdapter;
+
+    private ArrayAdapter<CharSequence> durationsArrayAdapter;
 
     private SurpriseMeListener listener;
 
-    private String chosenCategory;
-
     public interface SurpriseMeListener {
 
-        void onCategoryItemClick(String category);
+        void onCategoryItemClick(String category, String duration);
     }
 
     @Override
@@ -51,13 +52,14 @@ public class SurpriseMeFragment extends BaseFragment {
 
         ButterKnife.bind(this, fragmentView);
 
-        arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.category_item);
-        arrayAdapter.addAll(getResources().getStringArray(R.array.category_items));
-        categoriesListView.setAdapter(arrayAdapter);
+        categoriesArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.category_item);
+        categoriesArrayAdapter.addAll(getResources().getStringArray(R.array.category_items));
+        categoriesListView.setAdapter(categoriesArrayAdapter);
 
         categoriesListView.setOnItemClickListener((adapterView, view, position, id) -> {
-            chosenCategory = arrayAdapter.getItem(position);
-            listener.onCategoryItemClick(chosenCategory);
+            categoriesArrayAdapter.getItem(position);
+            listener.onCategoryItemClick(categoriesArrayAdapter.getItem(position),
+                    spinner.getSelectedItem().toString());
         });
 
         return fragmentView;
@@ -68,5 +70,16 @@ public class SurpriseMeFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        configureDurationSpinner();
+    }
+
+    private void configureDurationSpinner() {
+        durationsArrayAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.video_durations_array, android.R.layout.simple_spinner_item);
+        durationsArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(durationsArrayAdapter);
     }
 }

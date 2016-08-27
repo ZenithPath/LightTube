@@ -59,11 +59,11 @@
         <item>@string/sport_category</item>
     </string-array>
 
-    <string name="movie_length">Desired video duration?</string>
-    <string name="any_duration">Any</string>
-    <string name="short_duration">Short</string>
-    <string name="medium_duration">Medium</string>
-    <string name="long_duration">Long</string>
+    <string name="movie_duration">Desired video duration?</string>
+    <string name="any_duration">Any duration</string>
+    <string name="short_duration">Short videos</string>
+    <string name="medium_duration">Medium videos</string>
+    <string name="long_duration">Long videos</string>
     
     <string-array name="video_durations_array">
         <item>@string/any_duration</item>
