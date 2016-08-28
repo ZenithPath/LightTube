@@ -9,7 +9,11 @@ import java.util.List;
 
 public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGridPresenter<V> {
 
+    private static final int FIRST_PAGE = 0;
+
     private V view;
+
+    private int page;
 
     private GridListUseCase useCase;
 
@@ -38,9 +42,12 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
     }
 
     @Override
-    public void fetchVideos(String category, String duration) {
+    public void fetchVideos(String category, String duration, int page) {
+        this.page = page;
         useCase.setCategory(category);
         useCase.setDuration(duration);
+        useCase.setPage(page);
+
         useCase.execute(new GridSubscriber());
     }
 
@@ -50,7 +57,11 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
         public void onNext(List<SearchItemModel> searchItems) {
             super.onNext(searchItems);
 
-            view.populateAdapter(searchItems);
+            if (page == FIRST_PAGE) {
+                view.populateAdapter(searchItems);
+            } else {
+                view.updateAdapter(searchItems);
+            }
         }
     }
 }

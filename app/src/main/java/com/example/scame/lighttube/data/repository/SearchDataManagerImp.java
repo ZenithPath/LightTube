@@ -35,10 +35,14 @@ public class SearchDataManagerImp implements ISearchDataManager {
     }
 
     @Override
-    public Observable<SearchEntity> searchByCategory(String categoryId, String duration) {
+    public Observable<SearchEntity> searchByCategory(String categoryId, String duration, int page) {
 
         return searchApi.searchVideoWithCategory(PART, categoryId, matchDuration(duration),
-                TYPE, MAX_RESULTS, null, PrivateValues.API_KEY);
+                TYPE, MAX_RESULTS, getNextPageToken(page), PrivateValues.API_KEY)
+                .doOnNext(searchEntity -> {
+                    saveNextPageToken(searchEntity.getNextPageToken());
+                    savePageNumber(page);
+                });
     }
 
     @Override
@@ -67,7 +71,7 @@ public class SearchDataManagerImp implements ISearchDataManager {
         int prevPageNumber = getSharedPrefs()
                 .getInt(getContext().getString(R.string.search_page_number), 0);
 
-        return page < prevPageNumber ? null : nextPageToken;
+        return page <= prevPageNumber ? null : nextPageToken;
     }
 
     private void saveNextPageToken(String token) {

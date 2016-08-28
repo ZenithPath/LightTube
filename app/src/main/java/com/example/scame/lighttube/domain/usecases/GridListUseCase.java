@@ -20,6 +20,7 @@ public class GridListUseCase extends UseCase<List<SearchItemModel>> {
 
     private String duration;
     private String category;
+    private int page;
 
     public GridListUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
                            ICategoryDataManager categoryDataManager,
@@ -35,7 +36,7 @@ public class GridListUseCase extends UseCase<List<SearchItemModel>> {
         SearchListMapper mapper = new SearchListMapper();
 
         return categoryDataManager.getCategoryId(category)
-                .flatMap(categoryId -> searchDataManager.searchByCategory(categoryId, duration))
+                .flatMap(categoryId -> searchDataManager.searchByCategory(categoryId, duration, page))
                 .map(mapper::convert);
     }
 
@@ -45,5 +46,9 @@ public class GridListUseCase extends UseCase<List<SearchItemModel>> {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 }

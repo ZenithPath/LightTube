@@ -11,5 +11,5 @@ public interface ISearchDataManager {
 
     Observable<SearchEntity> search(String query, int page);
 
-    Observable<SearchEntity> searchByCategory(String categoryId, String duration);
+    Observable<SearchEntity> searchByCategory(String categoryId, String duration, int page);
 }

@@ -1,10 +1,12 @@
 package com.example.scame.lighttube.presentation.fragments;
 
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttube.presentation.adapters.GridAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
@@ -39,6 +42,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     private String duration;
     private String category;
+    private int currentPage;
 
     @Nullable
     @Override
@@ -56,7 +60,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
             restoreState(savedInstanceState);
         } else {
-            presenter.fetchVideos(category, duration);
+            presenter.fetchVideos(category, duration, currentPage);
         }
 
         return fragmentView;
@@ -92,7 +96,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     public void populateAdapter(List<SearchItemModel> items) {
         this.items = items;
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        GridLayoutManager gridLayoutManager = buildLayoutManager();
         gridAdapter = new GridAdapter(getContext(), items);
         gridAdapter.setClickListener((itemView, position) -> {
             // TODO: open a video
@@ -101,6 +105,35 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         gridRv.setLayoutManager(gridLayoutManager);
         gridRv.setHasFixedSize(true);
         gridRv.setAdapter(gridAdapter);
+        gridRv.addOnScrollListener(buildScrollingListener(gridLayoutManager));
+    }
+
+    @Override
+    public void updateAdapter(List<SearchItemModel> items) {
+        this.items.addAll(items);
+        gridAdapter.notifyItemRangeInserted(gridAdapter.getItemCount(), items.size());
+    }
+
+    private GridLayoutManager buildLayoutManager() {
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return new GridLayoutManager(getContext(), 3);
+        } else {
+            return new GridLayoutManager(getContext(), 2);
+        }
+    }
+
+    private EndlessRecyclerViewScrollingListener buildScrollingListener(LinearLayoutManager manager) {
+        EndlessRecyclerViewScrollingListener listener = new EndlessRecyclerViewScrollingListener(manager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                currentPage = page;
+                presenter.fetchVideos(category, duration, page);
+            }
+        };
+
+        listener.setCurrentPage(currentPage);
+
+        return listener;
     }
 
     @Override

@@ -78,7 +78,9 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState
+                .getParcelableArrayList(getString(R.string.video_items_list)) != null) {
+
             currentPage = savedInstanceState.getInt(getString(R.string.page_number));
             initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list)));
         } else {

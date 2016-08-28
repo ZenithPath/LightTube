@@ -10,7 +10,9 @@ public interface IGridPresenter<V> extends Presenter<V> {
     interface GridView {
 
         void populateAdapter(List<SearchItemModel> items);
+
+        void updateAdapter(List<SearchItemModel> items);
     }
 
-    void fetchVideos(String category, String duration);
+    void fetchVideos(String category, String duration, int page);
 }
