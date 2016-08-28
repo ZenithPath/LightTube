@@ -41,6 +41,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     public static final String GRID_FRAG_TAG = "gridFragment";
 
+    private static int PREVIOUSLY_SELECTED_TAB = -1;
+
     private static final int HOME_TAB = 0;
     private static final int CHANNELS_TAB = 1;
     private static final int DISCOVER_TAB_SIGN_IN = 2;
@@ -70,7 +72,9 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         setContentView(R.layout.tab_activity);
 
 
-        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
+        if (savedInstanceState != null) {
+            PREVIOUSLY_SELECTED_TAB = savedInstanceState.getInt(getString(R.string.selected_tab_key));
+        } else {
             replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
         }
 
@@ -87,14 +91,22 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         };
     }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(getString(R.string.selected_tab_key), bottomNavigationBar.getCurrentSelectedPosition());
+    }
+
     // called by presenter after checkLogin method in onCreate
     @Override
     public void setBottomBarItems(boolean isSignedIn) {
 
         if (isSignedIn) {
-            initSignInBottomBar();
+            initSignInBottomBar(PREVIOUSLY_SELECTED_TAB);
         } else {
-            initSignOutBottomBar();
+            initSignOutBottomBar(PREVIOUSLY_SELECTED_TAB);
         }
     }
 
@@ -112,14 +124,22 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         bottomNavigationBar.setFirstSelectedPosition(ACCOUNT_TAB_SIGN_OUT).initialise();
     }
 
-    private void initSignInBottomBar() {
+    private void initSignInBottomBar(int tabToRestore) {
         setBottomNavigationColors(); // workaround for navigationBar colors problem
         configSignInBottomBar();
+
+        if (tabToRestore != -1) {
+            bottomNavigationBar.setFirstSelectedPosition(tabToRestore);
+        }
         bottomNavigationBar.initialise();
     }
 
-    private void initSignOutBottomBar() {
+    private void initSignOutBottomBar(int tabToRestore) {
         configSignOutBottomBar();
+
+        if (tabToRestore != -1) {
+            bottomNavigationBar.setFirstSelectedPosition(tabToRestore);
+        }
         bottomNavigationBar.initialise();
     }
 
@@ -152,86 +172,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 .addItem(bottomBarItems[HOME_TAB])
                 .addItem(bottomBarItems[DISCOVER_TAB_SIGN_IN])
                 .addItem(bottomBarItems[ACCOUNT_TAB_SIGN_IN]);
-    }
-
-
-    private BottomNavigationBar.OnTabSelectedListener signInListener() {
-        return new BottomNavigationBar.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(int position) {
-                switch (position) {
-                    case HOME_TAB:
-                        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
-                        }
-
-                        break;
-                    case CHANNELS_TAB:
-                        Toast.makeText(getApplicationContext(), "Channels", Toast.LENGTH_SHORT).show();
-                        break;
-                    case DISCOVER_TAB_SIGN_IN:
-                        if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
-                        }
-
-                        break;
-                    case ACCOUNT_TAB_SIGN_IN:
-                        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
-                        }
-
-                        break;
-                }
-            }
-
-            @Override
-            public void onTabUnselected(int position) {
-
-            }
-
-            @Override
-            public void onTabReselected(int position) {
-
-            }
-        };
-    }
-
-    private BottomNavigationBar.OnTabSelectedListener signOutListener() {
-        return new BottomNavigationBar.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(int position) {
-                switch (position) {
-                    case HOME_TAB:
-                        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
-                        }
-
-                        break;
-                    case DISCOVER_TAB_SIGN_OUT:
-                        if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
-                        }
-                        break;
-
-                    case ACCOUNT_TAB_SIGN_OUT:
-                        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
-                        }
-
-                        break;
-                }
-            }
-
-            @Override
-            public void onTabUnselected(int position) {
-
-            }
-
-            @Override
-            public void onTabReselected(int position) {
-
-            }
-        };
     }
 
     protected void onRestart() {
@@ -300,5 +240,84 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 .tabModule(new TabModule())
                 .build()
                 .inject(this);
+    }
+
+    private BottomNavigationBar.OnTabSelectedListener signOutListener() {
+        return new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                switch (position) {
+                    case HOME_TAB:
+                        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+                        }
+
+                        break;
+                    case DISCOVER_TAB_SIGN_OUT:
+                        if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
+                        }
+                        break;
+
+                    case ACCOUNT_TAB_SIGN_OUT:
+                        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                        }
+
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        };
+    }
+
+    private BottomNavigationBar.OnTabSelectedListener signInListener() {
+        return new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                switch (position) {
+                    case HOME_TAB:
+                        if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+                        }
+
+                        break;
+                    case CHANNELS_TAB:
+                        Toast.makeText(getApplicationContext(), "Channels", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DISCOVER_TAB_SIGN_IN:
+                        if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new SurpriseMeFragment(), SURPRISE_ME_FRAG_TAG);
+                        }
+
+                        break;
+                    case ACCOUNT_TAB_SIGN_IN:
+                        if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                        }
+
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        };
     }
 }

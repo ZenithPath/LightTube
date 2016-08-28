@@ -17,6 +17,7 @@ import com.example.scame.lighttube.presentation.adapters.GridAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,6 +35,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     IGridPresenter<IGridPresenter.GridView> presenter;
 
     private GridAdapter gridAdapter;
+    private List<SearchItemModel> items;
 
     private String duration;
     private String category;
@@ -48,9 +50,21 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         presenter.setView(this);
 
         parseIntent();
-        presenter.fetchVideos(category, duration);
+
+        if (savedInstanceState != null && savedInstanceState
+                .getStringArrayList(getString(R.string.category_list_items)) != null) {
+
+            restoreState(savedInstanceState);
+        } else {
+            presenter.fetchVideos(category, duration);
+        }
 
         return fragmentView;
+    }
+
+    private void restoreState(Bundle savedInstanceState) {
+        items = savedInstanceState.getParcelableArrayList(getString(R.string.category_list_items));
+        populateAdapter(items);
     }
 
     private void parseIntent() {
@@ -76,6 +90,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     @Override
     public void populateAdapter(List<SearchItemModel> items) {
+        this.items = items;
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         gridAdapter = new GridAdapter(getContext(), items);
         gridAdapter.setClickListener((itemView, position) -> {
@@ -85,5 +101,14 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         gridRv.setLayoutManager(gridLayoutManager);
         gridRv.setHasFixedSize(true);
         gridRv.setAdapter(gridAdapter);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (items != null) {
+            outState.putParcelableArrayList(getString(R.string.category_list_items), new ArrayList<>(items));
+        }
     }
 }

@@ -73,4 +73,8 @@
     <string name="duration_key">durationKey</string>
     <string name="category_key">categoryKey</string>
 
+    <string name="category_list_items">categoryItemsKey</string>
+
+    <string name="selected_tab_key">selectedTab</string>
+
 </resources>
