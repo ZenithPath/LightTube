@@ -84,7 +84,7 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
 
     private void inject() {

@@ -5,7 +5,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
@@ -14,10 +13,12 @@ import com.example.scame.lighttube.presentation.di.components.ApplicationCompone
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
 import com.example.scame.lighttube.presentation.di.components.DaggerTabComponent;
 import com.example.scame.lighttube.presentation.di.components.GridComponent;
+import com.example.scame.lighttube.presentation.di.components.RecentVideosComponent;
 import com.example.scame.lighttube.presentation.di.components.SignInComponent;
 import com.example.scame.lighttube.presentation.di.components.VideoListComponent;
 import com.example.scame.lighttube.presentation.di.modules.TabModule;
 import com.example.scame.lighttube.presentation.fragments.GridFragment;
+import com.example.scame.lighttube.presentation.fragments.RecentVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
 import com.example.scame.lighttube.presentation.fragments.SurpriseMeFragment;
 import com.example.scame.lighttube.presentation.fragments.VideoListFragment;
@@ -34,12 +35,10 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                                                     SurpriseMeFragment.SurpriseMeListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
-
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
-
     public static final String SURPRISE_ME_FRAG_TAG = "surpriseMeFragment";
-
     public static final String GRID_FRAG_TAG = "gridFragment";
+    public static final String RECENT_FRAG_TAG = "recentFragment";
 
     private static int PREVIOUSLY_SELECTED_TAB = -1;
 
@@ -64,6 +63,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private VideoListComponent videoListComponent;
     private SignInComponent signInComponent;
     private GridComponent gridComponent;
+    private RecentVideosComponent recentVideosComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +216,14 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         return gridComponent;
     }
 
+    public RecentVideosComponent getRecentVideosComponent() {
+        if (recentVideosComponent == null) {
+            recentVideosComponent = componentsManager.provideRecentVideosComponent();
+        }
+
+        return recentVideosComponent;
+    }
+
     @Override
     public void onVideoClick(String id) {
         navigator.navigateToPlayVideo(this, id);
@@ -292,7 +300,10 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
                         break;
                     case CHANNELS_TAB:
-                        Toast.makeText(getApplicationContext(), "Channels", Toast.LENGTH_SHORT).show();
+                        if (getSupportFragmentManager().findFragmentByTag(RECENT_FRAG_TAG) == null) {
+                            replaceFragment(R.id.tab_activity_fl, new RecentVideosFragment(), RECENT_FRAG_TAG);
+                        }
+
                         break;
                     case DISCOVER_TAB_SIGN_IN:
                         if (getSupportFragmentManager().findFragmentByTag(SURPRISE_ME_FRAG_TAG) == null) {
