@@ -5,6 +5,7 @@ import android.app.Application;
 import com.example.scame.lighttube.data.di.DataModule;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
+import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
@@ -35,4 +36,6 @@ public interface ApplicationComponent {
     ISearchDataManager getSearchDataManager();
 
     ICategoryDataManager getCategoryDataManager();
+
+    IRecentVideosDataManager getRecentVideosDataManager();
 }

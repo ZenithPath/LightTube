@@ -1,7 +1,7 @@
 package com.example.scame.lighttube.data.entities.videolist;
 
 
-public class VideoSnippetEntity {
+public class SnippetEntity {
 
     private String publishedAt;
 

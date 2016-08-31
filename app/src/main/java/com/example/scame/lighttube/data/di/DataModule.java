@@ -4,9 +4,11 @@ import com.example.scame.lighttube.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttube.data.interceptors.TokenAuthenticator;
 import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
+import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
+import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
 import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
 import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
@@ -71,5 +73,11 @@ public class DataModule {
     @Provides
     ICategoryDataManager provideCategoryDataManager() {
         return new CategoryDataManagerImp();
+    }
+
+    @Singleton
+    @Provides
+    IRecentVideosDataManager provideRecentVideosDataManager() {
+        return new RecentVideosDataManagerImp();
     }
 }

@@ -7,7 +7,7 @@ public class VideoEntity {
 
     private String channelTitle;
 
-    private VideoSnippetEntity snippet;
+    private SnippetEntity snippet;
 
     public void setId(String id) {
         this.id = id;
@@ -17,7 +17,7 @@ public class VideoEntity {
         this.channelTitle = channelTitle;
     }
 
-    public void setSnippet(VideoSnippetEntity snippet) {
+    public void setSnippet(SnippetEntity snippet) {
         this.snippet = snippet;
     }
 
@@ -29,7 +29,7 @@ public class VideoEntity {
         return channelTitle;
     }
 
-    public VideoSnippetEntity getSnippet() {
+    public SnippetEntity getSnippet() {
         return snippet;
     }
 }

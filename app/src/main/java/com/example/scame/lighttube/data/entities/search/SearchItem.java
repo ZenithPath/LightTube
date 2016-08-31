@@ -1,12 +1,12 @@
 package com.example.scame.lighttube.data.entities.search;
 
-import com.example.scame.lighttube.data.entities.videolist.VideoSnippetEntity;
+import com.example.scame.lighttube.data.entities.videolist.SnippetEntity;
 
 public class SearchItem {
 
     private SearchId id;
 
-    private VideoSnippetEntity snippet;
+    private SnippetEntity snippet;
 
     public void setId(SearchId id) {
         this.id = id;
@@ -16,11 +16,11 @@ public class SearchItem {
         return id;
     }
 
-    public void setSnippet(VideoSnippetEntity snippet) {
+    public void setSnippet(SnippetEntity snippet) {
         this.snippet = snippet;
     }
 
-    public VideoSnippetEntity getSnippet() {
+    public SnippetEntity getSnippet() {
         return snippet;
     }
 }
