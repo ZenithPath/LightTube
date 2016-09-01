@@ -1,6 +1,8 @@
 package com.example.scame.lighttube.data.entities.videolist;
 
 
+import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionResourceId;
+
 public class SnippetEntity {
 
     private String publishedAt;
@@ -12,6 +14,12 @@ public class SnippetEntity {
     private String description;
 
     private ThumbnailsGroup thumbnails;
+
+    private SubscriptionResourceId resourceId;
+
+    public void setResourceId(SubscriptionResourceId resourceId) {
+        this.resourceId = resourceId;
+    }
 
     public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
@@ -51,5 +59,9 @@ public class SnippetEntity {
 
     public ThumbnailsGroup getThumbnails() {
         return thumbnails;
+    }
+
+    public SubscriptionResourceId getResourceId() {
+        return resourceId;
     }
 }

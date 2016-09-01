@@ -47,6 +47,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
+        presenter.fetchRecentVideos();
 
         return fragmentView;
     }

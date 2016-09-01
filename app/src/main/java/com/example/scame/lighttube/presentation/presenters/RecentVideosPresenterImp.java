@@ -3,9 +3,10 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import android.util.Log;
 
-import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionsEntity;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
+
+import java.util.List;
 
 public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVideosView>
                                             implements IRecentVideosPresenter<T> {
@@ -45,13 +46,13 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     }
 
-    private final class SubscriptionsSubscriber extends DefaultSubscriber<SubscriptionsEntity> {
+    private final class SubscriptionsSubscriber extends DefaultSubscriber<List<String>> {
 
         @Override
-        public void onNext(SubscriptionsEntity subscriptionsEntity) {
-            super.onNext(subscriptionsEntity);
+        public void onNext(List<String> strings) {
+            super.onNext(strings);
 
-            Log.i("onxNext", subscriptionsEntity.getItems().get(0).getSnippet().getTitle());
+            Log.i("onxNext", strings.toString());
         }
     }
 }
