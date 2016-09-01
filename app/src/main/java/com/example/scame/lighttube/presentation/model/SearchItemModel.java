@@ -6,11 +6,17 @@ import android.os.Parcelable;
 
 public class SearchItemModel implements Parcelable {
 
+    private String publishedAt;
+
     private String imageUrl;
 
     private String title;
 
     private String id;
+
+    public void setPublishedAt(String publishedAt) {
+        this.publishedAt = publishedAt;
+    }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
@@ -36,6 +42,9 @@ public class SearchItemModel implements Parcelable {
         return id;
     }
 
+    public String getPublishedAt() {
+        return publishedAt;
+    }
 
     @Override
     public int describeContents() {
@@ -44,6 +53,7 @@ public class SearchItemModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.publishedAt);
         dest.writeString(this.imageUrl);
         dest.writeString(this.title);
         dest.writeString(this.id);
@@ -53,6 +63,7 @@ public class SearchItemModel implements Parcelable {
     }
 
     protected SearchItemModel(Parcel in) {
+        this.publishedAt = in.readString();
         this.imageUrl = in.readString();
         this.title = in.readString();
         this.id = in.readString();
