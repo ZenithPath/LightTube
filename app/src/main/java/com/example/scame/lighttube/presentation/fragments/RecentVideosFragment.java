@@ -1,9 +1,11 @@
 package com.example.scame.lighttube.presentation.fragments;
 
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
 
@@ -29,6 +32,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
+
+    private List<SearchItemModel> listItems;
+    private RecentVideosAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,11 +67,24 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     @Override
     public void populateAdapter(List<SearchItemModel> items) {
+        listItems = items;
 
+        adapter = new RecentVideosAdapter(items, getContext());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(buildLayoutManager());
     }
 
     @Override
     public void updateAdapter(List<SearchItemModel> items) {
 
+    }
+
+    private LinearLayoutManager buildLayoutManager() {
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        } else {
+            return new LinearLayoutManager(getContext());
+        }
     }
 }

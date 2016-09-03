@@ -118,6 +118,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         LinearLayoutManager layoutManager = buildLayoutManager();
 
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
     }
