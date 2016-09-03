@@ -10,8 +10,8 @@ import rx.subscriptions.Subscriptions;
 
 public abstract class UseCase<T> {
 
-    private SubscribeOn subscribeOn;
-    private ObserveOn observeOn;
+    protected SubscribeOn subscribeOn;
+    protected ObserveOn observeOn;
     private Subscription subscription = Subscriptions.empty();
     private Observable<T> observable;
 

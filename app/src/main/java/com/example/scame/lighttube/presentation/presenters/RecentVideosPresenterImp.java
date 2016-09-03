@@ -2,8 +2,8 @@ package com.example.scame.lighttube.presentation.presenters;
 
 
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
-import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
+import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
 import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
@@ -18,6 +18,8 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     private RecentVideosUseCase recentVideosUseCase;
 
+    private OrderByDateUseCase orderUseCase;
+
     private List<SearchEntity> searchEntities;
 
     private int subscriptionsNumber;
@@ -26,17 +28,17 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
     private T view;
 
     public RecentVideosPresenterImp(SubscriptionsUseCase subscriptionsUseCase,
-                                    RecentVideosUseCase recentVideosUseCase) {
+                                    RecentVideosUseCase recentVideosUseCase,
+                                    OrderByDateUseCase orderUseCase) {
 
         this.subscriptionsUseCase = subscriptionsUseCase;
         this.recentVideosUseCase = recentVideosUseCase;
+        this.orderUseCase = orderUseCase;
     }
 
     @Override
     public void fetchRecentVideos() {
         subscriptionsUseCase.execute(new SubscriptionsSubscriber());
-
-        // TODO: search videos by channels Ids & filter the most recent
     }
 
     @Override
@@ -89,18 +91,21 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
         public void onCompleted() {
             super.onCompleted();
 
-            // when all threads are done, combine & map search results
-            // TODO: implement use case to do that work
+            // when all threads are done, combine & sort search results by publishing date
             if (++subscriptionsCounter == subscriptionsNumber) {
-                List<SearchItemModel> searchItems = new ArrayList<>();
-                SearchListMapper mapper = new SearchListMapper();
-
-                for (SearchEntity searchEntity : searchEntities) {
-                    searchItems.addAll(mapper.convert(searchEntity));
-                }
-
-                view.populateAdapter(searchItems);
+                orderUseCase.setSearchEntities(searchEntities);
+                orderUseCase.execute(new OrderSubscriber());
             }
+        }
+    }
+
+    private final class OrderSubscriber extends DefaultSubscriber<List<SearchItemModel>> {
+
+        @Override
+        public void onNext(List<SearchItemModel> searchItems) {
+            super.onNext(searchItems);
+
+            view.populateAdapter(searchItems);
         }
     }
 }

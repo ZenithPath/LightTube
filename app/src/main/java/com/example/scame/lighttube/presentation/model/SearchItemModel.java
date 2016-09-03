@@ -4,7 +4,9 @@ package com.example.scame.lighttube.presentation.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class SearchItemModel implements Parcelable {
+import java.util.Date;
+
+public class SearchItemModel implements Parcelable, Comparable<SearchItemModel> {
 
     private String publishedAt;
 
@@ -13,6 +15,17 @@ public class SearchItemModel implements Parcelable {
     private String title;
 
     private String id;
+
+    private Date date;
+
+    @Override
+    public int compareTo(SearchItemModel o) {
+        return date.compareTo(o.getDate());
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
@@ -44,6 +57,10 @@ public class SearchItemModel implements Parcelable {
 
     public String getPublishedAt() {
         return publishedAt;
+    }
+
+    public Date getDate() {
+        return date;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.di.modules;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
 import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
@@ -20,9 +21,10 @@ public class RecentVideosModule {
     @PerActivity
     @Provides
     IRecentVideosPresenter<RecentVideosView> provideRecentVideosPresenter(SubscriptionsUseCase subscriptionsUseCase,
-                                                                          RecentVideosUseCase recentVideosUseCase) {
+                                                                          RecentVideosUseCase recentVideosUseCase,
+                                                                          OrderByDateUseCase orderUseCase) {
 
-        return new RecentVideosPresenterImp<>(subscriptionsUseCase, recentVideosUseCase);
+        return new RecentVideosPresenterImp<>(subscriptionsUseCase, recentVideosUseCase, orderUseCase);
     }
 
     @PerActivity
@@ -39,5 +41,13 @@ public class RecentVideosModule {
                                                    IRecentVideosDataManager dataManager) {
 
         return new RecentVideosUseCase(subscribeOn, observeOn, dataManager);
+    }
+
+    @PerActivity
+    @Provides
+    OrderByDateUseCase provideOrderByDateUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                 IRecentVideosDataManager dataManager) {
+
+        return new OrderByDateUseCase(subscribeOn, observeOn, dataManager);
     }
 }

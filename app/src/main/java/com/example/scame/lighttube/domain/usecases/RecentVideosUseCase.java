@@ -7,6 +7,7 @@ import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
 import rx.Observable;
+import rx.Subscriber;
 
 public class RecentVideosUseCase extends UseCase<SearchEntity> {
 
@@ -28,5 +29,16 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
 
     public void setChannelId(String channelId) {
         this.channelId = channelId;
+    }
+
+    @Override
+    public void execute(Subscriber<SearchEntity> subscriber) {
+
+        Observable<SearchEntity> observable = getUseCaseObservable()
+                .subscribeOn(subscribeOn.getScheduler())
+                .observeOn(observeOn.getScheduler())
+                .cache();
+
+        observable.subscribe(subscriber);
     }
 }
