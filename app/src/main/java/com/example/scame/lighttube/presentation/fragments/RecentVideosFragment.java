@@ -18,6 +18,7 @@ import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,6 +37,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     private List<SearchItemModel> listItems;
     private RecentVideosAdapter adapter;
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,15 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
-        presenter.fetchRecentVideos();
+
+        if (savedInstanceState != null && savedInstanceState
+                .getStringArrayList(getString(R.string.video_items_list)) != null) {
+
+            listItems = savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list));
+            populateAdapter(listItems);
+        } else {
+            presenter.fetchRecentVideos();
+        }
 
         return fragmentView;
     }
@@ -85,6 +96,15 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
             return new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         } else {
             return new LinearLayoutManager(getContext());
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (listItems != null) {
+            outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(listItems));
         }
     }
 }
