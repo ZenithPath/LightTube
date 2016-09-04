@@ -2,10 +2,14 @@ package com.example.scame.lighttube.presentation.presenters;
 
 
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
+import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionsEntity;
+import com.example.scame.lighttube.data.mappers.ChannelsMapper;
+import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
 import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
+import com.example.scame.lighttube.presentation.model.ChannelModel;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 
 import java.util.ArrayList;
@@ -37,7 +41,8 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
     }
 
     @Override
-    public void fetchRecentVideos() {
+    public void initialize() {
+        subscriptionsCounter = 0; // presenter is singleton, so we must set a counter to zero
         subscriptionsUseCase.execute(new SubscriptionsSubscriber());
     }
 
@@ -61,11 +66,22 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     }
 
-    private final class SubscriptionsSubscriber extends DefaultSubscriber<List<String>> {
+    private final class SubscriptionsSubscriber extends DefaultSubscriber<SubscriptionsEntity> {
+
+        private SubscriptionsIdsMapper subscriptionsIdsMapper = new SubscriptionsIdsMapper();
+        private ChannelsMapper channelsMapper = new ChannelsMapper();
 
         @Override
-        public void onNext(List<String> subscriptionsIds) {
-            super.onNext(subscriptionsIds);
+        public void onNext(SubscriptionsEntity subscriptionsEntity) {
+            super.onNext(subscriptionsEntity);
+
+            makeRecentVideosRequests(subscriptionsEntity);
+            visualizeChannelList(subscriptionsEntity);
+        }
+
+        private void makeRecentVideosRequests(SubscriptionsEntity subscriptionsEntity) {
+
+            List<String> subscriptionsIds = subscriptionsIdsMapper.convert(subscriptionsEntity);
 
             subscriptionsNumber = subscriptionsIds.size();
             searchEntities = new ArrayList<>();
@@ -75,6 +91,11 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
                 recentVideosUseCase.setChannelId(channelId);
                 recentVideosUseCase.execute(new RecentVideosSubscriber());
             }
+        }
+
+        private void visualizeChannelList(SubscriptionsEntity subscriptionsEntity) {
+            List<ChannelModel> channelModels = channelsMapper.convert(subscriptionsEntity);
+            view.visualizeChannelList(channelModels);
         }
     }
 
@@ -93,7 +114,6 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
             // when all threads are done, combine & sort search results by publishing date
             if (++subscriptionsCounter == subscriptionsNumber) {
-                subscriptionsCounter = 0; // presenter is singleton, so we must set counter to zero
                 orderUseCase.setSearchEntities(searchEntities);
                 orderUseCase.execute(new OrderSubscriber());
             }

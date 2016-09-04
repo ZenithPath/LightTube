@@ -77,4 +77,6 @@
 
     <string name="selected_tab_key">selectedTab</string>
 
+    <string name="channel_models_key">channelsKey</string>
+
 </resources>

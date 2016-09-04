@@ -17,6 +17,7 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.ChannelsAdapter;
 import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
+import com.example.scame.lighttube.presentation.model.ChannelModel;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
 
@@ -41,8 +42,11 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
 
-    private List<SearchItemModel> listItems;
-    private RecentVideosAdapter adapter;
+    private List<SearchItemModel> videoItems;
+    private RecentVideosAdapter recentVideosAdapter;
+
+    private List<ChannelModel> channelItems;
+    private ChannelsAdapter channelsAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,10 +70,14 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         if (savedInstanceState != null && savedInstanceState
                 .getStringArrayList(getString(R.string.video_items_list)) != null) {
 
-            listItems = savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list));
-            populateAdapter(listItems);
+            videoItems = savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list));
+            channelItems = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
+
+            populateAdapter(videoItems);
+            visualizeChannelList(channelItems);
+
         } else {
-            presenter.fetchRecentVideos();
+            presenter.initialize();
         }
 
         return fragmentView;
@@ -83,16 +91,31 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     }
 
     @Override
-    public void populateAdapter(List<SearchItemModel> items) {
-        listItems = items;
+    public void visualizeChannelList(List<ChannelModel> channelModels) {
+        channelItems = channelModels;
 
-        adapter = new RecentVideosAdapter(items, getContext());
-        adapter.setupOnItemClickListener(this);
-        recentVideosRv.setAdapter(adapter);
+        channelsAdapter = new ChannelsAdapter(channelModels, getContext());
+        channelsAdapter.setupOnItemClickListener(this);
+
+        channelsRv.setAdapter(channelsAdapter);
+        channelsRv.setHasFixedSize(true);
+        channelsRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+    }
+
+    @Override
+    public void populateAdapter(List<SearchItemModel> items) {
+        videoItems = items;
+
+        recentVideosAdapter = new RecentVideosAdapter(items, getContext());
+        recentVideosAdapter.setupOnItemClickListener(this);
+
+        recentVideosRv.setAdapter(recentVideosAdapter);
         recentVideosRv.setHasFixedSize(true);
         recentVideosRv.setLayoutManager(buildLayoutManager());
 
-        appBarLayout.setExpanded(true, true);
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            appBarLayout.setExpanded(true, true);
+        }
     }
 
     @Override
@@ -112,8 +135,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (listItems != null) {
-            outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(listItems));
+        if (videoItems != null) {
+            outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(videoItems));
+            outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(channelItems));
         }
     }
 

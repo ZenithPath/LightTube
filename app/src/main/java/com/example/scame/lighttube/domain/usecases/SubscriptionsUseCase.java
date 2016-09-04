@@ -1,16 +1,14 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
-import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
+import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionsEntity;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
-import java.util.List;
-
 import rx.Observable;
 
-public class SubscriptionsUseCase extends UseCase<List<String>> {
+public class SubscriptionsUseCase extends UseCase<SubscriptionsEntity> {
 
     private IRecentVideosDataManager recentVideosDataManager;
 
@@ -22,10 +20,7 @@ public class SubscriptionsUseCase extends UseCase<List<String>> {
     }
 
     @Override
-    protected Observable<List<String>> getUseCaseObservable() {
-        SubscriptionsIdsMapper mapper = new SubscriptionsIdsMapper();
-
-        return recentVideosDataManager.getSubscriptions()
-                .map(mapper::convert);
+    protected Observable<SubscriptionsEntity> getUseCaseObservable() {
+        return recentVideosDataManager.getSubscriptions();
     }
 }
