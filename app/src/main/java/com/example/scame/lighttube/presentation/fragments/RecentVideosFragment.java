@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.fragments;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.ChannelsAdapter;
 import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
@@ -26,9 +28,14 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecentVideosFragment extends BaseFragment implements IRecentVideosPresenter.RecentVideosView {
+public class RecentVideosFragment extends BaseFragment implements IRecentVideosPresenter.RecentVideosView,
+                                                            ChannelsAdapter.OnItemClickListener,
+                                                            RecentVideosAdapter.OnItemClickListener {
 
-    @BindView(R.id.recent_rv) RecyclerView recyclerView;
+    @BindView(R.id.channels_rv) RecyclerView channelsRv;
+    @BindView(R.id.recent_rv) RecyclerView recentVideosRv;
+
+    @BindView(R.id.recent_app_bar) AppBarLayout appBarLayout;
     @BindView(R.id.recent_toolbar) Toolbar toolbar;
 
     @Inject
@@ -36,8 +43,6 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     private List<SearchItemModel> listItems;
     private RecentVideosAdapter adapter;
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +61,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
+        appBarLayout.setExpanded(false);
 
         if (savedInstanceState != null && savedInstanceState
                 .getStringArrayList(getString(R.string.video_items_list)) != null) {
@@ -81,9 +87,12 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         listItems = items;
 
         adapter = new RecentVideosAdapter(items, getContext());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(buildLayoutManager());
+        adapter.setupOnItemClickListener(this);
+        recentVideosRv.setAdapter(adapter);
+        recentVideosRv.setHasFixedSize(true);
+        recentVideosRv.setLayoutManager(buildLayoutManager());
+
+        appBarLayout.setExpanded(true, true);
     }
 
     @Override
@@ -106,5 +115,15 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         if (listItems != null) {
             outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(listItems));
         }
+    }
+
+    @Override
+    public void onChannelClick(View itemView, int position) {
+        // TODO: implement channel click logic
+    }
+
+    @Override
+    public void onItemClick(View itemView, int position) {
+        // TODO: implement video click logic
     }
 }

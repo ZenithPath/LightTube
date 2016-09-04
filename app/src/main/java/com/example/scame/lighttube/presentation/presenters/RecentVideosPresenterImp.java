@@ -93,6 +93,7 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
             // when all threads are done, combine & sort search results by publishing date
             if (++subscriptionsCounter == subscriptionsNumber) {
+                subscriptionsCounter = 0; // presenter is singleton, so we must set counter to zero
                 orderUseCase.setSearchEntities(searchEntities);
                 orderUseCase.execute(new OrderSubscriber());
             }
