@@ -17,14 +17,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHolder>{
+public class ChannelsViewAdapter extends RecyclerView.Adapter<ChannelsViewAdapter.ViewHolder>{
 
     private List<ChannelModel> items;
     private Context context;
 
     private static OnItemClickListener listener;
 
-    public ChannelsAdapter(List<ChannelModel> items, Context context) {
+    public ChannelsViewAdapter(List<ChannelModel> items, Context context) {
         this.items = items;
         this.context = context;
     }

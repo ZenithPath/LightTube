@@ -10,7 +10,7 @@ public interface IRecentVideosPresenter<T> extends Presenter<T> {
 
     interface RecentVideosView {
 
-        void visualizeChannelList(List<ChannelModel> channelModels);
+        void visualizeChannelsList(List<ChannelModel> channelModels);
 
         void populateAdapter(List<SearchItemModel> items);
 

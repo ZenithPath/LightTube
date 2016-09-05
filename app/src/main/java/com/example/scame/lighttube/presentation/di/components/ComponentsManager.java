@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.di.components;
 import android.app.Activity;
 
 import com.example.scame.lighttube.presentation.LightTubeApp;
+import com.example.scame.lighttube.presentation.di.modules.ChannelVideosModule;
 import com.example.scame.lighttube.presentation.di.modules.GridModule;
 import com.example.scame.lighttube.presentation.di.modules.RecentVideosModule;
 import com.example.scame.lighttube.presentation.di.modules.SearchModule;
@@ -50,6 +51,13 @@ public class ComponentsManager {
         return DaggerRecentVideosComponent.builder()
                 .applicationComponent(LightTubeApp.getAppComponent())
                 .recentVideosModule(new RecentVideosModule())
+                .build();
+    }
+
+    public ChannelVideosComponent provideChannelsComponent() {
+        return DaggerChannelVideosComponent.builder()
+                .applicationComponent(LightTubeApp.getAppComponent())
+                .channelVideosModule(new ChannelVideosModule())
                 .build();
     }
 }

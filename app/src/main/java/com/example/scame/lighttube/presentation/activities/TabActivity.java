@@ -10,6 +10,7 @@ import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.di.components.ApplicationComponent;
+import com.example.scame.lighttube.presentation.di.components.ChannelVideosComponent;
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
 import com.example.scame.lighttube.presentation.di.components.DaggerTabComponent;
 import com.example.scame.lighttube.presentation.di.components.GridComponent;
@@ -17,6 +18,7 @@ import com.example.scame.lighttube.presentation.di.components.RecentVideosCompon
 import com.example.scame.lighttube.presentation.di.components.SignInComponent;
 import com.example.scame.lighttube.presentation.di.components.VideoListComponent;
 import com.example.scame.lighttube.presentation.di.modules.TabModule;
+import com.example.scame.lighttube.presentation.fragments.ChannelVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.GridFragment;
 import com.example.scame.lighttube.presentation.fragments.RecentVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
@@ -32,13 +34,16 @@ import butterknife.ButterKnife;
 public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener,
                                                     ITabActivityPresenter.ITabActivityView,
                                                     SignInFragment.SignUpListener,
-                                                    SurpriseMeFragment.SurpriseMeListener {
+                                                    SurpriseMeFragment.SurpriseMeListener,
+                                                    RecentVideosFragment.RecentVideosListener,
+                                                    ChannelVideosFragment.ChannelVideosListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
     public static final String SURPRISE_ME_FRAG_TAG = "surpriseMeFragment";
     public static final String GRID_FRAG_TAG = "gridFragment";
     public static final String RECENT_FRAG_TAG = "recentFragment";
+    public static final String CHANNELS_FRAG_TAG = "chanenelsTabFragm";
 
     private static int PREVIOUSLY_SELECTED_TAB = -1;
 
@@ -64,6 +69,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private SignInComponent signInComponent;
     private GridComponent gridComponent;
     private RecentVideosComponent recentVideosComponent;
+    private ChannelVideosComponent channelVideosComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,6 +230,14 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         return recentVideosComponent;
     }
 
+    public ChannelVideosComponent getChannelVideosComponent() {
+        if (channelVideosComponent == null) {
+            channelVideosComponent = componentsManager.provideChannelsComponent();
+        }
+
+        return channelVideosComponent;
+    }
+
     @Override
     public void onVideoClick(String id) {
         navigator.navigateToPlayVideo(this, id);
@@ -239,6 +253,17 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         gridFragment.setArguments(args);
 
         replaceFragment(R.id.tab_activity_fl, gridFragment, GRID_FRAG_TAG);
+    }
+
+    @Override
+    public void onChannelClick(String channelId) {
+        ChannelVideosFragment channelVideosFragment = new ChannelVideosFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ChannelVideosFragment.class.getCanonicalName(), channelId);
+        channelVideosFragment.setArguments(args);
+
+        replaceFragment(R.id.tab_activity_fl, channelVideosFragment, CHANNELS_FRAG_TAG);
     }
 
     @Override

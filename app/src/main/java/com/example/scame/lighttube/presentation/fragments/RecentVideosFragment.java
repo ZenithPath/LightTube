@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.presentation.fragments;
 
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
-import com.example.scame.lighttube.presentation.adapters.ChannelsAdapter;
+import com.example.scame.lighttube.presentation.adapters.ChannelsViewAdapter;
 import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
 import com.example.scame.lighttube.presentation.model.ChannelModel;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
@@ -29,9 +30,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecentVideosFragment extends BaseFragment implements IRecentVideosPresenter.RecentVideosView,
-                                                            ChannelsAdapter.OnItemClickListener,
-                                                            RecentVideosAdapter.OnItemClickListener {
+public class RecentVideosFragment extends BaseFragment implements IRecentVideosPresenter.RecentVideosView {
 
     @BindView(R.id.channels_rv) RecyclerView channelsRv;
     @BindView(R.id.recent_rv) RecyclerView recentVideosRv;
@@ -42,11 +41,29 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
 
+    private RecentVideosListener recentVideosListener;
+
     private List<SearchItemModel> videoItems;
     private RecentVideosAdapter recentVideosAdapter;
 
     private List<ChannelModel> channelItems;
-    private ChannelsAdapter channelsAdapter;
+    private ChannelsViewAdapter channelsViewAdapter;
+
+    public interface RecentVideosListener {
+
+        void onChannelClick(String channelId);
+
+        void onVideoClick(String videoId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (getActivity() instanceof RecentVideosListener) {
+            recentVideosListener = (RecentVideosListener) getActivity();
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +91,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
             channelItems = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
 
             populateAdapter(videoItems);
-            visualizeChannelList(channelItems);
+            visualizeChannelsList(channelItems);
 
         } else {
             presenter.initialize();
@@ -91,13 +108,14 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     }
 
     @Override
-    public void visualizeChannelList(List<ChannelModel> channelModels) {
+    public void visualizeChannelsList(List<ChannelModel> channelModels) {
         channelItems = channelModels;
 
-        channelsAdapter = new ChannelsAdapter(channelModels, getContext());
-        channelsAdapter.setupOnItemClickListener(this);
+        channelsViewAdapter = new ChannelsViewAdapter(channelModels, getContext());
+        channelsViewAdapter.setupOnItemClickListener((itemView, position) ->
+                recentVideosListener.onChannelClick(channelItems.get(position).getChannelId()));
 
-        channelsRv.setAdapter(channelsAdapter);
+        channelsRv.setAdapter(channelsViewAdapter);
         channelsRv.setHasFixedSize(true);
         channelsRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
@@ -107,7 +125,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         videoItems = items;
 
         recentVideosAdapter = new RecentVideosAdapter(items, getContext());
-        recentVideosAdapter.setupOnItemClickListener(this);
+        recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
+                recentVideosListener.onVideoClick(videoItems.get(position).getId()));
 
         recentVideosRv.setAdapter(recentVideosAdapter);
         recentVideosRv.setHasFixedSize(true);
@@ -139,15 +158,5 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
             outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(videoItems));
             outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(channelItems));
         }
-    }
-
-    @Override
-    public void onChannelClick(View itemView, int position) {
-        // TODO: implement channel click logic
-    }
-
-    @Override
-    public void onItemClick(View itemView, int position) {
-        // TODO: implement video click logic
     }
 }

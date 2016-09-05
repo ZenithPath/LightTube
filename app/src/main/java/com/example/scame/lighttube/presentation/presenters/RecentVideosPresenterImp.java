@@ -95,7 +95,7 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
         private void visualizeChannelList(SubscriptionsEntity subscriptionsEntity) {
             List<ChannelModel> channelModels = channelsMapper.convert(subscriptionsEntity);
-            view.visualizeChannelList(channelModels);
+            view.visualizeChannelsList(channelModels);
         }
     }
 
