@@ -79,4 +79,8 @@
 
     <string name="channel_models_key">channelsKey</string>
 
+    <string name="no_internet">There\'s no internet connection</string>
+
+    <string name="retry">Retry</string>
+
 </resources>

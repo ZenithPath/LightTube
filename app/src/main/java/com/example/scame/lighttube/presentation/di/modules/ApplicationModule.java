@@ -1,7 +1,5 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
-import android.app.Application;
-
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.presentation.LightTubeApp;
@@ -24,7 +22,7 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    Application provideApplication() {
+    LightTubeApp provideApplication() {
         return lightTubeApp;
     }
 

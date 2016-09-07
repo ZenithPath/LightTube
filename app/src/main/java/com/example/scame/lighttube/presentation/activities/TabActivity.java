@@ -1,14 +1,21 @@
 package com.example.scame.lighttube.presentation.activities;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.ConnectivityReceiver;
+import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.di.components.ApplicationComponent;
 import com.example.scame.lighttube.presentation.di.components.ChannelVideosComponent;
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
@@ -20,6 +27,7 @@ import com.example.scame.lighttube.presentation.di.components.VideoListComponent
 import com.example.scame.lighttube.presentation.di.modules.TabModule;
 import com.example.scame.lighttube.presentation.fragments.ChannelVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.GridFragment;
+import com.example.scame.lighttube.presentation.fragments.NoInternetFragment;
 import com.example.scame.lighttube.presentation.fragments.RecentVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
 import com.example.scame.lighttube.presentation.fragments.SurpriseMeFragment;
@@ -44,6 +52,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     public static final String GRID_FRAG_TAG = "gridFragment";
     public static final String RECENT_FRAG_TAG = "recentFragment";
     public static final String CHANNELS_FRAG_TAG = "chanenelsTabFragm";
+    public static final String NO_INTERNET_FRAG_TAG = "noInternetTag";
 
     private static int PREVIOUSLY_SELECTED_TAB = -1;
 
@@ -59,6 +68,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     @Inject
     ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> presenter;
 
+    private Snackbar connectionSnackbar;
+
     private MenuItem searchItem;
 
     private BottomNavigationItem[] bottomBarItems;
@@ -71,21 +82,90 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private RecentVideosComponent recentVideosComponent;
     private ChannelVideosComponent channelVideosComponent;
 
+    private Bundle savedInstanceState;
+
+    // workaround for devices that send several broadcasts after connect/disconnect
+    private boolean connectionState;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        LightTubeApp.getAppComponent().getApp().setConnectivityListener(isConnected -> {
+            if (isConnected && connectionState != isConnected) {
+                initializeWithInternet(savedInstanceState);
+            } else if (!isConnected && connectionState != isConnected) {
+                initializeWithoutInternet();
+                showSnackbar(isConnected);
+            }
+
+            connectionState = isConnected;
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // to avoid memory leaks
+        LightTubeApp.getAppComponent().getApp().setConnectivityListener(null);
+    }
+
+    private void showSnackbar(boolean isConnected) {
+        String message;
+        int color;
+        if (isConnected) {
+            message = "Connected to the Internet";
+            color = Color.WHITE;
+        } else {
+            message = "Sorry! Not connected to the Internet";
+            color = Color.RED;
+        }
+
+        connectionSnackbar = Snackbar
+                .make(bottomNavigationBar, message, Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.retry), view -> Log.i("onxClick", "clicked"))
+                .setActionTextColor(Color.RED)
+                .setDuration(Snackbar.LENGTH_INDEFINITE);
+
+        View sbView = connectionSnackbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(color);
+        connectionSnackbar.show();
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         componentsManager = new ComponentsManager(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tab_activity);
 
+        ButterKnife.bind(this);
+        presenter.setView(this);
+
+        this.savedInstanceState = savedInstanceState;
+
+        if (ConnectivityReceiver.isConnected()) {
+            connectionState = true;
+            initializeWithInternet(savedInstanceState);
+        } else {
+            connectionState = false;
+            initializeWithoutInternet();
+        }
+    }
+
+    private void initializeWithInternet(Bundle savedInstanceState) {
+
+        if (connectionSnackbar != null && connectionSnackbar.isShown()) {
+            connectionSnackbar.dismiss();
+        }
 
         if (savedInstanceState != null) {
             PREVIOUSLY_SELECTED_TAB = savedInstanceState.getInt(getString(R.string.selected_tab_key));
         } else {
             replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
         }
-
-        ButterKnife.bind(this);
-        presenter.setView(this);
 
         presenter.checkLogin();
 
@@ -95,8 +175,16 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.discover_item)),
                 new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, getString(R.string.account_item))
         };
+
+        bottomNavigationBar.setVisibility(View.VISIBLE);
+        bottomNavigationBar.show();
     }
 
+    private void initializeWithoutInternet() {
+        bottomNavigationBar.setVisibility(View.GONE);
+        bottomNavigationBar.hide();
+        replaceFragment(R.id.tab_activity_fl, new NoInternetFragment(), NO_INTERNET_FRAG_TAG);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

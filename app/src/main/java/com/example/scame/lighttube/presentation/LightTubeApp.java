@@ -43,6 +43,10 @@ public class LightTubeApp extends Application {
         Picasso.setSingletonInstance(built);
     }
 
+    public void setConnectivityListener(ConnectivityReceiver.ConnectivityListener connectivityListener) {
+        ConnectivityReceiver.connectivityListener = connectivityListener;
+    }
+
     public static ApplicationComponent getAppComponent() {
         return applicationComponent;
     }

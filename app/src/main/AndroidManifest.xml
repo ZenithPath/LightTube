@@ -3,6 +3,7 @@
     package="com.example.scame.lighttube">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="com.example.scame.lighttube.presentation.LightTubeApp"
@@ -30,6 +31,14 @@
                 android:resource="@xml/searchable"/>
 
         </activity>
+
+        <receiver
+            android:name=".presentation.ConnectivityReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
