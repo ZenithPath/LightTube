@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
@@ -34,6 +35,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     @BindView(R.id.grid_toolbar) Toolbar gridToolbar;
 
+    @BindView(R.id.grid_pb) ProgressBar progressBar;
+
     @Inject
     IGridPresenter<IGridPresenter.GridView> presenter;
 
@@ -54,6 +57,9 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         presenter.setView(this);
 
         parseIntent();
+
+        progressBar.setVisibility(View.VISIBLE);
+        gridRv.setVisibility(View.GONE);
 
         if (savedInstanceState != null && savedInstanceState
                 .getStringArrayList(getString(R.string.category_list_items)) != null) {
@@ -95,6 +101,9 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     @Override
     public void populateAdapter(List<SearchItemModel> items) {
         this.items = items;
+
+        progressBar.setVisibility(View.GONE);
+        gridRv.setVisibility(View.VISIBLE);
 
         GridLayoutManager gridLayoutManager = buildLayoutManager();
         gridAdapter = new GridAdapter(getContext(), items);

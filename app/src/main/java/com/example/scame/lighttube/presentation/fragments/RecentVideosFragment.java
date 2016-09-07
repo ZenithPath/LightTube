@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
@@ -37,6 +38,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     @BindView(R.id.recent_app_bar) AppBarLayout appBarLayout;
     @BindView(R.id.recent_toolbar) Toolbar toolbar;
+
+    @BindView(R.id.recent_videos_pb) ProgressBar progressBar;
 
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
@@ -84,6 +87,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         presenter.setView(this);
         appBarLayout.setExpanded(false);
 
+        progressBar.setVisibility(View.VISIBLE);
+        recentVideosRv.setVisibility(View.GONE);
+
         if (savedInstanceState != null && savedInstanceState
                 .getStringArrayList(getString(R.string.video_items_list)) != null) {
 
@@ -123,6 +129,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @Override
     public void populateAdapter(List<SearchItemModel> items) {
         videoItems = items;
+
+        progressBar.setVisibility(View.GONE);
+        recentVideosRv.setVisibility(View.VISIBLE);
 
         recentVideosAdapter = new RecentVideosAdapter(items, getContext());
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->

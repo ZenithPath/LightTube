@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.EndlessRecyclerViewScrollingListener;
@@ -30,6 +31,8 @@ import static com.example.scame.lighttube.presentation.presenters.ISearchResults
 public class SearchResultsFragment extends BaseFragment implements SearchResultsView {
 
     @BindView(R.id.search_results_rv) RecyclerView recyclerView;
+
+    @BindView(R.id.search_results_pb) ProgressBar progressBar;
 
     @Inject ISearchResultsPresenter<SearchResultsView> presenter;
 
@@ -68,6 +71,9 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
         presenter.setView(this);
 
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+
         if (savedInstanceState != null) {
             currentPage = savedInstanceState.getInt(getString(R.string.page_number), 0);
             initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)));
@@ -89,6 +95,10 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     @Override
     public void initializeAdapter(List<SearchItemModel> items) {
         searchItems = items;
+
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+
         adapter = new SearchResultsAdapter(items, getContext());
         adapter.setupOnItemClickListener((itemView, position) ->
                 listener.onVideoClick(searchItems.get(position).getId()));

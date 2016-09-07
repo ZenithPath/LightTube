@@ -23,7 +23,7 @@ public class SurpriseMeFragment extends BaseFragment {
 
     @BindView(R.id.categories_toolbar) Toolbar toolbar;
 
-    @BindView(R.id.durations_spinner) Spinner spinner;
+    @BindView(R.id.durations_spinner) Spinner durationsSpinner;
 
     private ArrayAdapter<String> categoriesArrayAdapter;
 
@@ -56,11 +56,10 @@ public class SurpriseMeFragment extends BaseFragment {
         categoriesArrayAdapter.addAll(getResources().getStringArray(R.array.category_items));
         categoriesListView.setAdapter(categoriesArrayAdapter);
 
-        categoriesListView.setOnItemClickListener((adapterView, view, position, id) -> {
-            categoriesArrayAdapter.getItem(position);
+        categoriesListView.setOnItemClickListener((adapterView, view, position, id) ->
             listener.onCategoryItemClick(categoriesArrayAdapter.getItem(position),
-                    spinner.getSelectedItem().toString());
-        });
+                    durationsSpinner.getSelectedItem().toString())
+        );
 
         return fragmentView;
     }
@@ -80,6 +79,6 @@ public class SurpriseMeFragment extends BaseFragment {
                 R.array.video_durations_array, android.R.layout.simple_spinner_item);
         durationsArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spinner.setAdapter(durationsArrayAdapter);
+        durationsSpinner.setAdapter(durationsArrayAdapter);
     }
 }

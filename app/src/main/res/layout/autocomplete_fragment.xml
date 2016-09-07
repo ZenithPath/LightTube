@@ -4,6 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include
+        android:id="@+id/autocomplete_pb"
+        layout="@layout/progress_bar" />
+
     <ListView
         android:id="@+id/autocomplete_lv"
         android:background="#F0FFFF"

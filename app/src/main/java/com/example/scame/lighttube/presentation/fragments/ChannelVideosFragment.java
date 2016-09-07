@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
@@ -31,8 +32,10 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
     IChannelsPresenter<IChannelsPresenter.ChannelsView> presenter;
 
     @BindView(R.id.channels_fragment_rv) RecyclerView recyclerView;
-    @BindView(R.id.channels_toolbar)
-    Toolbar toolbar;
+
+    @BindView(R.id.channels_pb) ProgressBar progressBar;
+
+    @BindView(R.id.channels_toolbar) Toolbar toolbar;
 
     private ChannelsVideosAdapter fragmentAdapter;
     private List<SearchItemModel> searchItemModels;
@@ -65,6 +68,9 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         presenter.setView(this);
 
         parseIntent();
+
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
 
         if (savedInstanceState != null &&
                 savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key)) != null) {
@@ -100,6 +106,9 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
     @Override
     public void populateAdapter(List<SearchItemModel> searchItemModels) {
         this.searchItemModels = searchItemModels;
+
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
 
         fragmentAdapter = new ChannelsVideosAdapter(searchItemModels, getContext());
         fragmentAdapter.setupOnItemClickListener((itemView, position) ->

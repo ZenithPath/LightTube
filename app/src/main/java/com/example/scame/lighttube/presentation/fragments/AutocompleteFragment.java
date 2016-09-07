@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.AutocompleteAdapter;
@@ -28,6 +29,8 @@ import static com.example.scame.lighttube.presentation.presenters.IAutocompleteP
 public class AutocompleteFragment extends BaseFragment implements AutocompleteView {
 
     @BindView(R.id.autocomplete_lv) ListView autocompleteLv;
+
+    @BindView(R.id.autocomplete_pb) ProgressBar progressBar;
 
     private AutocompleteAdapter adapter;
 
@@ -91,6 +94,9 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
         adapter.clear();
         adapter.addAll(strings);
         adapter.notifyDataSetChanged();
+
+        progressBar.setVisibility(View.GONE);
+        autocompleteLv.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -113,8 +119,10 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 if (!newText.isEmpty()) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    autocompleteLv.setVisibility(View.GONE);
+
                     listener.enableAutocomplete();
                     presenter.updateAutocompleteList(newText);
                 }

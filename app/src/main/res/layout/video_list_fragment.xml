@@ -23,6 +23,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <include
+        android:id="@+id/video_list_pb"
+        layout="@layout/progress_bar" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/videolist_rv"
         android:layout_width="match_parent"

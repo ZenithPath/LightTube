@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
@@ -32,6 +33,8 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     @BindView(R.id.videolist_rv) RecyclerView recyclerView;
 
     @BindView(R.id.videolist_toolbar) Toolbar toolbar;
+
+    @BindView(R.id.video_list_pb) ProgressBar progressBar;
 
     @Inject
     IVideoListPresenter<IVideoListPresenter.VideoListView> presenter;
@@ -78,6 +81,9 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
+        recyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
         if (savedInstanceState != null && savedInstanceState
                 .getParcelableArrayList(getString(R.string.video_items_list)) != null) {
 
@@ -110,6 +116,10 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
     @Override
     public void initializeAdapter(List<VideoItemModel> items) {
+
+        recyclerView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+
         this.items = items;
         this.adapter = new VideoListAdapter(items, getContext());
         adapter.setupOnItemClickListener((itemView, position) ->

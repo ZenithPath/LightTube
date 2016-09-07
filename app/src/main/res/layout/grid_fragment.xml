@@ -22,6 +22,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <include
+        android:id="@+id/grid_pb"
+        layout="@layout/progress_bar" />
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/grid_rv"
         android:layout_width="match_parent"
