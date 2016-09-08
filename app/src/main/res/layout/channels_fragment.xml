@@ -25,9 +25,17 @@
         android:id="@+id/channels_pb"
         layout="@layout/progress_bar" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/channels_fragment_rv"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/channels_swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/channels_fragment_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </android.support.design.widget.CoordinatorLayout>

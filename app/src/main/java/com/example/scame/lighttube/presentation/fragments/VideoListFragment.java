@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +36,8 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     @BindView(R.id.videolist_toolbar) Toolbar toolbar;
 
     @BindView(R.id.video_list_pb) ProgressBar progressBar;
+
+    @BindView(R.id.video_list_swipe) SwipeRefreshLayout refreshLayout;
 
     @Inject
     IVideoListPresenter<IVideoListPresenter.VideoListView> presenter;
@@ -81,6 +84,11 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            presenter.fetchVideos(currentPage);
+        });
+
         recyclerView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -95,6 +103,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         return fragmentView;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -131,6 +140,10 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
+
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override

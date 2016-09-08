@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.fragments;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +38,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     @BindView(R.id.grid_pb) ProgressBar progressBar;
 
+    @BindView(R.id.grid_swipe) SwipeRefreshLayout refreshLayout;
+
     @Inject
     IGridPresenter<IGridPresenter.GridView> presenter;
 
@@ -57,6 +60,11 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         presenter.setView(this);
 
         parseIntent();
+
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            presenter.fetchVideos(category, duration, currentPage);
+        });
 
         progressBar.setVisibility(View.VISIBLE);
         gridRv.setVisibility(View.GONE);
@@ -115,6 +123,10 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         gridRv.setHasFixedSize(true);
         gridRv.setAdapter(gridAdapter);
         gridRv.addOnScrollListener(buildScrollingListener(gridLayoutManager));
+
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override

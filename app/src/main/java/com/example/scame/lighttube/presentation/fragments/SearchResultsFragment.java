@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,6 +34,8 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     @BindView(R.id.search_results_rv) RecyclerView recyclerView;
 
     @BindView(R.id.search_results_pb) ProgressBar progressBar;
+
+    @BindView(R.id.search_results_swipe) SwipeRefreshLayout refreshLayout;
 
     @Inject ISearchResultsPresenter<SearchResultsView> presenter;
 
@@ -71,6 +74,11 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
         presenter.setView(this);
 
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            presenter.fetchVideos(currentPage, query);
+        });
+
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
 
@@ -108,6 +116,10 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
+
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override

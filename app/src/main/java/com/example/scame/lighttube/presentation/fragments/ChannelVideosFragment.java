@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,8 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
 
     @BindView(R.id.channels_toolbar) Toolbar toolbar;
 
+    @BindView(R.id.channels_swipe) SwipeRefreshLayout refreshLayout;
+
     private ChannelsVideosAdapter fragmentAdapter;
     private List<SearchItemModel> searchItemModels;
 
@@ -68,6 +71,10 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         presenter.setView(this);
 
         parseIntent();
+
+        refreshLayout.setOnRefreshListener(() -> {
+            presenter.fetchChannelVideos(channelId);
+        });
 
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
@@ -117,6 +124,10 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         recyclerView.setAdapter(fragmentAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override

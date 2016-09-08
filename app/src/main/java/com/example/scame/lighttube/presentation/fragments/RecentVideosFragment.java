@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +41,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @BindView(R.id.recent_toolbar) Toolbar toolbar;
 
     @BindView(R.id.recent_videos_pb) ProgressBar progressBar;
+
+    @BindView(R.id.recent_swipe) SwipeRefreshLayout refreshLayout;
 
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
@@ -86,6 +89,10 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
         appBarLayout.setExpanded(false);
+
+        refreshLayout.setOnRefreshListener(() -> {
+            presenter.initialize();
+        });
 
         progressBar.setVisibility(View.VISIBLE);
         recentVideosRv.setVisibility(View.GONE);
@@ -143,6 +150,10 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             appBarLayout.setExpanded(true, true);
+        }
+
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
         }
     }
 
