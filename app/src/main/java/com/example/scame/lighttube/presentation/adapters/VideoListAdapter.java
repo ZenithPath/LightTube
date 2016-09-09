@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.presentation.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +18,63 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder>{
+public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+    private static final int VIEW_TYPE_PROGRESS = 0;
+    private static final int VIEW_TYPE_VIDEO = 1;
 
     private List<VideoItemModel> items;
     private Context context;
 
     private static OnItemClickListener listener;
 
-    public VideoListAdapter(List<VideoItemModel> items, Context context) {
+    private OnLoadMoreListener onLoadMoreListener;
+
+    private int visibleThreshold = 3;
+    private int lastVisibleItem, totalItemCount;
+    private boolean loading;
+
+    private int currentPage;
+
+    public VideoListAdapter(List<VideoItemModel> items, Context context, RecyclerView recyclerView) {
         this.items = items;
         this.context = context;
+
+        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+
+                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                        if (onLoadMoreListener != null) {
+                            onLoadMoreListener.onLoadMore(++currentPage);
+                        }
+
+                        loading = true;
+                    }
+                }
+            });
+        }
     }
+
+    public void setLoaded() {
+        loading = false;
+    }
+
+    public void setPage(int page) {
+        this.currentPage = page;
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        this.onLoadMoreListener = onLoadMoreListener;
+    }
+
 
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position);
@@ -37,12 +84,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         this.listener = listener;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.videolist_item_iv) ImageView thumbnailsIv;
         @BindView(R.id.videolist_item_title) TextView titleTv;
 
-        public ViewHolder(View itemView) {
+        public VideoViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
@@ -56,32 +103,55 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        View videoItemView = inflater.inflate(R.layout.video_list_item, parent, false);
-
-        return new ViewHolder(videoItemView);
+    public int getItemViewType(int position) {
+        return items.get(position) == null ? VIEW_TYPE_PROGRESS : VIEW_TYPE_VIDEO;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        VideoItemModel item = items.get(position);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        ImageView imageView = holder.thumbnailsIv;
-        TextView textView = holder.titleTv;
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        RecyclerView.ViewHolder viewHolder = null;
 
-        Picasso.with(context).load(item.getImageUrl()).resize(650, 400).centerCrop().into(imageView);
-        textView.setText(item.getTitle());
+        if (viewType == VIEW_TYPE_VIDEO) {
+            View viewItem = layoutInflater.inflate(R.layout.video_list_item, parent, false);
+            viewHolder = new VideoViewHolder(viewItem);
+        } else if (viewType == VIEW_TYPE_PROGRESS) {
+            View viewItem = layoutInflater.inflate(R.layout.progress_item_layout, parent, false);
+            viewHolder = new ProgressViewHolder(viewItem);
+        }
+
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+        if (holder instanceof VideoViewHolder) {
+            VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
+            VideoItemModel videoItem = items.get(position);
+
+            videoViewHolder.titleTv.setText(videoItem.getTitle());
+            Picasso.with(context)
+                    .load(videoItem.getImageUrl())
+                    .resize(650, 400).centerCrop()
+                    .into(videoViewHolder.thumbnailsIv);
+        } else if (holder instanceof ProgressViewHolder) {
+            ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;
+            progressViewHolder.progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items == null ? 0 : items.size();
     }
 
     public Context getContext() {
         return context;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 }

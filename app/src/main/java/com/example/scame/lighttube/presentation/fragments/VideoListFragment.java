@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
-import com.example.scame.lighttube.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttube.presentation.adapters.VideoListAdapter;
 import com.example.scame.lighttube.presentation.model.VideoItemModel;
 import com.example.scame.lighttube.presentation.presenters.IVideoListPresenter;
@@ -86,6 +85,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         refreshLayout.setOnRefreshListener(() -> {
             currentPage = 0;
+            adapter.setPage(currentPage);
             presenter.fetchVideos(currentPage);
         });
 
@@ -130,16 +130,27 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         progressBar.setVisibility(View.GONE);
 
         this.items = items;
-        this.adapter = new VideoListAdapter(items, getContext());
-        adapter.setupOnItemClickListener((itemView, position) ->
-                listActivityListener.onVideoClick(items.get(position).getId()));
 
         LinearLayoutManager layoutManager = buildLayoutManager();
 
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new VideoListAdapter(items, getContext(), recyclerView);
+        adapter.setPage(currentPage);
+
+        adapter.setupOnItemClickListener((itemView, position) ->
+                listActivityListener.onVideoClick(items.get(position).getId()));
+
+
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
+
+        adapter.setOnLoadMoreListener((page) -> {
+            items.add(null);
+            adapter.notifyItemInserted(items.size() - 1);
+
+            currentPage = page;
+            presenter.fetchVideos(page);
+        });
 
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
@@ -147,24 +158,16 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     }
 
     @Override
-    public void updateAdapter(List<VideoItemModel> items) {
-        this.items.addAll(items);
-        adapter.notifyItemRangeInserted(adapter.getItemCount(), items.size());
+    public void updateAdapter(List<VideoItemModel> newItems) {
+        items.remove(items.size() - 1);
+        adapter.notifyItemRemoved(items.size());
+
+        items.addAll(newItems);
+        adapter.notifyItemRangeInserted(adapter.getItemCount(), newItems.size());
+
+        adapter.setLoaded();
     }
 
-    private EndlessRecyclerViewScrollingListener buildScrollingListener(LinearLayoutManager manager) {
-        EndlessRecyclerViewScrollingListener listener = new EndlessRecyclerViewScrollingListener(manager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                currentPage = page;
-                presenter.fetchVideos(page);
-            }
-        };
-
-        listener.setCurrentPage(currentPage);
-
-        return listener;
-    }
 
     private LinearLayoutManager buildLayoutManager() {
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
-import com.example.scame.lighttube.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttube.presentation.adapters.GridAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
@@ -107,22 +105,32 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
 
     @Override
-    public void populateAdapter(List<SearchItemModel> items) {
-        this.items = items;
+    public void populateAdapter(List<SearchItemModel> newItems) {
+        items = newItems;
 
         progressBar.setVisibility(View.GONE);
         gridRv.setVisibility(View.VISIBLE);
 
         GridLayoutManager gridLayoutManager = buildLayoutManager();
-        gridAdapter = new GridAdapter(getContext(), items);
+        gridRv.setLayoutManager(gridLayoutManager);
+
+        gridAdapter = new GridAdapter(getContext(), newItems, gridRv);
+        gridAdapter.setCurrentPage(currentPage);
+
         gridAdapter.setClickListener((itemView, position) -> {
             // TODO: open a video
         });
 
-        gridRv.setLayoutManager(gridLayoutManager);
+        gridAdapter.setOnLoadMoreListener(page -> {
+            items.add(null);
+            gridAdapter.notifyItemInserted(items.size() - 1);
+
+            currentPage = page;
+            presenter.fetchVideos(category, duration, page);
+        });
+
         gridRv.setHasFixedSize(true);
         gridRv.setAdapter(gridAdapter);
-        gridRv.addOnScrollListener(buildScrollingListener(gridLayoutManager));
 
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
@@ -130,32 +138,45 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     }
 
     @Override
-    public void updateAdapter(List<SearchItemModel> items) {
-        this.items.addAll(items);
-        gridAdapter.notifyItemRangeInserted(gridAdapter.getItemCount(), items.size());
+    public void updateAdapter(List<SearchItemModel> newItems) {
+        items.remove(items.size() - 1);
+        gridAdapter.notifyItemRemoved(items.size());
+
+        items.addAll(newItems);
+        gridAdapter.notifyItemRangeInserted(gridAdapter.getItemCount(), newItems.size());
+
+        gridAdapter.setLoaded();
     }
+
 
     private GridLayoutManager buildLayoutManager() {
+        int columnNumber;
+
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return new GridLayoutManager(getContext(), 3);
+            columnNumber = 3;
         } else {
-            return new GridLayoutManager(getContext(), 2);
+            columnNumber = 2;
         }
-    }
 
-    private EndlessRecyclerViewScrollingListener buildScrollingListener(LinearLayoutManager manager) {
-        EndlessRecyclerViewScrollingListener listener = new EndlessRecyclerViewScrollingListener(manager) {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), columnNumber);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                currentPage = page;
-                presenter.fetchVideos(category, duration, page);
+            public int getSpanSize(int position) {
+
+                switch (gridAdapter.getItemViewType(position)) {
+                    case GridAdapter.VIEW_TYPE_VIDEO:
+                        return 1;
+                    case GridAdapter.VIEW_TYPE_PROGRESS:
+                        return columnNumber;
+                    default:
+                        return -1;
+                }
             }
-        };
+        });
 
-        listener.setCurrentPage(currentPage);
-
-        return listener;
+        return gridLayoutManager;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

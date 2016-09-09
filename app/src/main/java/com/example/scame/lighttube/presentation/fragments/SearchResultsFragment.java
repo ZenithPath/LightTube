@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.adapters.EndlessRecyclerViewScrollingListener;
 import com.example.scame.lighttube.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
@@ -107,15 +106,23 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
-        adapter = new SearchResultsAdapter(items, getContext());
+        LinearLayoutManager layoutManager = buildLayoutManager();
+        recyclerView.setLayoutManager(layoutManager);
+
+        adapter = new SearchResultsAdapter(items, getContext(), recyclerView);
+        adapter.setCurrentPage(currentPage);
+
         adapter.setupOnItemClickListener((itemView, position) ->
                 listener.onVideoClick(searchItems.get(position).getId()));
+        adapter.setOnLoadMoreListener(page -> {
+            searchItems.add(null);
+            adapter.notifyItemInserted(items.size() - 1);
 
-        LinearLayoutManager layoutManager = buildLayoutManager();
+            currentPage = page;
+            presenter.fetchVideos(currentPage, query);
+        });
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addOnScrollListener(buildScrollingListener(layoutManager));
 
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
@@ -123,9 +130,14 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     }
 
     @Override
-    public void updateAdapter(List<SearchItemModel> items) {
-        searchItems.addAll(items);
-        adapter.notifyItemRangeInserted(adapter.getItemCount(), items.size());
+    public void updateAdapter(List<SearchItemModel> newItems) {
+        searchItems.remove(searchItems.size() - 1);
+        adapter.notifyItemRemoved(searchItems.size());
+
+        searchItems.addAll(newItems);
+        adapter.notifyItemRangeInserted(adapter.getItemCount(), newItems.size());
+
+        adapter.setLoaded();
     }
 
 
@@ -140,19 +152,5 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         } else {
             return new LinearLayoutManager(getContext());
         }
-    }
-
-    private EndlessRecyclerViewScrollingListener buildScrollingListener(LinearLayoutManager manager) {
-        EndlessRecyclerViewScrollingListener listener = new EndlessRecyclerViewScrollingListener(manager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                currentPage = page;
-                presenter.fetchVideos(page, query);
-            }
-        };
-
-        listener.setCurrentPage(currentPage);
-
-        return listener;
     }
 }

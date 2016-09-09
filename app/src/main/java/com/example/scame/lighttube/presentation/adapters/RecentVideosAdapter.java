@@ -17,6 +17,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
 public class RecentVideosAdapter extends RecyclerView.Adapter<RecentVideosAdapter.ViewHolder> {
 
     private List<SearchItemModel> items;

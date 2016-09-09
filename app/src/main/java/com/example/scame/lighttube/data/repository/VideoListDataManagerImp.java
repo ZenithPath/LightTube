@@ -22,7 +22,7 @@ public class VideoListDataManagerImp implements IVideoListDataManager {
 
     private static final String CHART = "mostPopular";
     private static final String PART = "snippet";
-    private static final int MAX_RESULTS = 25;
+    private static final int MAX_RESULTS = 10;
 
     @Override
     public Observable<List<VideoItemModel>> getVideoItemsList(int page) {
