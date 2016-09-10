@@ -1,6 +1,6 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
-import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
+import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.ChannelVideosUseCase;
@@ -17,7 +17,7 @@ public class ChannelVideosModule {
     @Provides
     @PerActivity
     ChannelVideosUseCase provideChannelsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                IRecentVideosDataManager dataManager) {
+                                                IChannelVideosDataManager dataManager) {
 
         return new ChannelVideosUseCase(subscribeOn, observeOn, dataManager);
     }

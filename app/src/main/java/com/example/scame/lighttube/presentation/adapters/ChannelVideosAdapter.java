@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.model.VideoItemModel;
+import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -18,12 +18,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private static final int VIEW_TYPE_PROGRESS = 0;
     private static final int VIEW_TYPE_VIDEO = 1;
 
-    private List<VideoItemModel> items;
+    private List<SearchItemModel> items;
     private Context context;
 
     private static OnItemClickListener listener;
@@ -36,7 +36,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private int currentPage;
 
-    public VideoListAdapter(List<VideoItemModel> items, Context context, RecyclerView recyclerView) {
+    public ChannelVideosAdapter(List<SearchItemModel> items, Context context, RecyclerView recyclerView) {
         this.items = items;
         this.context = context;
 
@@ -75,28 +75,27 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
-
     public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
+        void onChannelClick(View itemView, int position);
     }
 
     public void setupOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    public static class VideoViewHolder extends RecyclerView.ViewHolder {
+    public static class ChannelVideosHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.videolist_item_iv) ImageView thumbnailsIv;
-        @BindView(R.id.videolist_item_title) TextView titleTv;
+        @BindView(R.id.channels_item_iv) ImageView thumbnailsIv;
+        @BindView(R.id.channels_item_title) TextView title;
 
-        public VideoViewHolder(View itemView) {
+        public ChannelVideosHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(view -> {
                 if (listener != null) {
-                    listener.onItemClick(view, getLayoutPosition());
+                    listener.onChannelClick(view, getLayoutPosition());
                 }
             });
         }
@@ -109,16 +108,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
         RecyclerView.ViewHolder viewHolder = null;
 
         if (viewType == VIEW_TYPE_VIDEO) {
-            View viewItem = layoutInflater.inflate(R.layout.video_list_item, parent, false);
-            viewHolder = new VideoViewHolder(viewItem);
+            View videoView = inflater.inflate(R.layout.channels_fragment_item, parent, false);
+            viewHolder = new ChannelVideosHolder(videoView);
         } else if (viewType == VIEW_TYPE_PROGRESS) {
-            View viewItem = layoutInflater.inflate(R.layout.progress_item_layout, parent, false);
-            viewHolder = new ProgressViewHolder(viewItem);
+            View progressView = inflater.inflate(R.layout.progress_item_layout, parent, false);
+            viewHolder = new ProgressViewHolder(progressView);
         }
 
         return viewHolder;
@@ -127,24 +125,25 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        if (holder instanceof VideoViewHolder) {
-            VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
-            VideoItemModel videoItem = items.get(position);
+        if (holder instanceof ChannelVideosHolder) {
+            ChannelVideosHolder channelVideosHolder = (ChannelVideosHolder) holder;
+            SearchItemModel item = items.get(position);
 
-            videoViewHolder.titleTv.setText(videoItem.getTitle());
-            Picasso.with(context)
-                    .load(videoItem.getImageUrl())
-                    .resize(650, 400).centerCrop()
-                    .into(videoViewHolder.thumbnailsIv);
+            ImageView imageView = channelVideosHolder.thumbnailsIv;
+            TextView textView = channelVideosHolder.title;
+
+            Picasso.with(context).load(item.getImageUrl()).resize(650, 400).centerCrop().into(imageView);
+            textView.setText(item.getTitle());
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;
             progressViewHolder.progressBar.setIndeterminate(true);
         }
+
     }
 
     @Override
     public int getItemCount() {
-        return items == null ? 0 : items.size();
+        return items.size();
     }
 
     public Context getContext() {

@@ -3,7 +3,9 @@ package com.example.scame.lighttube.data.di;
 import com.example.scame.lighttube.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttube.data.interceptors.TokenAuthenticator;
 import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
+import com.example.scame.lighttube.data.repository.ChannelVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
+import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
@@ -79,5 +81,11 @@ public class DataModule {
     @Provides
     IRecentVideosDataManager provideRecentVideosDataManager() {
         return new RecentVideosDataManagerImp();
+    }
+
+    @Singleton
+    @Provides
+    IChannelVideosDataManager provideChannelVideosRepository() {
+        return new ChannelVideosDataManagerImp();
     }
 }

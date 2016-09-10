@@ -1,8 +1,6 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import android.util.Log;
-
 import com.example.scame.lighttube.domain.usecases.ChannelVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
@@ -12,9 +10,11 @@ import java.util.List;
 public class ChannelsPresenterImp<T extends IChannelsPresenter.ChannelsView>
                                         implements IChannelsPresenter<T> {
 
-    private T view;
+    private static final int FIRST_PAGE = 0;
 
-    private int page;
+    private int currentPage;
+
+    private T view;
 
     private String channelId;
 
@@ -25,7 +25,10 @@ public class ChannelsPresenterImp<T extends IChannelsPresenter.ChannelsView>
     }
 
     @Override
-    public void fetchChannelVideos(String channelId) {
+    public void fetchChannelVideos(String channelId, int page) {
+        currentPage = page;
+
+        channelVideosUseCase.setPage(page);
         channelVideosUseCase.setChannelId(channelId);
         channelVideosUseCase.execute(new ChannelsSubscriber());
     }
@@ -50,11 +53,6 @@ public class ChannelsPresenterImp<T extends IChannelsPresenter.ChannelsView>
 
     }
 
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-
     public void setChannelId(String channelId) {
         this.channelId = channelId;
     }
@@ -65,7 +63,11 @@ public class ChannelsPresenterImp<T extends IChannelsPresenter.ChannelsView>
         public void onNext(List<SearchItemModel> channelVideosModels) {
             super.onNext(channelVideosModels);
 
-            view.populateAdapter(channelVideosModels);
+            if (currentPage == FIRST_PAGE) {
+                view.populateAdapter(channelVideosModels);
+            } else {
+                view.updateAdapter(channelVideosModels);
+            }
         }
     }
 }

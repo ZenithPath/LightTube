@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
-import com.example.scame.lighttube.presentation.adapters.ChannelsVideosAdapter;
+import com.example.scame.lighttube.presentation.adapters.ChannelVideosAdapter;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IChannelsPresenter;
 
@@ -40,12 +40,14 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
 
     @BindView(R.id.channels_swipe) SwipeRefreshLayout refreshLayout;
 
-    private ChannelsVideosAdapter fragmentAdapter;
-    private List<SearchItemModel> searchItemModels;
+    private ChannelVideosAdapter channelAdapter;
+    private List<SearchItemModel> searchItems;
 
     private ChannelVideosListener channelVideosListener;
 
     private String channelId;
+
+    private int currentPage;
 
     public interface ChannelVideosListener {
 
@@ -73,7 +75,8 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         parseIntent();
 
         refreshLayout.setOnRefreshListener(() -> {
-            presenter.fetchChannelVideos(channelId);
+            currentPage = 0;
+            presenter.fetchChannelVideos(channelId, currentPage);
         });
 
         progressBar.setVisibility(View.VISIBLE);
@@ -82,10 +85,12 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         if (savedInstanceState != null &&
                 savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key)) != null) {
 
-            searchItemModels = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
-            populateAdapter(searchItemModels);
+            searchItems = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
+            currentPage = savedInstanceState.getInt(getString(R.string.page_number));
+
+            populateAdapter(searchItems);
         } else {
-            presenter.fetchChannelVideos(channelId);
+            presenter.fetchChannelVideos(channelId, currentPage);
         }
 
         return fragmentView;
@@ -112,18 +117,28 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
 
     @Override
     public void populateAdapter(List<SearchItemModel> searchItemModels) {
-        this.searchItemModels = searchItemModels;
+        this.searchItems = searchItemModels;
 
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        fragmentAdapter = new ChannelsVideosAdapter(searchItemModels, getContext());
-        fragmentAdapter.setupOnItemClickListener((itemView, position) ->
+        channelAdapter = new ChannelVideosAdapter(searchItemModels, getContext(), recyclerView);
+        channelAdapter.setPage(currentPage);
+
+        channelAdapter.setupOnItemClickListener((itemView, position) ->
                 channelVideosListener.onVideoClick(searchItemModels.get(position).getId()));
 
-        recyclerView.setAdapter(fragmentAdapter);
+        channelAdapter.setOnLoadMoreListener(page -> {
+            searchItems.add(null);
+            channelAdapter.notifyItemInserted(searchItems.size() - 1);
+
+            currentPage = page;
+            presenter.fetchChannelVideos(channelId, currentPage);
+        });
+
+        recyclerView.setAdapter(channelAdapter);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
@@ -131,9 +146,21 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
     }
 
     @Override
+    public void updateAdapter(List<SearchItemModel> newItems) {
+        searchItems.remove(searchItems.size() - 1);
+        channelAdapter.notifyItemRemoved(searchItems.size());
+
+        searchItems.addAll(newItems);
+        channelAdapter.notifyItemRangeInserted(channelAdapter.getItemCount(), newItems.size());
+
+        channelAdapter.setLoaded();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(searchItemModels));
+        outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(searchItems));
+        outState.putInt(getString(R.string.page_number), currentPage);
     }
 }

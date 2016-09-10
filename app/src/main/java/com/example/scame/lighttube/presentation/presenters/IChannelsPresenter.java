@@ -9,8 +9,10 @@ public interface IChannelsPresenter<T> extends Presenter<T> {
 
     interface ChannelsView {
 
-        void populateAdapter(List<SearchItemModel> videoItemModels);
+        void populateAdapter(List<SearchItemModel> searchItemModels);
+
+        void updateAdapter(List<SearchItemModel> searchItemModels);
     }
 
-    void fetchChannelVideos(String channelId);
+    void fetchChannelVideos(String channelId, int page);
 }
