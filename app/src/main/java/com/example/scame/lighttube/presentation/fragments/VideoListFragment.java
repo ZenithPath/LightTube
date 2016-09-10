@@ -83,15 +83,17 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         ButterKnife.bind(this, fragmentView);
 
-        refreshLayout.setOnRefreshListener(() -> {
-            currentPage = 0;
-            adapter.setPage(currentPage);
-            presenter.fetchVideos(currentPage);
-        });
+        setupRefreshListener();
 
         recyclerView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
+        instantiateFragment(savedInstanceState);
+
+        return fragmentView;
+    }
+
+    private void instantiateFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState
                 .getParcelableArrayList(getString(R.string.video_items_list)) != null) {
 
@@ -100,10 +102,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         } else {
             presenter.fetchVideos(currentPage);
         }
-
-        return fragmentView;
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -124,26 +123,30 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
 
     @Override
-    public void initializeAdapter(List<VideoItemModel> items) {
+    public void initializeAdapter(List<VideoItemModel> newItems) {
+        items = newItems;
 
         recyclerView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
-        this.items = items;
-
-        LinearLayoutManager layoutManager = buildLayoutManager();
-
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new VideoListAdapter(items, getContext(), recyclerView);
+        recyclerView.setLayoutManager(buildLayoutManager());
+        adapter = new VideoListAdapter(newItems, getContext(), recyclerView);
         adapter.setPage(currentPage);
 
-        adapter.setupOnItemClickListener((itemView, position) ->
-                listActivityListener.onVideoClick(items.get(position).getId()));
-
+        setupClickListener();
+        setupOnLoadMoreListener();
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
 
+        stopRefreshing();
+    }
+
+    private void setupClickListener() {
+        adapter.setupOnItemClickListener((itemView, position) ->
+                listActivityListener.onVideoClick(items.get(position).getId()));
+    }
+
+    private void setupOnLoadMoreListener() {
         adapter.setOnLoadMoreListener((page) -> {
             items.add(null);
             adapter.notifyItemInserted(items.size() - 1);
@@ -151,10 +154,20 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
             currentPage = page;
             presenter.fetchVideos(page);
         });
+    }
 
+    private void stopRefreshing() {
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
         }
+    }
+
+    private void setupRefreshListener() {
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            adapter.setPage(currentPage);
+            presenter.fetchVideos(currentPage);
+        });
     }
 
     @Override

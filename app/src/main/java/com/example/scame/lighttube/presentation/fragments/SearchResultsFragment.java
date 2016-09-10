@@ -69,26 +69,27 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
         ButterKnife.bind(this, fragmentView);
         getComponent(SearchComponent.class).inject(this);
-        query = getQuery();
+        parseSearchQuery();
 
         presenter.setView(this);
 
-        refreshLayout.setOnRefreshListener(() -> {
-            currentPage = 0;
-            presenter.fetchVideos(currentPage, query);
-        });
+        setupRefreshListener();
 
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
 
+        instantiateFragment(savedInstanceState);
+
+        return fragmentView;
+    }
+
+    private void instantiateFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             currentPage = savedInstanceState.getInt(getString(R.string.page_number), 0);
             initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)));
         } else {
             presenter.fetchVideos(currentPage, query);
         }
-
-        return fragmentView;
     }
 
     @Override
@@ -106,27 +107,45 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
-        LinearLayoutManager layoutManager = buildLayoutManager();
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(buildLayoutManager());
 
         adapter = new SearchResultsAdapter(items, getContext(), recyclerView);
         adapter.setCurrentPage(currentPage);
 
+        setupOnClickListener();
+        setupOnLoadMoreListener();
+
+        recyclerView.setAdapter(adapter);
+
+        stopRefreshing();
+    }
+
+    private void setupOnClickListener() {
         adapter.setupOnItemClickListener((itemView, position) ->
                 listener.onVideoClick(searchItems.get(position).getId()));
+    }
+
+    private void setupOnLoadMoreListener() {
         adapter.setOnLoadMoreListener(page -> {
             searchItems.add(null);
-            adapter.notifyItemInserted(items.size() - 1);
+            adapter.notifyItemInserted(searchItems.size() - 1);
 
             currentPage = page;
             presenter.fetchVideos(currentPage, query);
         });
+    }
 
-        recyclerView.setAdapter(adapter);
-
+    private void stopRefreshing() {
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
         }
+    }
+
+    private void setupRefreshListener() {
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            presenter.fetchVideos(currentPage, query);
+        });
     }
 
     @Override
@@ -141,9 +160,9 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     }
 
 
-    private String getQuery() {
+    private void parseSearchQuery() {
         Bundle args = getArguments();
-        return args.getString(getString(R.string.search_query), "");
+        query = args.getString(getString(R.string.search_query), "");
     }
 
     private LinearLayoutManager buildLayoutManager() {

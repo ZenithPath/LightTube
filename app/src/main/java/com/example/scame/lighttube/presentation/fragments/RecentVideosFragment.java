@@ -90,13 +90,15 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         presenter.setView(this);
         appBarLayout.setExpanded(false);
 
-        refreshLayout.setOnRefreshListener(() -> {
-            presenter.initialize();
-        });
+        refreshLayout.setOnRefreshListener(() -> presenter.initialize());
 
         progressBar.setVisibility(View.VISIBLE);
         recentVideosRv.setVisibility(View.GONE);
 
+        return fragmentView;
+    }
+
+    private void instantiateFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState
                 .getStringArrayList(getString(R.string.video_items_list)) != null) {
 
@@ -109,8 +111,6 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         } else {
             presenter.initialize();
         }
-
-        return fragmentView;
     }
 
     @Override

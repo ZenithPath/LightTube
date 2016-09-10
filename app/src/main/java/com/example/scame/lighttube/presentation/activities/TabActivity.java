@@ -44,7 +44,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                                                     SignInFragment.SignUpListener,
                                                     SurpriseMeFragment.SurpriseMeListener,
                                                     RecentVideosFragment.RecentVideosListener,
-                                                    ChannelVideosFragment.ChannelVideosListener {
+                                                    ChannelVideosFragment.ChannelVideosListener,
+                                                    GridFragment.GridFragmentListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";

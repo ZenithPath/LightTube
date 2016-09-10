@@ -63,6 +63,13 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         }
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,16 +79,19 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
 
-        parseIntent();
+        parseChannelId();
 
-        refreshLayout.setOnRefreshListener(() -> {
-            currentPage = 0;
-            presenter.fetchChannelVideos(channelId, currentPage);
-        });
+        setupRefreshLayoutListener();
 
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
 
+        instantiateFragment(savedInstanceState);
+
+        return fragmentView;
+    }
+
+    private void instantiateFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null &&
                 savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key)) != null) {
 
@@ -92,20 +102,11 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
         } else {
             presenter.fetchChannelVideos(channelId, currentPage);
         }
-
-        return fragmentView;
     }
 
-    void parseIntent() {
+    void parseChannelId() {
         Bundle args = getArguments();
         channelId = args.getString(ChannelVideosFragment.class.getCanonicalName());
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
 
     private void inject() {
@@ -121,14 +122,26 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
 
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         channelAdapter = new ChannelVideosAdapter(searchItemModels, getContext(), recyclerView);
         channelAdapter.setPage(currentPage);
 
-        channelAdapter.setupOnItemClickListener((itemView, position) ->
-                channelVideosListener.onVideoClick(searchItemModels.get(position).getId()));
+        setupAdapterOnItemClickListener();
+        setupAdapterOnLoadMoreListener();
 
+        recyclerView.setAdapter(channelAdapter);
+
+        stopRefreshing();
+    }
+
+    private void setupAdapterOnItemClickListener() {
+        channelAdapter.setupOnItemClickListener((itemView, position) ->
+                channelVideosListener.onVideoClick(searchItems.get(position).getId()));
+    }
+
+    private void setupAdapterOnLoadMoreListener() {
         channelAdapter.setOnLoadMoreListener(page -> {
             searchItems.add(null);
             channelAdapter.notifyItemInserted(searchItems.size() - 1);
@@ -136,10 +149,16 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
             currentPage = page;
             presenter.fetchChannelVideos(channelId, currentPage);
         });
+    }
 
-        recyclerView.setAdapter(channelAdapter);
-        recyclerView.setHasFixedSize(true);
+    private void setupRefreshLayoutListener() {
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            presenter.fetchChannelVideos(channelId, currentPage);
+        });
+    }
 
+    private void stopRefreshing() {
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
         }

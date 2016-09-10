@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.presentation.fragments;
 
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -48,6 +49,28 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     private String category;
     private int currentPage;
 
+    private GridFragmentListener gridFragmentListener;
+
+    public interface GridFragmentListener {
+        void onVideoClick(String id);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof GridFragmentListener) {
+            gridFragmentListener = (GridFragmentListener) context;
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(gridToolbar);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,33 +80,31 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
 
-        parseIntent();
+        parseVideosSpecification();
 
-        refreshLayout.setOnRefreshListener(() -> {
-            currentPage = 0;
-            presenter.fetchVideos(category, duration, currentPage);
-        });
+        setupRefreshListener();
 
         progressBar.setVisibility(View.VISIBLE);
         gridRv.setVisibility(View.GONE);
 
-        if (savedInstanceState != null && savedInstanceState
-                .getStringArrayList(getString(R.string.category_list_items)) != null) {
-
-            restoreState(savedInstanceState);
-        } else {
-            presenter.fetchVideos(category, duration, currentPage);
-        }
+        instantiateFragment(savedInstanceState);
 
         return fragmentView;
     }
 
-    private void restoreState(Bundle savedInstanceState) {
-        items = savedInstanceState.getParcelableArrayList(getString(R.string.category_list_items));
-        populateAdapter(items);
+    private void instantiateFragment(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState
+                .getStringArrayList(getString(R.string.category_list_items)) != null) {
+
+            items = savedInstanceState.getParcelableArrayList(getString(R.string.category_list_items));
+            populateAdapter(items);
+        } else {
+            presenter.fetchVideos(category, duration, currentPage);
+        }
     }
 
-    private void parseIntent() {
+
+    private void parseVideosSpecification() {
         Bundle args = getArguments();
         duration = args.getString(getString(R.string.duration_key));
         category = args.getString(getString(R.string.category_key));
@@ -96,13 +117,6 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         }
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        ((AppCompatActivity) getActivity()).setSupportActionBar(gridToolbar);
-    }
-
 
     @Override
     public void populateAdapter(List<SearchItemModel> newItems) {
@@ -111,16 +125,26 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         progressBar.setVisibility(View.GONE);
         gridRv.setVisibility(View.VISIBLE);
 
-        GridLayoutManager gridLayoutManager = buildLayoutManager();
-        gridRv.setLayoutManager(gridLayoutManager);
+        gridRv.setLayoutManager(buildLayoutManager());
 
         gridAdapter = new GridAdapter(getContext(), newItems, gridRv);
         gridAdapter.setCurrentPage(currentPage);
 
-        gridAdapter.setClickListener((itemView, position) -> {
-            // TODO: open a video
-        });
+        setupOnClickListener();
+        setupOnLoadMoreListener();
 
+        gridRv.setAdapter(gridAdapter);
+
+        stopRefreshing();
+    }
+
+    private void setupOnClickListener() {
+        gridAdapter.setClickListener((itemView, position) -> {
+            gridFragmentListener.onVideoClick(items.get(position).getId());
+        });
+    }
+
+    private void setupOnLoadMoreListener() {
         gridAdapter.setOnLoadMoreListener(page -> {
             items.add(null);
             gridAdapter.notifyItemInserted(items.size() - 1);
@@ -128,13 +152,19 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
             currentPage = page;
             presenter.fetchVideos(category, duration, page);
         });
+    }
 
-        gridRv.setHasFixedSize(true);
-        gridRv.setAdapter(gridAdapter);
-
+    private void stopRefreshing() {
         if (refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(false);
         }
+    }
+
+    private void setupRefreshListener() {
+        refreshLayout.setOnRefreshListener(() -> {
+            currentPage = 0;
+            presenter.fetchVideos(category, duration, currentPage);
+        });
     }
 
     @Override
