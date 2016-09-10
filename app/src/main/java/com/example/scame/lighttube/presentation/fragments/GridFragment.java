@@ -216,4 +216,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
             outState.putParcelableArrayList(getString(R.string.category_list_items), new ArrayList<>(items));
         }
     }
+
+    public void scrollToTop() {
+        gridRv.smoothScrollToPosition(0);
+    }
 }

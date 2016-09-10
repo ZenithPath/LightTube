@@ -397,7 +397,28 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
             @Override
             public void onTabReselected(int position) {
+                switch (position) {
+                    case HOME_TAB:
+                        VideoListFragment videoListFragment = (VideoListFragment) getSupportFragmentManager()
+                                .findFragmentByTag(VIDEO_LIST_FRAG_TAG);
 
+                        if (videoListFragment != null) {
+                            videoListFragment.scrollToTop();
+                        }
+
+                        break;
+                    case DISCOVER_TAB_SIGN_OUT:
+                        GridFragment gridFragment = (GridFragment) getSupportFragmentManager()
+                                .findFragmentByTag(GRID_FRAG_TAG);
+
+                        if (gridFragment != null) {
+                            gridFragment.scrollToTop();
+                        }
+
+                        break;
+                    case ACCOUNT_TAB_SIGN_OUT:
+                        break;
+                }
             }
         };
     }
@@ -441,7 +462,37 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
             @Override
             public void onTabReselected(int position) {
+                switch (position) {
+                    case HOME_TAB:
+                        VideoListFragment videoListFragment = (VideoListFragment) getSupportFragmentManager()
+                                .findFragmentByTag(VIDEO_LIST_FRAG_TAG);
 
+                        if (videoListFragment != null) {
+                            videoListFragment.scrollToTop();
+                        }
+
+                        break;
+                    case CHANNELS_TAB:
+                        RecentVideosFragment recentVideosFragment = (RecentVideosFragment) getSupportFragmentManager()
+                                .findFragmentByTag(RECENT_FRAG_TAG);
+
+                        if (recentVideosFragment != null) {
+                            recentVideosFragment.scrollToTop();
+                        }
+
+                        break;
+                    case DISCOVER_TAB_SIGN_IN:
+                        GridFragment gridFragment = (GridFragment) getSupportFragmentManager()
+                                .findFragmentByTag(GRID_FRAG_TAG);
+
+                        if (gridFragment != null) {
+                            gridFragment.scrollToTop();
+                        }
+
+                        break;
+                    case ACCOUNT_TAB_SIGN_IN:
+                        break;
+                }
             }
         };
     }

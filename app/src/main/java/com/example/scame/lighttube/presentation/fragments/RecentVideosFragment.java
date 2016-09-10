@@ -95,6 +95,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         progressBar.setVisibility(View.VISIBLE);
         recentVideosRv.setVisibility(View.GONE);
 
+        instantiateFragment(savedInstanceState);
+
         return fragmentView;
     }
 
@@ -178,5 +180,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
             outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(videoItems));
             outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(channelItems));
         }
+    }
+
+    public void scrollToTop() {
+        recentVideosRv.smoothScrollToPosition(0);
     }
 }
