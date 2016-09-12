@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.presentation.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,23 @@ import butterknife.OnClick;
 
 public class NoInternetFragment extends BaseFragment {
 
+    public InternetConnectionListener connectionListener;
+
     @BindView(R.id.no_internet_toolbar) Toolbar toolbar;
+
+    public interface InternetConnectionListener {
+
+        void retry();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof InternetConnectionListener) {
+            connectionListener = (InternetConnectionListener) context;
+        }
+    }
 
     @Nullable
     @Override
@@ -38,6 +55,6 @@ public class NoInternetFragment extends BaseFragment {
 
     @OnClick(R.id.retry_btn)
     public void onRetryClick() {
-        // TODO: implement connection retry
+        connectionListener.retry();
     }
 }

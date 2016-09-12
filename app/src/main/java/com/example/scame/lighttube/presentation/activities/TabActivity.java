@@ -3,9 +3,9 @@ package com.example.scame.lighttube.presentation.activities;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +38,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
 public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener,
                                                     ITabActivityPresenter.ITabActivityView,
@@ -45,7 +46,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                                                     SurpriseMeFragment.SurpriseMeListener,
                                                     RecentVideosFragment.RecentVideosListener,
                                                     ChannelVideosFragment.ChannelVideosListener,
-                                                    GridFragment.GridFragmentListener {
+                                                    GridFragment.GridFragmentListener,
+                                                    NoInternetFragment.InternetConnectionListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
@@ -55,7 +57,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     public static final String CHANNELS_FRAG_TAG = "chanenelsTabFragm";
     public static final String NO_INTERNET_FRAG_TAG = "noInternetTag";
 
-    private static int PREVIOUSLY_SELECTED_TAB = -1;
+    private static final int DEFAULT_SELECTED_POSITION = -1;
+    private static int PREVIOUSLY_SELECTED_TAB = DEFAULT_SELECTED_POSITION;
 
     private static final int HOME_TAB = 0;
     private static final int CHANNELS_TAB = 1;
@@ -83,21 +86,115 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private RecentVideosComponent recentVideosComponent;
     private ChannelVideosComponent channelVideosComponent;
 
+    // workaround for devices that send several broadcasts after connect/disconnect
+    @State boolean connectionState;
+
+    // shows how activity was initialized before onDestroy method call
+    @State boolean initializedWithoutInternet;
+
     private Bundle savedInstanceState;
 
-    // workaround for devices that send several broadcasts after connect/disconnect
-    private boolean connectionState;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        componentsManager = new ComponentsManager(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.tab_activity);
+
+        ButterKnife.bind(this);
+        presenter.setView(this);
+
+        this.savedInstanceState = savedInstanceState;
+
+        // CASE 1
+        // activity wasn't recreated & there's no connection
+        if (!ConnectivityReceiver.isConnected() && savedInstanceState == null) {
+            initializeWithoutInternet();
+            initializedWithoutInternet = true;
+        }
+
+        // CASE 2
+        // activity wasn't recreated & there's established connection
+        if (ConnectivityReceiver.isConnected() && savedInstanceState == null) {
+            initializeWithInternet(null);
+            connectionState = true;
+        }
+
+        // activity was recreated from state CASE 1
+        // just show NoConnectionFragment, even though connection could be established
+        if (savedInstanceState != null && initializedWithoutInternet) {
+            initializeWithoutInternet();
+        }
+
+        // activity was recreated from state CASE 2
+        // recreate retry snack and show cached data
+        if (!ConnectivityReceiver.isConnected() && savedInstanceState != null && !initializedWithoutInternet) {
+            initializeWithInternet(savedInstanceState);
+            showConnectionSnack(false);
+        }
+
+        // activity was recreated from state CASE 2
+        // this is just a simple rotate scenario with established connection
+        if (ConnectivityReceiver.isConnected() && savedInstanceState != null && !initializedWithoutInternet) {
+            initializeWithInternet(savedInstanceState);
+            dismissSnack(); // need it when connection changes are followed by config changes
+        }
+    }
+
+    private void initializeWithInternet(Bundle savedInstanceState) {
+
+        if (savedInstanceState != null) {
+            PREVIOUSLY_SELECTED_TAB = savedInstanceState.getInt(getString(R.string.selected_tab_key));
+        }
+
+        // happens when an activity was recreated with NoInternetFragment & connection shows up
+        // or activity simply wasn't recreated
+        if (PREVIOUSLY_SELECTED_TAB == DEFAULT_SELECTED_POSITION) {
+            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+        }
+
+        presenter.checkLogin();
+
+        bottomBarItems = new BottomNavigationItem[] {
+                new BottomNavigationItem(R.drawable.ic_home_black_24dp, getString(R.string.home_item)),
+                new BottomNavigationItem(R.drawable.ic_video_library_black_24dp, getString(R.string.channels_item)),
+                new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.discover_item)),
+                new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, getString(R.string.account_item))
+        };
+    }
+
+    private void initializeWithoutInternet() {
+        replaceFragment(R.id.tab_activity_fl, new NoInternetFragment(), NO_INTERNET_FRAG_TAG);
+    }
+
+    private void dismissSnack() {
+        if (connectionSnackbar != null && connectionSnackbar.isShown()) {
+            connectionSnackbar.dismiss();
+        }
+    }
+
+    private void reinitializeFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if (fragmentManager.findFragmentByTag(GRID_FRAG_TAG) != null) {
+            replaceFragment(R.id.tab_activity_fl, new GridFragment(), GRID_FRAG_TAG);
+        } else if (fragmentManager.findFragmentByTag(RECENT_FRAG_TAG) != null) {
+            replaceFragment(R.id.tab_activity_fl, new RecentVideosFragment(), RECENT_FRAG_TAG);
+        } else if (fragmentManager.findFragmentByTag(VIDEO_LIST_FRAG_TAG) != null) {
+            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+        } else if (fragmentManager.findFragmentByTag(CHANNELS_FRAG_TAG) != null) {
+            replaceFragment(R.id.tab_activity_fl, new ChannelVideosFragment(), CHANNELS_FRAG_TAG);
+        }
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
         LightTubeApp.getAppComponent().getApp().setConnectivityListener(isConnected -> {
-            if (isConnected && connectionState != isConnected) {
-                initializeWithInternet(savedInstanceState);
-            } else if (!isConnected && connectionState != isConnected) {
-                initializeWithoutInternet();
-                showSnackbar(isConnected);
+            // show only if previously there was connection
+            if (!isConnected && connectionState != isConnected) {
+                showConnectionSnack(false);
             }
 
             connectionState = isConnected;
@@ -112,22 +209,26 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         LightTubeApp.getAppComponent().getApp().setConnectivityListener(null);
     }
 
-    private void showSnackbar(boolean isConnected) {
+    private void showConnectionSnack(boolean isConnectedSnack) {
+
         String message;
         int color;
-        if (isConnected) {
-            message = "Connected to the Internet";
-            color = Color.WHITE;
-        } else {
-            message = "Sorry! Not connected to the Internet";
-            color = Color.RED;
-        }
 
-        connectionSnackbar = Snackbar
-                .make(bottomNavigationBar, message, Snackbar.LENGTH_LONG)
-                .setAction(getString(R.string.retry), view -> Log.i("onxClick", "clicked"))
-                .setActionTextColor(Color.RED)
-                .setDuration(Snackbar.LENGTH_INDEFINITE);
+        if (isConnectedSnack) {
+            message = "Connection is established";
+            color = Color.GREEN;
+
+            connectionSnackbar = Snackbar.make(bottomNavigationBar, message, Snackbar.LENGTH_SHORT);
+        } else {
+            message = "No connection";
+            color = Color.RED;
+
+            connectionSnackbar = Snackbar
+                    .make(bottomNavigationBar, message, Snackbar.LENGTH_INDEFINITE)
+                    .setActionTextColor(color)
+                    .setAction("Retry", view -> snackClickHandler())
+                    .setDuration(Snackbar.LENGTH_INDEFINITE);
+        }
 
         View sbView = connectionSnackbar.getView();
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
@@ -136,55 +237,13 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     }
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        componentsManager = new ComponentsManager(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.tab_activity);
-
-        ButterKnife.bind(this);
-        presenter.setView(this);
-
-        this.savedInstanceState = savedInstanceState;
-
-        if (ConnectivityReceiver.isConnected()) {
-            connectionState = true;
-            initializeWithInternet(savedInstanceState);
+    private void snackClickHandler() {
+        if (connectionState) {
+            reinitializeFragment();
+            showConnectionSnack(true);
         } else {
-            connectionState = false;
-            initializeWithoutInternet();
+            showConnectionSnack(false);
         }
-    }
-
-    private void initializeWithInternet(Bundle savedInstanceState) {
-
-        if (connectionSnackbar != null && connectionSnackbar.isShown()) {
-            connectionSnackbar.dismiss();
-        }
-
-        if (savedInstanceState != null) {
-            PREVIOUSLY_SELECTED_TAB = savedInstanceState.getInt(getString(R.string.selected_tab_key));
-        } else {
-            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
-        }
-
-        presenter.checkLogin();
-
-        bottomBarItems = new BottomNavigationItem[] {
-                new BottomNavigationItem(R.drawable.ic_home_black_24dp, getString(R.string.home_item)),
-                new BottomNavigationItem(R.drawable.ic_video_library_black_24dp, getString(R.string.channels_item)),
-                new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.discover_item)),
-                new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, getString(R.string.account_item))
-        };
-
-        bottomNavigationBar.setVisibility(View.VISIBLE);
-        bottomNavigationBar.show();
-    }
-
-    private void initializeWithoutInternet() {
-        bottomNavigationBar.setVisibility(View.GONE);
-        bottomNavigationBar.hide();
-        replaceFragment(R.id.tab_activity_fl, new NoInternetFragment(), NO_INTERNET_FRAG_TAG);
     }
 
     @Override
@@ -325,6 +384,14 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         }
 
         return channelVideosComponent;
+    }
+
+    @Override
+    public void retry() {
+        if (connectionState) {
+            initializedWithoutInternet = false;
+            initializeWithInternet(savedInstanceState);
+        }
     }
 
     @Override

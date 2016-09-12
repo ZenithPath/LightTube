@@ -12,6 +12,8 @@ import com.example.scame.lighttube.presentation.navigation.Navigator;
 
 import javax.inject.Inject;
 
+import icepick.Icepick;
+
 public abstract class BaseActivity extends AppCompatActivity {
 
     @Inject Navigator navigator;
@@ -21,6 +23,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         inject(getAppComponent()); // to avoid NPE from fragments after config changes
         super.onCreate(savedInstanceState);
 
+        Icepick.restoreInstanceState(this, savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Icepick.saveInstanceState(this, outState);
     }
 
     protected void replaceFragment(int containerViewId, Fragment fragment, String TAG) {
