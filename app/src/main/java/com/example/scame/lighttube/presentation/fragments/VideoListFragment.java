@@ -15,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.NoConnectionObject;
 import com.example.scame.lighttube.presentation.adapters.VideoListAdapter;
 import com.example.scame.lighttube.presentation.model.VideoItemModel;
 import com.example.scame.lighttube.presentation.presenters.IVideoListPresenter;
@@ -27,6 +29,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
 public class VideoListFragment extends BaseFragment implements IVideoListPresenter.VideoListView {
 
@@ -42,7 +45,11 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     IVideoListPresenter<IVideoListPresenter.VideoListView> presenter;
 
     private List<VideoItemModel> items;
-    private int currentPage;
+
+    // these three variables represent adapter state
+    @State int currentPage;
+    @State boolean isLoading;
+    @State boolean isConnectedPreviously = true;
 
     private VideoListAdapter adapter;
 
@@ -97,7 +104,6 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         if (savedInstanceState != null && savedInstanceState
                 .getParcelableArrayList(getString(R.string.video_items_list)) != null) {
 
-            currentPage = savedInstanceState.getInt(getString(R.string.page_number));
             initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list)));
         } else {
             presenter.fetchVideos(currentPage);
@@ -113,11 +119,13 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        isLoading = adapter.isLoading();
+        isConnectedPreviously = adapter.isConnectedPreviously();
+
         super.onSaveInstanceState(outState);
 
         if (items != null ) {
             outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(items));
-            outState.putInt(getString(R.string.page_number), currentPage);
         }
     }
 
@@ -132,18 +140,49 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         recyclerView.setLayoutManager(buildLayoutManager());
         adapter = new VideoListAdapter(newItems, getContext(), recyclerView);
         adapter.setPage(currentPage);
+        adapter.setConnectedPreviously(isConnectedPreviously);
+        adapter.setLoading(isLoading);
 
-        setupClickListener();
+        setupRetryListener();
+        setupOnVideoClickListener();
         setupOnLoadMoreListener();
+        setupNoConnectionListener();
 
         recyclerView.setAdapter(adapter);
 
         stopRefreshing();
     }
 
-    private void setupClickListener() {
-        adapter.setupOnItemClickListener((itemView, position) ->
-                listActivityListener.onVideoClick(items.get(position).getId()));
+    private void setupRetryListener() {
+        adapter.setOnRetryClickListener(() -> {
+
+            if (ConnectivityReceiver.isConnected()) {
+                items.remove(items.size() - 1);
+                adapter.notifyItemRemoved(items.size());
+
+                items.add(null);
+                adapter.notifyItemInserted(items.size() - 1);
+
+                ++currentPage;
+                adapter.setLoading(true);
+                adapter.setConnectedPreviously(true);
+                adapter.setPage(currentPage);
+                presenter.fetchVideos(currentPage);
+            }
+        });
+    }
+
+    private void setupOnVideoClickListener() {
+        adapter.setupOnItemClickListener((itemView, position) -> {
+                listActivityListener.onVideoClick(items.get(position).getId());
+        });
+    }
+
+    private void setupNoConnectionListener() {
+        adapter.setNoConnectionListener(() -> {
+            items.add(new NoConnectionObject());
+            adapter.notifyItemInserted(items.size() - 1);
+        });
     }
 
     private void setupOnLoadMoreListener() {
@@ -165,7 +204,12 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     private void setupRefreshListener() {
         refreshLayout.setOnRefreshListener(() -> {
             currentPage = 0;
+            isLoading = false;
+            isConnectedPreviously = true;
+
             adapter.setPage(currentPage);
+            adapter.setLoading(isLoading);
+            adapter.setConnectedPreviously(isConnectedPreviously);
             presenter.fetchVideos(currentPage);
         });
     }
@@ -178,7 +222,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         items.addAll(newItems);
         adapter.notifyItemRangeInserted(adapter.getItemCount(), newItems.size());
 
-        adapter.setLoaded();
+        adapter.setLoading(false);
     }
 
 

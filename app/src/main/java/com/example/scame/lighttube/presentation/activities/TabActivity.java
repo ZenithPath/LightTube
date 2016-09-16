@@ -1,21 +1,15 @@
 package com.example.scame.lighttube.presentation.activities;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.di.components.ApplicationComponent;
 import com.example.scame.lighttube.presentation.di.components.ChannelVideosComponent;
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
@@ -72,8 +66,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     @Inject
     ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> presenter;
 
-    private Snackbar connectionSnackbar;
-
     private MenuItem searchItem;
 
     private BottomNavigationItem[] bottomBarItems;
@@ -85,9 +77,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private GridComponent gridComponent;
     private RecentVideosComponent recentVideosComponent;
     private ChannelVideosComponent channelVideosComponent;
-
-    // workaround for devices that send several broadcasts after connect/disconnect
-    @State boolean connectionState;
 
     // shows how activity was initialized before onDestroy method call
     @State boolean initializedWithoutInternet;
@@ -106,38 +95,13 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
         this.savedInstanceState = savedInstanceState;
 
-        // CASE 1
-        // activity wasn't recreated & there's no connection
         if (!ConnectivityReceiver.isConnected() && savedInstanceState == null) {
             initializeWithoutInternet();
             initializedWithoutInternet = true;
-        }
-
-        // CASE 2
-        // activity wasn't recreated & there's established connection
-        if (ConnectivityReceiver.isConnected() && savedInstanceState == null) {
-            initializeWithInternet(null);
-            connectionState = true;
-        }
-
-        // activity was recreated from state CASE 1
-        // just show NoConnectionFragment, even though connection could be established
-        if (savedInstanceState != null && initializedWithoutInternet) {
+        } else if (savedInstanceState != null && initializedWithoutInternet) {
             initializeWithoutInternet();
-        }
-
-        // activity was recreated from state CASE 2
-        // recreate retry snack and show cached data
-        if (!ConnectivityReceiver.isConnected() && savedInstanceState != null && !initializedWithoutInternet) {
+        } else {
             initializeWithInternet(savedInstanceState);
-            showConnectionSnack(false);
-        }
-
-        // activity was recreated from state CASE 2
-        // this is just a simple rotate scenario with established connection
-        if (ConnectivityReceiver.isConnected() && savedInstanceState != null && !initializedWithoutInternet) {
-            initializeWithInternet(savedInstanceState);
-            dismissSnack(); // need it when connection changes are followed by config changes
         }
     }
 
@@ -167,84 +131,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         replaceFragment(R.id.tab_activity_fl, new NoInternetFragment(), NO_INTERNET_FRAG_TAG);
     }
 
-    private void dismissSnack() {
-        if (connectionSnackbar != null && connectionSnackbar.isShown()) {
-            connectionSnackbar.dismiss();
-        }
-    }
-
-    private void reinitializeFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        if (fragmentManager.findFragmentByTag(GRID_FRAG_TAG) != null) {
-            replaceFragment(R.id.tab_activity_fl, new GridFragment(), GRID_FRAG_TAG);
-        } else if (fragmentManager.findFragmentByTag(RECENT_FRAG_TAG) != null) {
-            replaceFragment(R.id.tab_activity_fl, new RecentVideosFragment(), RECENT_FRAG_TAG);
-        } else if (fragmentManager.findFragmentByTag(VIDEO_LIST_FRAG_TAG) != null) {
-            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
-        } else if (fragmentManager.findFragmentByTag(CHANNELS_FRAG_TAG) != null) {
-            replaceFragment(R.id.tab_activity_fl, new ChannelVideosFragment(), CHANNELS_FRAG_TAG);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        LightTubeApp.getAppComponent().getApp().setConnectivityListener(isConnected -> {
-            // show only if previously there was connection
-            if (!isConnected && connectionState != isConnected) {
-                showConnectionSnack(false);
-            }
-
-            connectionState = isConnected;
-        });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // to avoid memory leaks
-        LightTubeApp.getAppComponent().getApp().setConnectivityListener(null);
-    }
-
-    private void showConnectionSnack(boolean isConnectedSnack) {
-
-        String message;
-        int color;
-
-        if (isConnectedSnack) {
-            message = "Connection is established";
-            color = Color.GREEN;
-
-            connectionSnackbar = Snackbar.make(bottomNavigationBar, message, Snackbar.LENGTH_SHORT);
-        } else {
-            message = "No connection";
-            color = Color.RED;
-
-            connectionSnackbar = Snackbar
-                    .make(bottomNavigationBar, message, Snackbar.LENGTH_INDEFINITE)
-                    .setActionTextColor(color)
-                    .setAction("Retry", view -> snackClickHandler())
-                    .setDuration(Snackbar.LENGTH_INDEFINITE);
-        }
-
-        View sbView = connectionSnackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(color);
-        connectionSnackbar.show();
-    }
-
-
-    private void snackClickHandler() {
-        if (connectionState) {
-            reinitializeFragment();
-            showConnectionSnack(true);
-        } else {
-            showConnectionSnack(false);
-        }
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -388,7 +274,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     @Override
     public void retry() {
-        if (connectionState) {
+        if (ConnectivityReceiver.isConnected()) {
             initializedWithoutInternet = false;
             initializeWithInternet(savedInstanceState);
         }
