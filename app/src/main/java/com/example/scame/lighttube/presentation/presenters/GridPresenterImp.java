@@ -58,7 +58,7 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
             super.onNext(searchItems);
 
             if (page == FIRST_PAGE) {
-                view.populateAdapter(searchItems);
+                view.initializeAdapter(searchItems);
             } else {
                 view.updateAdapter(searchItems);
             }

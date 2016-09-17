@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
+import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
@@ -42,7 +43,7 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     @Inject ISearchResultsPresenter<SearchResultsView> presenter;
 
-    private SearchResultsAdapter adapter;
+    private BaseAdapter adapter;
 
     private List<ModelMarker> searchItems;
 
@@ -92,12 +93,8 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     private void instantiateFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            List<ModelMarker> cachedList = savedInstanceState
-                    .getParcelableArrayList(getString(R.string.search_items_list));
-
-            if (cachedList != null) {
-                initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)));
-            }
+            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list));
+            if (cachedList != null) initializeAdapter(cachedList);
         } else {
             presenter.fetchVideos(currentPage, query);
         }
@@ -148,7 +145,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         adapter.setLoading(false);
     }
 
-
     private void setupRetryListener() {
         adapter.setOnRetryClickListener(() -> {
 
@@ -178,10 +174,13 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     }
 
     private void setupOnVideoClickListener() {
-        adapter.setupOnItemClickListener((itemView, position) -> {
-            String videoId = ((SearchItemModel) searchItems.get(position)).getId();
-            listener.onVideoClick(videoId);
-        });
+        if (adapter instanceof SearchResultsAdapter) {
+            SearchResultsAdapter searchAdapter = (SearchResultsAdapter) adapter;
+            searchAdapter.setupOnItemClickListener((itemView, position) -> {
+                String videoId = ((SearchItemModel) searchItems.get(position)).getId();
+                listener.onVideoClick(videoId);
+            });
+        }
     }
 
     private void setupOnLoadMoreListener() {
@@ -210,7 +209,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
             presenter.fetchVideos(currentPage, query);
         });
     }
-
 
     private void parseSearchQuery() {
         Bundle args = getArguments();

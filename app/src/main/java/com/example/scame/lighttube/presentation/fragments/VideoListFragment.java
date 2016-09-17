@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.adapters.VideoListAdapter;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
@@ -52,7 +53,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     @State boolean isLoading;
     @State boolean isConnectedPreviously = true;
 
-    private VideoListAdapter adapter;
+    private BaseAdapter adapter;
 
     private VideoListActivityListener listActivityListener;
 
@@ -102,10 +103,9 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState
-                .getParcelableArrayList(getString(R.string.video_items_list)) != null) {
-
-            initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list)));
+        if (savedInstanceState != null) {
+            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list));
+            if (cachedList != null) initializeAdapter(cachedList);
         } else {
             presenter.fetchVideos(currentPage);
         }
@@ -176,10 +176,13 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     }
 
     private void setupOnVideoClickListener() {
-        adapter.setupOnItemClickListener((itemView, position) -> {
+        if (adapter instanceof VideoListAdapter) {
+            VideoListAdapter videoAdapter = (VideoListAdapter) adapter;
+            videoAdapter.setupOnItemClickListener((itemView, position) -> {
                 String videoId = ((VideoItemModel) items.get(position)).getId();
                 listActivityListener.onVideoClick(videoId);
-        });
+            });
+        }
     }
 
     private void setupNoConnectionListener() {

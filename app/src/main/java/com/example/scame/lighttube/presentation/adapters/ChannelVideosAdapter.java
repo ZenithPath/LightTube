@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.presentation.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,35 +17,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class ChannelVideosAdapter extends BaseAdapter {
 
-    private static final int VIEW_TYPE_PROGRESS = 0;
-    private static final int VIEW_TYPE_VIDEO = 1;
-    private static final int VIEW_TYPE_NO_CONNECTION = 2;
-
-    private List<?> items;
-    private Context context;
-
-    private static OnItemClickListener listener;
-
-    private NoConnectionViewHolder.OnRetryClickListener onRetryClickListener;
-
-    private RecyclerViewScrollListener scrollListener;
-
-    public interface OnItemClickListener {
-        void onChannelClick(View itemView, int position);
-    }
+    private static BaseAdapter.OnItemClickListener listener;
 
     public ChannelVideosAdapter(List<?> items, Context context, RecyclerView recyclerView) {
-        this.items = items;
-        this.context = context;
-
-        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-            scrollListener = new RecyclerViewScrollListener(linearLayoutManager);
-            recyclerView.addOnScrollListener(scrollListener);
-        }
+        super(recyclerView, context, items);
     }
 
     public static class ChannelVideosHolder extends RecyclerView.ViewHolder {
@@ -61,7 +37,7 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             itemView.setOnClickListener(view -> {
                 if (listener != null) {
-                    listener.onChannelClick(view, getLayoutPosition());
+                    listener.onItemClick(view, getLayoutPosition());
                 }
             });
         }
@@ -119,47 +95,6 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
             noConnectionViewHolder.setClickListener(onRetryClickListener);
         }
 
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-
-    public Context getContext() {
-        return context;
-    }
-
-    public void setConnectedPreviously(boolean connectedPreviously) {
-        scrollListener.setConnectedPreviously(connectedPreviously);
-    }
-
-    public boolean isLoading() {
-        return scrollListener.isLoading();
-    }
-
-    public boolean isConnectedPreviously() {
-        return scrollListener.isConnectedPreviously();
-    }
-
-    public void setLoading(boolean isLoading) {
-        scrollListener.setLoading(isLoading);
-    }
-
-    public void setCurrentPage(int page) {
-        scrollListener.setCurrentPage(page);
-    }
-
-    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
-        scrollListener.setNoConnectionListener(noConnectionListener);
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        scrollListener.setOnLoadMoreListener(onLoadMoreListener);
-    }
-
-    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
-        this.onRetryClickListener = onRetryClickListener;
     }
 
     public void setupOnItemClickListener(OnItemClickListener listener) {

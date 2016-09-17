@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.ChannelVideosAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
@@ -44,7 +45,7 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
 
     @BindView(R.id.channels_swipe) SwipeRefreshLayout refreshLayout;
 
-    private ChannelVideosAdapter channelAdapter;
+    private BaseAdapter channelAdapter;
     private List<ModelMarker> searchItems;
 
     private ChannelVideosListener channelVideosListener;
@@ -99,11 +100,9 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null &&
-                savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key)) != null) {
-
-            searchItems = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
-            populateAdapter(searchItems);
+        if (savedInstanceState != null) {
+            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
+            if (cachedList != null) populateAdapter(cachedList);
         } else {
             presenter.fetchChannelVideos(channelId, currentPage);
         }
@@ -178,10 +177,13 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
     }
 
     private void setupOnVideoClickListener() {
-        channelAdapter.setupOnItemClickListener((itemView, position) -> {
-            String videoId = ((SearchItemModel) searchItems.get(position)).getId();
-            channelVideosListener.onVideoClick(videoId);
-        });
+        if (channelAdapter instanceof ChannelVideosAdapter) {
+            ChannelVideosAdapter videosAdapter = (ChannelVideosAdapter) channelAdapter;
+            videosAdapter.setupOnItemClickListener((itemView, position) -> {
+                String videoId = ((SearchItemModel) searchItems.get(position)).getId();
+                channelVideosListener.onVideoClick(videoId);
+            });
+        }
     }
 
 

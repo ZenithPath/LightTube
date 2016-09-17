@@ -9,7 +9,7 @@ public interface IGridPresenter<V> extends Presenter<V> {
 
     interface GridView {
 
-        void populateAdapter(List<? extends ModelMarker> items);
+        void initializeAdapter(List<? extends ModelMarker> items);
 
         void updateAdapter(List<? extends ModelMarker> items);
     }

@@ -2,7 +2,6 @@ package com.example.scame.lighttube.presentation.adapters;
 
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,20 +18,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchResultsAdapter extends BaseAdapter {
 
-    private static final int VIEW_TYPE_PROGRESS = 0;
-    private static final int VIEW_TYPE_VIDEO = 1;
-    private static final int VIEW_TYPE_NO_CONNECTION = 2;
+    private static BaseAdapter.OnItemClickListener listener;
 
-    private Context context;
-    private List<?> searchItems;
-
-    private static OnItemClickListener listener;
-
-    private NoConnectionViewHolder.OnRetryClickListener onRetryClickListener;
-
-    private RecyclerViewScrollListener scrollListener;
+    public SearchResultsAdapter(List<?> items, Context context, RecyclerView recyclerView) {
+        super(recyclerView, context, items);
+    }
 
     public static class SearchViewHolder extends  RecyclerView.ViewHolder {
 
@@ -52,29 +44,13 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
-    }
-
-    public SearchResultsAdapter(List<?> items, Context context, RecyclerView recyclerView) {
-        this.searchItems = items;
-        this.context = context;
-
-        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-            scrollListener = new RecyclerViewScrollListener(linearLayoutManager);
-            recyclerView.addOnScrollListener(scrollListener);
-        }
-    }
-
     @Override
     public int getItemViewType(int position) {
-        if (searchItems.get(position) instanceof NoConnectionMarker) {
+        if (items.get(position) instanceof NoConnectionMarker) {
             return VIEW_TYPE_NO_CONNECTION;
-        } else if (searchItems.get(position) instanceof SearchItemModel) {
+        } else if (items.get(position) instanceof SearchItemModel) {
             return VIEW_TYPE_VIDEO;
-        } else if (searchItems.get(position) == null) {
+        } else if (items.get(position) == null) {
             return VIEW_TYPE_PROGRESS;
         }
 
@@ -104,7 +80,7 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof SearchViewHolder) {
-            SearchItemModel searchItem = (SearchItemModel) searchItems.get(position);
+            SearchItemModel searchItem = (SearchItemModel) items.get(position);
             SearchViewHolder viewHolder = (SearchViewHolder) holder;
 
             ImageView imageView = viewHolder.searchIv;
@@ -120,43 +96,6 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
             NoConnectionViewHolder noConnectionViewHolder = (NoConnectionViewHolder) holder;
             noConnectionViewHolder.setClickListener(onRetryClickListener);
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return searchItems.size();
-    }
-
-    public void setConnectedPreviously(boolean connectedPreviously) {
-        scrollListener.setConnectedPreviously(connectedPreviously);
-    }
-
-    public boolean isLoading() {
-        return scrollListener.isLoading();
-    }
-
-    public boolean isConnectedPreviously() {
-        return scrollListener.isConnectedPreviously();
-    }
-
-    public void setLoading(boolean isLoading) {
-        scrollListener.setLoading(isLoading);
-    }
-
-    public void setCurrentPage(int page) {
-        scrollListener.setCurrentPage(page);
-    }
-
-    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
-        scrollListener.setNoConnectionListener(noConnectionListener);
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        scrollListener.setOnLoadMoreListener(onLoadMoreListener);
-    }
-
-    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
-        this.onRetryClickListener = onRetryClickListener;
     }
 
     public void setupOnItemClickListener(OnItemClickListener listener) {

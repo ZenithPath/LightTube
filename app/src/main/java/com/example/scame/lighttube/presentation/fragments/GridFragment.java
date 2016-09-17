@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
+import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.GridAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
@@ -46,7 +47,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     @Inject
     IGridPresenter<IGridPresenter.GridView> presenter;
 
-    private GridAdapter gridAdapter;
+    private BaseAdapter gridAdapter;
     private List<ModelMarker> items;
 
     private String duration;
@@ -101,11 +102,9 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState
-                .getStringArrayList(getString(R.string.category_list_items)) != null) {
-
-            items = savedInstanceState.getParcelableArrayList(getString(R.string.category_list_items));
-            populateAdapter(items);
+        if (savedInstanceState != null) {
+            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.category_list_items));
+            if (cachedList != null) initializeAdapter(cachedList);
         } else {
             presenter.fetchVideos(category, duration, currentPage);
         }
@@ -127,7 +126,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
 
     @Override
-    public void populateAdapter(List<? extends ModelMarker> newItems) {
+    public void initializeAdapter(List<? extends ModelMarker> newItems) {
         items = new ArrayList<>(newItems);
 
         progressBar.setVisibility(View.GONE);
@@ -151,10 +150,13 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     }
 
     private void setupOnVideoClickListener() {
-        gridAdapter.setupOnItemClickListener((itemView, position) -> {
-            String videoId = ((SearchItemModel) items.get(position)).getId();
-            gridFragmentListener.onVideoClick(videoId);
-        });
+        if (gridAdapter instanceof GridAdapter) {
+            GridAdapter adapter = (GridAdapter) gridAdapter;
+            adapter.setupOnItemClickListener((itemView, position) -> {
+                String videoId = ((SearchItemModel) items.get(position)).getId();
+                gridFragmentListener.onVideoClick(videoId);
+            });
+        }
     }
 
     private void setupNoConnectionListener() {
