@@ -46,12 +46,12 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     @Inject
     IVideoListPresenter<IVideoListPresenter.VideoListView> presenter;
 
-    private List<ModelMarker> items;
-
-    // these three variables represent adapter state
+    // these variables represent adapter state
     @State int currentPage;
     @State boolean isLoading;
     @State boolean isConnectedPreviously = true;
+
+    @State ArrayList<ModelMarker> items;
 
     private BaseAdapter adapter;
 
@@ -103,9 +103,8 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list));
-            if (cachedList != null) initializeAdapter(cachedList);
+        if (savedInstanceState != null && items != null) {
+            initializeAdapter(items);
         } else {
             presenter.fetchVideos(currentPage);
         }
@@ -124,10 +123,6 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         isConnectedPreviously = adapter.isConnectedPreviously();
 
         super.onSaveInstanceState(outState);
-
-        if (items != null ) {
-            outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(items));
-        }
     }
 
 

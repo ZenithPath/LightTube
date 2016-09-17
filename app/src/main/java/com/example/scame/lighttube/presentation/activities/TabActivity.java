@@ -66,6 +66,9 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     @Inject
     ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> presenter;
 
+    // shows how activity was initialized before onDestroy method call
+    @State boolean initializedWithoutInternet;
+
     private MenuItem searchItem;
 
     private BottomNavigationItem[] bottomBarItems;
@@ -78,11 +81,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private RecentVideosComponent recentVideosComponent;
     private ChannelVideosComponent channelVideosComponent;
 
-    // shows how activity was initialized before onDestroy method call
-    @State boolean initializedWithoutInternet;
-
-    private Bundle savedInstanceState;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +91,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         ButterKnife.bind(this);
         presenter.setView(this);
 
-        this.savedInstanceState = savedInstanceState;
 
         if (!ConnectivityReceiver.isConnected() && savedInstanceState == null) {
             initializeWithoutInternet();
@@ -101,15 +98,11 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         } else if (savedInstanceState != null && initializedWithoutInternet) {
             initializeWithoutInternet();
         } else {
-            initializeWithInternet(savedInstanceState);
+            initializeWithInternet();
         }
     }
 
-    private void initializeWithInternet(Bundle savedInstanceState) {
-
-        if (savedInstanceState != null) {
-            PREVIOUSLY_SELECTED_TAB = savedInstanceState.getInt(getString(R.string.selected_tab_key));
-        }
+    private void initializeWithInternet() {
 
         // happens when an activity was recreated with NoInternetFragment & connection shows up
         // or activity simply wasn't recreated
@@ -136,7 +129,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(getString(R.string.selected_tab_key), bottomNavigationBar.getCurrentSelectedPosition());
+        PREVIOUSLY_SELECTED_TAB = bottomNavigationBar.getCurrentSelectedPosition();
     }
 
     // called by presenter after checkLogin method in onCreate
@@ -276,7 +269,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     public void retry() {
         if (ConnectivityReceiver.isConnected()) {
             initializedWithoutInternet = false;
-            initializeWithInternet(savedInstanceState);
+            initializeWithInternet();
         }
     }
 

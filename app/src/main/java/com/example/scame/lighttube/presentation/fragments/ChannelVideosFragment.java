@@ -45,17 +45,18 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
 
     @BindView(R.id.channels_swipe) SwipeRefreshLayout refreshLayout;
 
+    @State ArrayList<ModelMarker> searchItems;
+
+    // these variables represent adapter state
+    @State int currentPage;
+    @State boolean isLoading;
+    @State boolean isConnectedPreviously = true;
+
     private BaseAdapter channelAdapter;
-    private List<ModelMarker> searchItems;
 
     private ChannelVideosListener channelVideosListener;
 
     private String channelId;
-
-    // these three variables represent adapter state
-    @State int currentPage;
-    @State boolean isLoading;
-    @State boolean isConnectedPreviously = true;
 
     public interface ChannelVideosListener {
 
@@ -100,9 +101,8 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
-            if (cachedList != null) populateAdapter(cachedList);
+        if (savedInstanceState != null && searchItems != null) {
+            initializeAdapter(searchItems);
         } else {
             presenter.fetchChannelVideos(channelId, currentPage);
         }
@@ -121,7 +121,7 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
     }
 
     @Override
-    public void populateAdapter(List<? extends ModelMarker> newItems) {
+    public void initializeAdapter(List<? extends ModelMarker> newItems) {
         searchItems = new ArrayList<>(newItems);
 
         progressBar.setVisibility(View.GONE);
@@ -227,7 +227,5 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
         isConnectedPreviously = channelAdapter.isConnectedPreviously();
 
         super.onSaveInstanceState(outState);
-
-        outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(searchItems));
     }
 }

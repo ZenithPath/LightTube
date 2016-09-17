@@ -31,6 +31,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
 public class RecentVideosFragment extends BaseFragment implements IRecentVideosPresenter.RecentVideosView {
 
@@ -47,12 +48,12 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
 
+    @State ArrayList<SearchItemModel> videoItems;
+    @State ArrayList<ChannelModel> channelItems;
+
     private RecentVideosListener recentVideosListener;
 
-    private List<SearchItemModel> videoItems;
     private RecentVideosAdapter recentVideosAdapter;
-
-    private List<ChannelModel> channelItems;
     private ChannelsViewAdapter channelsViewAdapter;
 
     public interface RecentVideosListener {
@@ -101,15 +102,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState
-                .getStringArrayList(getString(R.string.video_items_list)) != null) {
-
-            videoItems = savedInstanceState.getParcelableArrayList(getString(R.string.video_items_list));
-            channelItems = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
-
+        if (savedInstanceState != null && videoItems != null && channelItems != null) {
             populateAdapter(videoItems);
             visualizeChannelsList(channelItems);
-
         } else {
             presenter.initialize();
         }
@@ -124,9 +119,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     @Override
     public void visualizeChannelsList(List<ChannelModel> channelModels) {
-        channelItems = channelModels;
+        channelItems = new ArrayList<>(channelModels);
 
-        channelsViewAdapter = new ChannelsViewAdapter(channelModels, getContext());
+        channelsViewAdapter = new ChannelsViewAdapter(channelItems, getContext());
         channelsViewAdapter.setupOnItemClickListener((itemView, position) ->
                 recentVideosListener.onChannelClick(channelItems.get(position).getChannelId()));
 
@@ -137,12 +132,12 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     @Override
     public void populateAdapter(List<SearchItemModel> items) {
-        videoItems = items;
+        videoItems = new ArrayList<>(items);
 
         progressBar.setVisibility(View.GONE);
         recentVideosRv.setVisibility(View.VISIBLE);
 
-        recentVideosAdapter = new RecentVideosAdapter(items, getContext());
+        recentVideosAdapter = new RecentVideosAdapter(videoItems, getContext());
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
                 recentVideosListener.onVideoClick(videoItems.get(position).getId()));
 
@@ -169,16 +164,6 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
             return new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         } else {
             return new LinearLayoutManager(getContext());
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        if (videoItems != null) {
-            outState.putParcelableArrayList(getString(R.string.video_items_list), new ArrayList<>(videoItems));
-            outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(channelItems));
         }
     }
 

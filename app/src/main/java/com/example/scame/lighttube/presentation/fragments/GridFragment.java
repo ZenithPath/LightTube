@@ -47,18 +47,19 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     @Inject
     IGridPresenter<IGridPresenter.GridView> presenter;
 
+    @State ArrayList<ModelMarker> items;
+
+    // these variables represent adapter state
+    @State int currentPage;
+    @State boolean isLoading;
+    @State boolean isConnectedPreviously = true;
+
     private BaseAdapter gridAdapter;
-    private List<ModelMarker> items;
 
     private String duration;
     private String category;
 
     private GridFragmentListener gridFragmentListener;
-
-    // these three variables represent adapter state
-    @State int currentPage;
-    @State boolean isLoading;
-    @State boolean isConnectedPreviously = true;
 
     public interface GridFragmentListener {
         void onVideoClick(String id);
@@ -102,9 +103,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.category_list_items));
-            if (cachedList != null) initializeAdapter(cachedList);
+        if (savedInstanceState != null && items != null){
+            initializeAdapter(items);
         } else {
             presenter.fetchVideos(category, duration, currentPage);
         }
@@ -263,10 +263,6 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         isConnectedPreviously = gridAdapter.isConnectedPreviously();
 
         super.onSaveInstanceState(outState);
-
-        if (items != null) {
-            outState.putParcelableArrayList(getString(R.string.category_list_items), new ArrayList<>(items));
-        }
     }
 
     public void scrollToTop() {

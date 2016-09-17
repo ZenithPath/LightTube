@@ -38,14 +38,14 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
 
     private SearchComponent component;
 
-    private Bundle state;
+    private Bundle savedState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
 
-        state = savedInstanceState;
+        savedState = savedInstanceState;
 
         if (getSupportFragmentManager().findFragmentByTag(AUTOCOMPLETE_FRAG_TAG) == null) {
             addFragment(R.id.search_activity_fl, new AutocompleteFragment(), AUTOCOMPLETE_FRAG_TAG);
@@ -84,7 +84,7 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
 
         searchView.setQueryHint(getString(R.string.search_hint));
 
-        if (state == null) {
+        if (savedState == null) {
             MenuItemCompat.expandActionView(menuItem);
         }
 
@@ -96,7 +96,7 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
 
     public void enableAutocomplete() {
 
-        // if there's a search results fragment in activity manager - remove it,
+        // if there's a search results fragment in activity manager then remove it,
         // so an autocomplete fragment is on top and visible
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(SearchActivity.SEARCH_FRAG_TAG);
         if (fragment != null) {

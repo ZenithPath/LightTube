@@ -43,14 +43,14 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     @Inject ISearchResultsPresenter<SearchResultsView> presenter;
 
-    private BaseAdapter adapter;
+    @State ArrayList<ModelMarker> searchItems;
 
-    private List<ModelMarker> searchItems;
-
-    // these three variables represent adapter state
+    // these variables represent adapter state
     @State int currentPage;
     @State boolean isLoading;
     @State boolean isConnectedPreviously = true;
+
+    private BaseAdapter adapter;
 
     private SearchResultsListener listener;
 
@@ -92,9 +92,8 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            List<ModelMarker> cachedList = savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list));
-            if (cachedList != null) initializeAdapter(cachedList);
+        if (savedInstanceState != null && searchItems != null) {
+            initializeAdapter(searchItems);
         } else {
             presenter.fetchVideos(currentPage, query);
         }
@@ -106,8 +105,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         isConnectedPreviously = adapter.isConnectedPreviously();
 
         super.onSaveInstanceState(outState);
-
-        outState.putParcelableArrayList(getString(R.string.search_items_list), new ArrayList<>(searchItems));
     }
 
     @Override

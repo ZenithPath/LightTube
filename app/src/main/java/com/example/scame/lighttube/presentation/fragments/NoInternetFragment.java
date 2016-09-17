@@ -18,9 +18,9 @@ import butterknife.OnClick;
 
 public class NoInternetFragment extends BaseFragment {
 
-    public InternetConnectionListener connectionListener;
-
     @BindView(R.id.no_internet_toolbar) Toolbar toolbar;
+
+    private InternetConnectionListener connectionListener;
 
     public interface InternetConnectionListener {
 

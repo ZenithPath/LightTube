@@ -9,7 +9,7 @@ public interface IChannelVideosPresenter<T> extends Presenter<T> {
 
     interface ChannelsView {
 
-        void populateAdapter(List<? extends ModelMarker> searchItemModels);
+        void initializeAdapter(List<? extends ModelMarker> searchItemModels);
 
         void updateAdapter(List<? extends ModelMarker> searchItemModels);
     }

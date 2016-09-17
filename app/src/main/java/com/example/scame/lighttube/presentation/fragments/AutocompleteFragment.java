@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
 import static com.example.scame.lighttube.presentation.presenters.IAutocompletePresenter.AutocompleteView;
 
@@ -32,12 +33,12 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
     @BindView(R.id.autocomplete_pb) ProgressBar progressBar;
 
-    private AutocompleteAdapter adapter;
-
-    private List<String> autocompleteList;
+    @State ArrayList<String> autocompleteList;
 
     @Inject
     IAutocompletePresenter<AutocompleteView> presenter;
+
+    private AutocompleteAdapter adapter;
 
     private AutocompleteFragmentListener listener;
 
@@ -71,8 +72,8 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
         configureListView();
 
-        if (savedInstanceState != null) {
-            updateAutocompleteList(savedInstanceState.getStringArrayList(getString(R.string.autocomplete_list)));
+        if (savedInstanceState != null && autocompleteList != null) {
+            updateAutocompleteList(autocompleteList);
         }
 
         return fragmentView;
@@ -89,7 +90,7 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
 
     @Override
     public void updateAutocompleteList(List<String> strings) {
-        autocompleteList = strings;
+        autocompleteList =  new ArrayList<>(strings);
 
         adapter.clear();
         adapter.addAll(strings);
@@ -99,13 +100,6 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
         autocompleteLv.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putStringArrayList(getString(R.string.autocomplete_list),
-                new ArrayList<>(autocompleteList));
-    }
 
     public SearchView.OnQueryTextListener buildOnQueryTextListener() {
 

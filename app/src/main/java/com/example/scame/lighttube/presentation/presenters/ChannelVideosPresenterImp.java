@@ -65,7 +65,7 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
             super.onNext(channelVideosModels);
 
             if (currentPage == FIRST_PAGE) {
-                view.populateAdapter(channelVideosModels);
+                view.initializeAdapter(channelVideosModels);
             } else {
                 view.updateAdapter(channelVideosModels);
             }
