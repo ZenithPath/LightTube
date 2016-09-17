@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.model.VideoItemModel;
 import com.squareup.picasso.Picasso;
 
@@ -30,19 +29,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private static OnItemClickListener listener;
 
-    private OnLoadMoreListener onLoadMoreListener;
-
-    private NoConnectionListener noConnectionListener;
-
     private NoConnectionViewHolder.OnRetryClickListener onRetryClickListener;
 
-    private int visibleThreshold = 3;
-    private int lastVisibleItem, totalItemCount;
-    private boolean loading;
+    private RecyclerViewScrollListener scrollListener;
 
-    private boolean connectedPreviously = true;
-
-    private int currentPage;
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
 
     public VideoListAdapter(List<?> items, Context context, RecyclerView recyclerView) {
         this.items = items;
@@ -51,75 +44,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold) &&
-                            ConnectivityReceiver.isConnected() && connectedPreviously) {
-
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore(++currentPage);
-                        }
-
-                        loading = true;
-                    } else if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold) &&
-                            !ConnectivityReceiver.isConnected() && connectedPreviously) {
-
-                        if (noConnectionListener != null) {
-                            noConnectionListener.onNoConnection();
-                        }
-
-                        connectedPreviously = false;
-                    }
-                }
-            });
+            scrollListener = new RecyclerViewScrollListener(linearLayoutManager);
+            recyclerView.addOnScrollListener(scrollListener);
         }
-    }
-
-    public void setConnectedPreviously(boolean connectedPreviously) {
-        this.connectedPreviously = connectedPreviously;
-    }
-
-    public boolean isLoading() {
-        return loading;
-    }
-
-    public boolean isConnectedPreviously() {
-        return connectedPreviously;
-    }
-
-    public void setLoading(boolean isLoading) {
-        loading = isLoading;
-    }
-
-    public void setPage(int page) {
-        this.currentPage = page;
-    }
-
-    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
-        this.noConnectionListener = noConnectionListener;
-    }
-
-    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
-        this.onRetryClickListener = onRetryClickListener;
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener;
-    }
-
-
-    public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
-    }
-
-    public void setupOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
@@ -200,5 +127,41 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public Context getContext() {
         return context;
+    }
+
+    public void setConnectedPreviously(boolean connectedPreviously) {
+        scrollListener.setConnectedPreviously(connectedPreviously);
+    }
+
+    public boolean isLoading() {
+        return scrollListener.isLoading();
+    }
+
+    public boolean isConnectedPreviously() {
+        return scrollListener.isConnectedPreviously();
+    }
+
+    public void setLoading(boolean isLoading) {
+        scrollListener.setLoading(isLoading);
+    }
+
+    public void setPage(int page) {
+        scrollListener.setCurrentPage(page);
+    }
+
+    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
+        scrollListener.setNoConnectionListener(noConnectionListener);
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        scrollListener.setOnLoadMoreListener(onLoadMoreListener);
+    }
+
+    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
+        this.onRetryClickListener = onRetryClickListener;
+    }
+
+    public void setupOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

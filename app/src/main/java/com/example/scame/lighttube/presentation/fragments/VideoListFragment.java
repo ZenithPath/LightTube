@@ -157,6 +157,8 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         adapter.setOnRetryClickListener(() -> {
 
             if (ConnectivityReceiver.isConnected()) {
+                stopRefreshing();
+
                 items.remove(items.size() - 1);
                 adapter.notifyItemRemoved(items.size());
 
@@ -203,13 +205,11 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
     private void setupRefreshListener() {
         refreshLayout.setOnRefreshListener(() -> {
+
             currentPage = 0;
             isLoading = false;
             isConnectedPreviously = true;
 
-            adapter.setPage(currentPage);
-            adapter.setLoading(isLoading);
-            adapter.setConnectedPreviously(isConnectedPreviously);
             presenter.fetchVideos(currentPage);
         });
     }
