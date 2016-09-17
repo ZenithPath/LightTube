@@ -13,8 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.ConnectivityReceiver;
+import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
+import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.ISearchResultsPresenter;
 
@@ -25,6 +28,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
 import static com.example.scame.lighttube.presentation.presenters.ISearchResultsPresenter.SearchResultsView;
 
@@ -40,9 +44,12 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     private SearchResultsAdapter adapter;
 
-    private List<SearchItemModel> searchItems;
+    private List<ModelMarker> searchItems;
 
-    private int currentPage;
+    // these three variables represent adapter state
+    @State int currentPage;
+    @State boolean isLoading;
+    @State boolean isConnectedPreviously = true;
 
     private SearchResultsListener listener;
 
@@ -85,8 +92,12 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     private void instantiateFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            currentPage = savedInstanceState.getInt(getString(R.string.page_number), 0);
-            initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)));
+            List<ModelMarker> cachedList = savedInstanceState
+                    .getParcelableArrayList(getString(R.string.search_items_list));
+
+            if (cachedList != null) {
+                initializeAdapter(savedInstanceState.getParcelableArrayList(getString(R.string.search_items_list)));
+            }
         } else {
             presenter.fetchVideos(currentPage, query);
         }
@@ -94,35 +105,83 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        isLoading = adapter.isLoading();
+        isConnectedPreviously = adapter.isConnectedPreviously();
+
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(getString(R.string.search_items_list), new ArrayList<>(searchItems));
-        outState.putInt(getString(R.string.page_number), currentPage);
     }
 
     @Override
-    public void initializeAdapter(List<SearchItemModel> items) {
-        searchItems = items;
+    public void initializeAdapter(List<? extends ModelMarker> items) {
+        searchItems = new ArrayList<>(items);
 
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
         recyclerView.setLayoutManager(buildLayoutManager());
 
-        adapter = new SearchResultsAdapter(items, getContext(), recyclerView);
+        adapter = new SearchResultsAdapter(searchItems, getContext(), recyclerView);
         adapter.setCurrentPage(currentPage);
+        adapter.setConnectedPreviously(isConnectedPreviously);
+        adapter.setLoading(isLoading);
 
-        setupOnClickListener();
+        setupRetryListener();
+        setupOnVideoClickListener();
         setupOnLoadMoreListener();
+        setupNoConnectionListener();
 
         recyclerView.setAdapter(adapter);
 
         stopRefreshing();
     }
 
-    private void setupOnClickListener() {
-        adapter.setupOnItemClickListener((itemView, position) ->
-                listener.onVideoClick(searchItems.get(position).getId()));
+    @Override
+    public void updateAdapter(List<? extends ModelMarker> newItems) {
+        searchItems.remove(searchItems.size() - 1);
+        adapter.notifyItemRemoved(searchItems.size());
+
+        searchItems.addAll(newItems);
+        adapter.notifyItemRangeInserted(adapter.getItemCount(), newItems.size());
+
+        adapter.setLoading(false);
+    }
+
+
+    private void setupRetryListener() {
+        adapter.setOnRetryClickListener(() -> {
+
+            if (ConnectivityReceiver.isConnected()) {
+                stopRefreshing();
+
+                searchItems.remove(searchItems.size() - 1);
+                adapter.notifyItemRemoved(searchItems.size());
+
+                searchItems.add(null);
+                adapter.notifyItemInserted(searchItems.size() - 1);
+
+                ++currentPage;
+                adapter.setLoading(true);
+                adapter.setConnectedPreviously(true);
+                adapter.setCurrentPage(currentPage);
+                presenter.fetchVideos(currentPage, query);
+            }
+        });
+    }
+
+    private void setupNoConnectionListener() {
+        adapter.setNoConnectionListener(() -> {
+            searchItems.add(new NoConnectionMarker());
+            adapter.notifyItemInserted(searchItems.size() - 1);
+        });
+    }
+
+    private void setupOnVideoClickListener() {
+        adapter.setupOnItemClickListener((itemView, position) -> {
+            String videoId = ((SearchItemModel) searchItems.get(position)).getId();
+            listener.onVideoClick(videoId);
+        });
     }
 
     private void setupOnLoadMoreListener() {
@@ -143,20 +202,13 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     private void setupRefreshListener() {
         refreshLayout.setOnRefreshListener(() -> {
+
             currentPage = 0;
+            isLoading = false;
+            isConnectedPreviously = true;
+
             presenter.fetchVideos(currentPage, query);
         });
-    }
-
-    @Override
-    public void updateAdapter(List<SearchItemModel> newItems) {
-        searchItems.remove(searchItems.size() - 1);
-        adapter.notifyItemRemoved(searchItems.size());
-
-        searchItems.addAll(newItems);
-        adapter.notifyItemRangeInserted(adapter.getItemCount(), newItems.size());
-
-        adapter.setLoaded();
     }
 
 

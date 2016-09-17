@@ -1,7 +1,7 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.ModelMarker;
 
 import java.util.List;
 
@@ -9,9 +9,9 @@ public interface IGridPresenter<V> extends Presenter<V> {
 
     interface GridView {
 
-        void populateAdapter(List<SearchItemModel> items);
+        void populateAdapter(List<? extends ModelMarker> items);
 
-        void updateAdapter(List<SearchItemModel> items);
+        void updateAdapter(List<? extends ModelMarker> items);
     }
 
     void fetchVideos(String category, String duration, int page);

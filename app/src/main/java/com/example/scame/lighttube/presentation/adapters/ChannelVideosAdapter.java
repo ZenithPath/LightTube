@@ -22,65 +22,31 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private static final int VIEW_TYPE_PROGRESS = 0;
     private static final int VIEW_TYPE_VIDEO = 1;
+    private static final int VIEW_TYPE_NO_CONNECTION = 2;
 
-    private List<SearchItemModel> items;
+    private List<?> items;
     private Context context;
 
     private static OnItemClickListener listener;
 
-    private OnLoadMoreListener onLoadMoreListener;
+    private NoConnectionViewHolder.OnRetryClickListener onRetryClickListener;
 
-    private int visibleThreshold = 3;
-    private int lastVisibleItem, totalItemCount;
-    private boolean loading;
+    private RecyclerViewScrollListener scrollListener;
 
-    private int currentPage;
+    public interface OnItemClickListener {
+        void onChannelClick(View itemView, int position);
+    }
 
-    public ChannelVideosAdapter(List<SearchItemModel> items, Context context, RecyclerView recyclerView) {
+    public ChannelVideosAdapter(List<?> items, Context context, RecyclerView recyclerView) {
         this.items = items;
         this.context = context;
 
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore(++currentPage);
-                        }
-
-                        loading = true;
-                    }
-                }
-            });
+            scrollListener = new RecyclerViewScrollListener(linearLayoutManager);
+            recyclerView.addOnScrollListener(scrollListener);
         }
-    }
-
-    public void setLoaded() {
-        loading = false;
-    }
-
-    public void setPage(int page) {
-        this.currentPage = page;
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener;
-    }
-
-    public interface OnItemClickListener {
-        void onChannelClick(View itemView, int position);
-    }
-
-    public void setupOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
     }
 
     public static class ChannelVideosHolder extends RecyclerView.ViewHolder {
@@ -103,7 +69,15 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-        return items.get(position) == null ? VIEW_TYPE_PROGRESS : VIEW_TYPE_VIDEO;
+        if (items.get(position) instanceof NoConnectionMarker) {
+            return VIEW_TYPE_NO_CONNECTION;
+        } else if (items.get(position) instanceof SearchItemModel) {
+            return VIEW_TYPE_VIDEO;
+        } else if (items.get(position) == null) {
+            return VIEW_TYPE_PROGRESS;
+        }
+
+        return -1;
     }
 
     @Override
@@ -117,6 +91,9 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else if (viewType == VIEW_TYPE_PROGRESS) {
             View progressView = inflater.inflate(R.layout.progress_item_layout, parent, false);
             viewHolder = new ProgressViewHolder(progressView);
+        } else if (viewType == VIEW_TYPE_NO_CONNECTION) {
+            View noConnectionView = inflater.inflate(R.layout.no_internet_list_item, parent, false);
+            viewHolder = new NoConnectionViewHolder(noConnectionView);
         }
 
         return viewHolder;
@@ -127,7 +104,7 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         if (holder instanceof ChannelVideosHolder) {
             ChannelVideosHolder channelVideosHolder = (ChannelVideosHolder) holder;
-            SearchItemModel item = items.get(position);
+            SearchItemModel item = (SearchItemModel) items.get(position);
 
             ImageView imageView = channelVideosHolder.thumbnailsIv;
             TextView textView = channelVideosHolder.title;
@@ -137,6 +114,9 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;
             progressViewHolder.progressBar.setIndeterminate(true);
+        } else if (holder instanceof NoConnectionViewHolder) {
+            NoConnectionViewHolder noConnectionViewHolder = (NoConnectionViewHolder) holder;
+            noConnectionViewHolder.setClickListener(onRetryClickListener);
         }
 
     }
@@ -148,5 +128,41 @@ public class ChannelVideosAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public Context getContext() {
         return context;
+    }
+
+    public void setConnectedPreviously(boolean connectedPreviously) {
+        scrollListener.setConnectedPreviously(connectedPreviously);
+    }
+
+    public boolean isLoading() {
+        return scrollListener.isLoading();
+    }
+
+    public boolean isConnectedPreviously() {
+        return scrollListener.isConnectedPreviously();
+    }
+
+    public void setLoading(boolean isLoading) {
+        scrollListener.setLoading(isLoading);
+    }
+
+    public void setCurrentPage(int page) {
+        scrollListener.setCurrentPage(page);
+    }
+
+    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
+        scrollListener.setNoConnectionListener(noConnectionListener);
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        scrollListener.setOnLoadMoreListener(onLoadMoreListener);
+    }
+
+    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
+        this.onRetryClickListener = onRetryClickListener;
+    }
+
+    public void setupOnItemClickListener(OnItemClickListener listener) {
+        ChannelVideosAdapter.listener = listener;
     }
 }

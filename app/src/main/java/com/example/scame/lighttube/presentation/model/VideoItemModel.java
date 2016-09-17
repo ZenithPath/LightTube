@@ -3,7 +3,7 @@ package com.example.scame.lighttube.presentation.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class VideoItemModel implements Parcelable {
+public class VideoItemModel implements Parcelable, ModelMarker {
 
     private String imageUrl;
 

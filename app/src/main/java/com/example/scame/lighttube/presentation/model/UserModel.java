@@ -1,10 +1,12 @@
 package com.example.scame.lighttube.presentation.model;
 
+import android.os.Parcel;
+
 import com.google.android.gms.common.api.Scope;
 
 import java.util.Set;
 
-public class UserModel {
+public class UserModel implements ModelMarker {
 
     private String userName;
 
@@ -64,4 +66,40 @@ public class UserModel {
                 "photoUrl: " + photoUrl + "\n" +
                 "grantedScopes" + grantedScopes + "\n";
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.userName);
+        dest.writeString(this.email);
+        dest.writeString(this.userId);
+        dest.writeString(this.photoUrl);
+    }
+
+    public UserModel() {
+    }
+
+    protected UserModel(Parcel in) {
+        this.userName = in.readString();
+        this.email = in.readString();
+        this.userId = in.readString();
+        this.photoUrl = in.readString();
+    }
+
+    public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
+        @Override
+        public UserModel createFromParcel(Parcel source) {
+            return new UserModel(source);
+        }
+
+        @Override
+        public UserModel[] newArray(int size) {
+            return new UserModel[size];
+        }
+    };
 }

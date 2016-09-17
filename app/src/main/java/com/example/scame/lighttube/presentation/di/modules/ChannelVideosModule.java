@@ -5,8 +5,8 @@ import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.ChannelVideosUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
-import com.example.scame.lighttube.presentation.presenters.ChannelsPresenterImp;
-import com.example.scame.lighttube.presentation.presenters.IChannelsPresenter;
+import com.example.scame.lighttube.presentation.presenters.ChannelVideosPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.IChannelVideosPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,7 +24,7 @@ public class ChannelVideosModule {
 
     @Provides
     @PerActivity
-    IChannelsPresenter<IChannelsPresenter.ChannelsView> provideChannelsPresenter(ChannelVideosUseCase useCase) {
-        return new ChannelsPresenterImp<>(useCase);
+    IChannelVideosPresenter<IChannelVideosPresenter.ChannelsView> provideChannelsPresenter(ChannelVideosUseCase useCase) {
+        return new ChannelVideosPresenterImp<>(useCase);
     }
 }

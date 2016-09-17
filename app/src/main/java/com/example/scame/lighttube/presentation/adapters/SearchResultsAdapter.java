@@ -23,19 +23,16 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private static final int VIEW_TYPE_PROGRESS = 0;
     private static final int VIEW_TYPE_VIDEO = 1;
+    private static final int VIEW_TYPE_NO_CONNECTION = 2;
 
     private Context context;
-    private List<SearchItemModel> searchItems;
+    private List<?> searchItems;
 
     private static OnItemClickListener listener;
 
-    private OnLoadMoreListener onLoadMoreListener;
+    private NoConnectionViewHolder.OnRetryClickListener onRetryClickListener;
 
-    private int visibleThreshold = 3;
-    private int lastVisibleItem, totalItemCount;
-    private boolean loading;
-
-    private int currentPage;
+    private RecyclerViewScrollListener scrollListener;
 
     public static class SearchViewHolder extends  RecyclerView.ViewHolder {
 
@@ -59,40 +56,29 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
         void onItemClick(View itemView, int position);
     }
 
-    public SearchResultsAdapter(List<SearchItemModel> items, Context context, RecyclerView recyclerView) {
+    public SearchResultsAdapter(List<?> items, Context context, RecyclerView recyclerView) {
         this.searchItems = items;
         this.context = context;
 
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore(++currentPage);
-                        }
-
-                        loading = true;
-                    }
-                }
-            });
+            scrollListener = new RecyclerViewScrollListener(linearLayoutManager);
+            recyclerView.addOnScrollListener(scrollListener);
         }
-    }
-
-    public void setupOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return searchItems.get(position) == null ? VIEW_TYPE_PROGRESS : VIEW_TYPE_VIDEO;
+        if (searchItems.get(position) instanceof NoConnectionMarker) {
+            return VIEW_TYPE_NO_CONNECTION;
+        } else if (searchItems.get(position) instanceof SearchItemModel) {
+            return VIEW_TYPE_VIDEO;
+        } else if (searchItems.get(position) == null) {
+            return VIEW_TYPE_PROGRESS;
+        }
+
+        return -1;
     }
 
     @Override
@@ -106,6 +92,9 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else if (viewType == VIEW_TYPE_PROGRESS) {
             View progressView = inflater.inflate(R.layout.progress_item_layout, parent, false);
             viewHolder = new ProgressViewHolder(progressView);
+        } else if (viewType == VIEW_TYPE_NO_CONNECTION) {
+            View noConnectionView = inflater.inflate(R.layout.no_internet_list_item, parent, false);
+            viewHolder = new NoConnectionViewHolder(noConnectionView);
         }
 
         return viewHolder;
@@ -115,7 +104,7 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof SearchViewHolder) {
-            SearchItemModel searchItem = searchItems.get(position);
+            SearchItemModel searchItem = (SearchItemModel) searchItems.get(position);
             SearchViewHolder viewHolder = (SearchViewHolder) holder;
 
             ImageView imageView = viewHolder.searchIv;
@@ -127,11 +116,10 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressHolder = (ProgressViewHolder) holder;
             progressHolder.progressBar.setIndeterminate(true);
+        } else if (holder instanceof NoConnectionViewHolder) {
+            NoConnectionViewHolder noConnectionViewHolder = (NoConnectionViewHolder) holder;
+            noConnectionViewHolder.setClickListener(onRetryClickListener);
         }
-    }
-
-    public void setLoaded() {
-        loading = false;
     }
 
     @Override
@@ -139,11 +127,39 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<RecyclerView.View
         return searchItems.size();
     }
 
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener;
+    public void setConnectedPreviously(boolean connectedPreviously) {
+        scrollListener.setConnectedPreviously(connectedPreviously);
     }
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+    public boolean isLoading() {
+        return scrollListener.isLoading();
+    }
+
+    public boolean isConnectedPreviously() {
+        return scrollListener.isConnectedPreviously();
+    }
+
+    public void setLoading(boolean isLoading) {
+        scrollListener.setLoading(isLoading);
+    }
+
+    public void setCurrentPage(int page) {
+        scrollListener.setCurrentPage(page);
+    }
+
+    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
+        scrollListener.setNoConnectionListener(noConnectionListener);
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        scrollListener.setOnLoadMoreListener(onLoadMoreListener);
+    }
+
+    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
+        this.onRetryClickListener = onRetryClickListener;
+    }
+
+    public void setupOnItemClickListener(OnItemClickListener listener) {
+        SearchResultsAdapter.listener = listener;
     }
 }

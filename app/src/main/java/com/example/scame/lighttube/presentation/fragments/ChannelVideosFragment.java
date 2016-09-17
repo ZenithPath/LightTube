@@ -14,10 +14,13 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.ChannelVideosAdapter;
+import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
+import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
-import com.example.scame.lighttube.presentation.presenters.IChannelsPresenter;
+import com.example.scame.lighttube.presentation.presenters.IChannelVideosPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +29,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
-public class ChannelVideosFragment extends BaseFragment implements IChannelsPresenter.ChannelsView {
+public class ChannelVideosFragment extends BaseFragment implements IChannelVideosPresenter.ChannelsView {
 
     @Inject
-    IChannelsPresenter<IChannelsPresenter.ChannelsView> presenter;
+    IChannelVideosPresenter<IChannelVideosPresenter.ChannelsView> presenter;
 
     @BindView(R.id.channels_fragment_rv) RecyclerView recyclerView;
 
@@ -41,13 +45,16 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
     @BindView(R.id.channels_swipe) SwipeRefreshLayout refreshLayout;
 
     private ChannelVideosAdapter channelAdapter;
-    private List<SearchItemModel> searchItems;
+    private List<ModelMarker> searchItems;
 
     private ChannelVideosListener channelVideosListener;
 
     private String channelId;
 
-    private int currentPage;
+    // these three variables represent adapter state
+    @State int currentPage;
+    @State boolean isLoading;
+    @State boolean isConnectedPreviously = true;
 
     public interface ChannelVideosListener {
 
@@ -96,8 +103,6 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
                 savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key)) != null) {
 
             searchItems = savedInstanceState.getParcelableArrayList(getString(R.string.channel_models_key));
-            currentPage = savedInstanceState.getInt(getString(R.string.page_number));
-
             populateAdapter(searchItems);
         } else {
             presenter.fetchChannelVideos(channelId, currentPage);
@@ -117,31 +122,77 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
     }
 
     @Override
-    public void populateAdapter(List<SearchItemModel> searchItemModels) {
-        this.searchItems = searchItemModels;
+    public void populateAdapter(List<? extends ModelMarker> newItems) {
+        searchItems = new ArrayList<>(newItems);
 
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        channelAdapter = new ChannelVideosAdapter(searchItemModels, getContext(), recyclerView);
-        channelAdapter.setPage(currentPage);
+        channelAdapter = new ChannelVideosAdapter(searchItems, getContext(), recyclerView);
+        channelAdapter.setCurrentPage(currentPage);
+        channelAdapter.setConnectedPreviously(isConnectedPreviously);
+        channelAdapter.setLoading(isLoading);
 
-        setupAdapterOnItemClickListener();
-        setupAdapterOnLoadMoreListener();
+        setupRetryListener();
+        setupOnVideoClickListener();
+        setupOnLoadMoreListener();
+        setupNoConnectionListener();
 
         recyclerView.setAdapter(channelAdapter);
 
         stopRefreshing();
     }
 
-    private void setupAdapterOnItemClickListener() {
-        channelAdapter.setupOnItemClickListener((itemView, position) ->
-                channelVideosListener.onVideoClick(searchItems.get(position).getId()));
+    @Override
+    public void updateAdapter(List<? extends ModelMarker> newItems) {
+        searchItems.remove(searchItems.size() - 1);
+        channelAdapter.notifyItemRemoved(searchItems.size());
+
+        searchItems.addAll(newItems);
+        channelAdapter.notifyItemRangeInserted(channelAdapter.getItemCount(), newItems.size());
+
+        channelAdapter.setLoading(false);
     }
 
-    private void setupAdapterOnLoadMoreListener() {
+    private void setupRetryListener() {
+        channelAdapter.setOnRetryClickListener(() -> {
+
+            if (ConnectivityReceiver.isConnected()) {
+                stopRefreshing();
+
+                searchItems.remove(searchItems.size() - 1);
+                channelAdapter.notifyItemRemoved(searchItems.size());
+
+                searchItems.add(null);
+                channelAdapter.notifyItemInserted(searchItems.size() - 1);
+
+                ++currentPage;
+                channelAdapter.setLoading(true);
+                channelAdapter.setConnectedPreviously(true);
+                channelAdapter.setCurrentPage(currentPage);
+                presenter.fetchChannelVideos(channelId, currentPage);
+            }
+        });
+    }
+
+    private void setupOnVideoClickListener() {
+        channelAdapter.setupOnItemClickListener((itemView, position) -> {
+            String videoId = ((SearchItemModel) searchItems.get(position)).getId();
+            channelVideosListener.onVideoClick(videoId);
+        });
+    }
+
+
+    private void setupNoConnectionListener() {
+        channelAdapter.setNoConnectionListener(() -> {
+            searchItems.add(new NoConnectionMarker());
+            channelAdapter.notifyItemInserted(searchItems.size() - 1);
+        });
+    }
+
+    private void setupOnLoadMoreListener() {
         channelAdapter.setOnLoadMoreListener(page -> {
             searchItems.add(null);
             channelAdapter.notifyItemInserted(searchItems.size() - 1);
@@ -153,7 +204,11 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
 
     private void setupRefreshLayoutListener() {
         refreshLayout.setOnRefreshListener(() -> {
+
             currentPage = 0;
+            isLoading = false;
+            isConnectedPreviously = true;
+
             presenter.fetchChannelVideos(channelId, currentPage);
         });
     }
@@ -165,21 +220,12 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelsPres
     }
 
     @Override
-    public void updateAdapter(List<SearchItemModel> newItems) {
-        searchItems.remove(searchItems.size() - 1);
-        channelAdapter.notifyItemRemoved(searchItems.size());
-
-        searchItems.addAll(newItems);
-        channelAdapter.notifyItemRangeInserted(channelAdapter.getItemCount(), newItems.size());
-
-        channelAdapter.setLoaded();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
+        isLoading = channelAdapter.isLoading();
+        isConnectedPreviously = channelAdapter.isConnectedPreviously();
+
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(getString(R.string.channel_models_key), new ArrayList<>(searchItems));
-        outState.putInt(getString(R.string.page_number), currentPage);
     }
 }

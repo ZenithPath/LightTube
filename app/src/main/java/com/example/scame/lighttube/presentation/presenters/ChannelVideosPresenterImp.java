@@ -7,8 +7,8 @@ import com.example.scame.lighttube.presentation.model.SearchItemModel;
 
 import java.util.List;
 
-public class ChannelsPresenterImp<T extends IChannelsPresenter.ChannelsView>
-                                        implements IChannelsPresenter<T> {
+public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.ChannelsView>
+                                        implements IChannelVideosPresenter<T> {
 
     private static final int FIRST_PAGE = 0;
 
@@ -20,13 +20,14 @@ public class ChannelsPresenterImp<T extends IChannelsPresenter.ChannelsView>
 
     private ChannelVideosUseCase channelVideosUseCase;
 
-    public ChannelsPresenterImp(ChannelVideosUseCase channelVideosUseCase) {
+    public ChannelVideosPresenterImp(ChannelVideosUseCase channelVideosUseCase) {
         this.channelVideosUseCase = channelVideosUseCase;
     }
 
     @Override
     public void fetchChannelVideos(String channelId, int page) {
         currentPage = page;
+        this.channelId = channelId;
 
         channelVideosUseCase.setPage(page);
         channelVideosUseCase.setChannelId(channelId);

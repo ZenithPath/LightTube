@@ -4,7 +4,7 @@ package com.example.scame.lighttube.presentation.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ChannelModel implements Parcelable {
+public class ChannelModel implements Parcelable, ModelMarker {
 
     private String channelId;
 

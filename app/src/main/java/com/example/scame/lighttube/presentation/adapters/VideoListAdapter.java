@@ -69,7 +69,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        if (items.get(position) instanceof NoConnectionObject) {
+        if (items.get(position) instanceof NoConnectionMarker) {
             return VIEW_TYPE_NO_CONNECTION;
         } else if (items.get(position) instanceof VideoItemModel) {
             return VIEW_TYPE_VIDEO;
@@ -145,7 +145,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         scrollListener.setLoading(isLoading);
     }
 
-    public void setPage(int page) {
+    public void setCurrentPage(int page) {
         scrollListener.setCurrentPage(page);
     }
 
@@ -162,6 +162,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void setupOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
+        VideoListAdapter.listener = listener;
     }
 }

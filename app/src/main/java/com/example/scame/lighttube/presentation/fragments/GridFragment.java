@@ -16,8 +16,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.GridAdapter;
+import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
+import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.SearchItemModel;
 import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
 
@@ -28,6 +31,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.State;
 
 public class GridFragment extends BaseFragment implements IGridPresenter.GridView {
 
@@ -43,13 +47,17 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     IGridPresenter<IGridPresenter.GridView> presenter;
 
     private GridAdapter gridAdapter;
-    private List<SearchItemModel> items;
+    private List<ModelMarker> items;
 
     private String duration;
     private String category;
-    private int currentPage;
 
     private GridFragmentListener gridFragmentListener;
+
+    // these three variables represent adapter state
+    @State int currentPage;
+    @State boolean isLoading;
+    @State boolean isConnectedPreviously = true;
 
     public interface GridFragmentListener {
         void onVideoClick(String id);
@@ -119,28 +127,61 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
 
     @Override
-    public void populateAdapter(List<SearchItemModel> newItems) {
-        items = newItems;
+    public void populateAdapter(List<? extends ModelMarker> newItems) {
+        items = new ArrayList<>(newItems);
 
         progressBar.setVisibility(View.GONE);
         gridRv.setVisibility(View.VISIBLE);
 
         gridRv.setLayoutManager(buildLayoutManager());
 
-        gridAdapter = new GridAdapter(getContext(), newItems, gridRv);
+        gridAdapter = new GridAdapter(getContext(), items, gridRv);
         gridAdapter.setCurrentPage(currentPage);
+        gridAdapter.setConnectedPreviously(isConnectedPreviously);
+        gridAdapter.setLoading(isLoading);
 
-        setupOnClickListener();
+        setupRetryListener();
+        setupOnVideoClickListener();
         setupOnLoadMoreListener();
+        setupNoConnectionListener();
 
         gridRv.setAdapter(gridAdapter);
 
         stopRefreshing();
     }
 
-    private void setupOnClickListener() {
-        gridAdapter.setClickListener((itemView, position) -> {
-            gridFragmentListener.onVideoClick(items.get(position).getId());
+    private void setupOnVideoClickListener() {
+        gridAdapter.setupOnItemClickListener((itemView, position) -> {
+            String videoId = ((SearchItemModel) items.get(position)).getId();
+            gridFragmentListener.onVideoClick(videoId);
+        });
+    }
+
+    private void setupNoConnectionListener() {
+        gridAdapter.setNoConnectionListener(() -> {
+            items.add(new NoConnectionMarker());
+            gridAdapter.notifyItemInserted(items.size() - 1);
+        });
+    }
+
+    private void setupRetryListener() {
+        gridAdapter.setOnRetryClickListener(() -> {
+
+            if (ConnectivityReceiver.isConnected()) {
+                stopRefreshing();
+
+                items.remove(items.size() - 1);
+                gridAdapter.notifyItemRemoved(items.size());
+
+                items.add(null);
+                gridAdapter.notifyItemInserted(items.size() - 1);
+
+                ++currentPage;
+                gridAdapter.setLoading(true);
+                gridAdapter.setConnectedPreviously(true);
+                gridAdapter.setCurrentPage(currentPage);
+                presenter.fetchVideos(category, duration, currentPage);
+            }
         });
     }
 
@@ -162,20 +203,24 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     private void setupRefreshListener() {
         refreshLayout.setOnRefreshListener(() -> {
+
             currentPage = 0;
+            isLoading = false;
+            isConnectedPreviously = true;
+
             presenter.fetchVideos(category, duration, currentPage);
         });
     }
 
     @Override
-    public void updateAdapter(List<SearchItemModel> newItems) {
+    public void updateAdapter(List<? extends ModelMarker> newItems) {
         items.remove(items.size() - 1);
         gridAdapter.notifyItemRemoved(items.size());
 
         items.addAll(newItems);
         gridAdapter.notifyItemRangeInserted(gridAdapter.getItemCount(), newItems.size());
 
-        gridAdapter.setLoaded();
+        gridAdapter.setLoading(false);
     }
 
 
@@ -198,6 +243,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
                         return 1;
                     case GridAdapter.VIEW_TYPE_PROGRESS:
                         return columnNumber;
+                    case GridAdapter.VIEW_TYPE_NO_CONNECTION:
+                        return columnNumber;
                     default:
                         return -1;
                 }
@@ -210,6 +257,9 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        isLoading = gridAdapter.isLoading();
+        isConnectedPreviously = gridAdapter.isConnectedPreviously();
+
         super.onSaveInstanceState(outState);
 
         if (items != null) {

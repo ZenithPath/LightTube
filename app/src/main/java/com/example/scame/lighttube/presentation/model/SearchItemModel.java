@@ -6,7 +6,7 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
-public class SearchItemModel implements Parcelable, Comparable<SearchItemModel> {
+public class SearchItemModel implements Parcelable, Comparable<SearchItemModel>, ModelMarker {
 
     private String publishedAt;
 

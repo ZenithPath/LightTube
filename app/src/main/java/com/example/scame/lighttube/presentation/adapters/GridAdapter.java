@@ -23,52 +23,34 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int VIEW_TYPE_PROGRESS = 0;
     public static final int VIEW_TYPE_VIDEO = 1;
+    public static final int VIEW_TYPE_NO_CONNECTION = 2;
 
     private Context context;
 
-    private static OnItemClickListener clickListener;
+    private static OnItemClickListener listener;
 
-    private List<SearchItemModel> items;
+    private NoConnectionViewHolder.OnRetryClickListener onRetryClickListener;
 
-    private OnLoadMoreListener onLoadMoreListener;
+    private RecyclerViewScrollListener scrollListener;
 
-    private int visibleThreshold = 3;
-    private int lastVisibleItem, totalItemCount;
-    private boolean loading;
-
-    private int currentPage;
-
-    public GridAdapter(Context context, List<SearchItemModel> items, RecyclerView recyclerView) {
-        this.context = context;
-        this.items = items;
-
-
-        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-            GridLayoutManager gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = gridLayoutManager.getItemCount();
-                    lastVisibleItem = gridLayoutManager.findLastVisibleItemPosition();
-
-                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore(++currentPage);
-                        }
-
-                        loading = true;
-                    }
-                }
-            });
-        }
-    }
+    private List<?> items;
 
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position);
     }
+
+    public GridAdapter(Context context, List<?> items, RecyclerView recyclerView) {
+        this.context = context;
+        this.items = items;
+
+        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+
+            scrollListener = new RecyclerViewScrollListener(gridLayoutManager);
+            recyclerView.addOnScrollListener(scrollListener);
+        }
+    }
+
 
     public static class GridViewHolder extends RecyclerView.ViewHolder {
 
@@ -81,7 +63,7 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(v ->
-                clickListener.onItemClick(itemView, getLayoutPosition())
+                listener.onItemClick(itemView, getLayoutPosition())
             );
 
         }
@@ -89,7 +71,15 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return items.get(position) == null ? VIEW_TYPE_PROGRESS : VIEW_TYPE_VIDEO;
+        if (items.get(position) instanceof NoConnectionMarker) {
+            return VIEW_TYPE_NO_CONNECTION;
+        } else if (items.get(position) instanceof SearchItemModel) {
+            return VIEW_TYPE_VIDEO;
+        } else if (items.get(position) == null) {
+            return VIEW_TYPE_PROGRESS;
+        }
+
+        return -1;
     }
 
     @Override
@@ -103,6 +93,9 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == VIEW_TYPE_PROGRESS) {
             View progressView = inflater.inflate(R.layout.progress_item_layout, parent, false);
             viewHolder = new ProgressViewHolder(progressView);
+        } else if (viewType == VIEW_TYPE_NO_CONNECTION) {
+            View noConnectionView = inflater.inflate(R.layout.no_internet_list_item, parent, false);
+            viewHolder = new NoConnectionViewHolder(noConnectionView);
         }
 
         return viewHolder;
@@ -112,7 +105,7 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof GridViewHolder) {
-            SearchItemModel searchItem = items.get(position);
+            SearchItemModel searchItem = (SearchItemModel) items.get(position);
             GridViewHolder gridVideoHolder = (GridViewHolder) holder;
 
             ImageView imageView = gridVideoHolder.thumbnails;
@@ -123,11 +116,10 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressHolder = (ProgressViewHolder) holder;
             progressHolder.progressBar.setIndeterminate(true);
+        } else if (holder instanceof NoConnectionViewHolder) {
+            NoConnectionViewHolder noConnectionViewHolder = (NoConnectionViewHolder) holder;
+            noConnectionViewHolder.setClickListener(onRetryClickListener);
         }
-    }
-
-    public void setLoaded() {
-        loading = false;
     }
 
     @Override
@@ -135,15 +127,39 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return items.size();
     }
 
+    public void setConnectedPreviously(boolean connectedPreviously) {
+        scrollListener.setConnectedPreviously(connectedPreviously);
+    }
+
+    public boolean isLoading() {
+        return scrollListener.isLoading();
+    }
+
+    public boolean isConnectedPreviously() {
+        return scrollListener.isConnectedPreviously();
+    }
+
+    public void setLoading(boolean isLoading) {
+        scrollListener.setLoading(isLoading);
+    }
+
+    public void setCurrentPage(int page) {
+        scrollListener.setCurrentPage(page);
+    }
+
+    public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
+        scrollListener.setNoConnectionListener(noConnectionListener);
+    }
+
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener;
+        scrollListener.setOnLoadMoreListener(onLoadMoreListener);
     }
 
-    public void setClickListener(OnItemClickListener clickListener) {
-        this.clickListener = clickListener;
+    public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
+        this.onRetryClickListener = onRetryClickListener;
     }
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+    public void setupOnItemClickListener(OnItemClickListener listener) {
+        GridAdapter.listener = listener;
     }
 }
