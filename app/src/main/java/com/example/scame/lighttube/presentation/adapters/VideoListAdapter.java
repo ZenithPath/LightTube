@@ -27,8 +27,8 @@ public class VideoListAdapter extends BaseAdapter {
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.videolist_item_iv) ImageView thumbnailsIv;
-        @BindView(R.id.videolist_item_title) TextView titleTv;
+        @BindView(R.id.video_list_item_iv) ImageView thumbnailsIv;
+        @BindView(R.id.video_list_item_title) TextView titleTv;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
@@ -83,10 +83,7 @@ public class VideoListAdapter extends BaseAdapter {
             VideoItemModel videoItem = (VideoItemModel) items.get(position);
 
             videoViewHolder.titleTv.setText(videoItem.getTitle());
-            Picasso.with(context)
-                    .load(videoItem.getImageUrl())
-                    .resize(650, 400).centerCrop()
-                    .into(videoViewHolder.thumbnailsIv);
+            Picasso.with(context).load(videoItem.getImageUrl()).into(videoViewHolder.thumbnailsIv);
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;
             progressViewHolder.progressBar.setIndeterminate(true);

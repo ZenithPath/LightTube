@@ -7,10 +7,10 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/channel_iv"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         app:civ_border_width="2dp"
         app:civ_border_color="#FF000000"
-        android:layout_margin="8dp"/>
+        android:layout_margin="4dp"/>
 
 </LinearLayout>

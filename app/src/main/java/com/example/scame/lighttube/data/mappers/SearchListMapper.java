@@ -17,7 +17,7 @@ public class SearchListMapper {
 
             modelItem.setId(searchItem.getId().getVideoId());
             modelItem.setTitle(searchItem.getSnippet().getTitle());
-            modelItem.setImageUrl(searchItem.getSnippet().getThumbnails().getMedium().getUrl());
+            modelItem.setImageUrl(searchItem.getSnippet().getThumbnails().getHigh().getUrl());
             modelItem.setPublishedAt(searchItem.getSnippet().getPublishedAt());
 
             items.add(modelItem);

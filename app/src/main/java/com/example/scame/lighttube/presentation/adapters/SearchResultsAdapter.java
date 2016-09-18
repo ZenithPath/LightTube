@@ -86,7 +86,7 @@ public class SearchResultsAdapter extends BaseAdapter {
             ImageView imageView = viewHolder.searchIv;
             TextView textView = viewHolder.titleTv;
 
-            Picasso.with(context).load(searchItem.getImageUrl()).resize(500, 275).centerCrop().into(imageView);
+            Picasso.with(context).load(searchItem.getImageUrl()).into(imageView);
             textView.setText(searchItem.getTitle());
 
         } else if (holder instanceof ProgressViewHolder) {

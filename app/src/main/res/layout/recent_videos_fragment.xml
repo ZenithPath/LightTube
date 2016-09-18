@@ -15,7 +15,7 @@
             android:id="@+id/recent_toolbar"
             style="@style/custom_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="70dp"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways" />
@@ -40,6 +40,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recent_rv"
+                android:layout_centerHorizontal="true"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

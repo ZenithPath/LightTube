@@ -7,6 +7,7 @@
 
     <ImageView
         android:id="@+id/grid_item_iv"
+        android:adjustViewBounds="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

@@ -113,10 +113,10 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         presenter.checkLogin();
 
         bottomBarItems = new BottomNavigationItem[]{
-                new BottomNavigationItem(R.drawable.ic_home_black_24dp, getString(R.string.home_item)),
-                new BottomNavigationItem(R.drawable.ic_video_library_black_24dp, getString(R.string.channels_item)),
-                new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.discover_item)),
-                new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, getString(R.string.account_item))
+                new BottomNavigationItem(R.drawable.ic_home_black_24dp, R.string.home_item),
+                new BottomNavigationItem(R.drawable.ic_video_library_black_24dp, R.string.subscriptions_item),
+                new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, R.string.discover_item),
+                new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, R.string.account_item)
         };
     }
 

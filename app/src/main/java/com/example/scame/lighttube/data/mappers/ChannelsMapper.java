@@ -17,7 +17,7 @@ public class ChannelsMapper {
             ChannelModel channelModel = new ChannelModel();
 
             channelModel.setChannelId(item.getSnippet().getResourceId().getChannelId());
-            channelModel.setImageUrl(item.getSnippet().getThumbnails().getMedium().getUrl());
+            channelModel.setImageUrl(item.getSnippet().getThumbnails().getHigh().getUrl());
             channelModel.setTitle(item.getSnippet().getTitle());
 
             channelModels.add(channelModel);

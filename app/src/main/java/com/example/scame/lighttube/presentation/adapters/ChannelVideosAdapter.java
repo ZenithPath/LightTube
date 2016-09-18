@@ -85,7 +85,7 @@ public class ChannelVideosAdapter extends BaseAdapter {
             ImageView imageView = channelVideosHolder.thumbnailsIv;
             TextView textView = channelVideosHolder.title;
 
-            Picasso.with(context).load(item.getImageUrl()).resize(650, 400).centerCrop().into(imageView);
+            Picasso.with(context).load(item.getImageUrl()).into(imageView);
             textView.setText(item.getTitle());
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;

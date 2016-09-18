@@ -158,6 +158,7 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
         channelAdapter.setLoading(false);
     }
 
+
     private void setupDirectionScrollListener() {
         channelAdapter.setDirectionScrollListener(scrollToTop -> channelVideosListener.onScrolled(scrollToTop));
     }

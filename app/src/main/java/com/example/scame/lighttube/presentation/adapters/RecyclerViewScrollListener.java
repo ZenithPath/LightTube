@@ -68,10 +68,12 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
     private void notifyScrollDirection(int dx, int dy) {
 
-        if (dy < 0) { // scrolled up
-            directionScrollListener.onDirectionScroll(true);
-        } else if (dy > 0) { // scrolled down
-            directionScrollListener.onDirectionScroll(false);
+        if (directionScrollListener != null) {
+            if (dy < 0) { // scrolled up
+                directionScrollListener.onDirectionScroll(true);
+            } else if (dy > 0) { // scrolled down
+                directionScrollListener.onDirectionScroll(false);
+            }
         }
     }
 

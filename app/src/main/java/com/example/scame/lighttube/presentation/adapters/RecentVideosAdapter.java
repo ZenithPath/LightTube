@@ -78,7 +78,7 @@ public class RecentVideosAdapter extends BaseAdapter {
         TextView titleTv = viewHolder.titleTv;
         TextView dateTv = viewHolder.dateTv;
 
-        Picasso.with(context).load(item.getImageUrl()).resize(650, 400).centerCrop().into(imageView);
+        Picasso.with(context).load(item.getImageUrl()).into(imageView);
         titleTv.setText(item.getTitle());
         dateTv.setText(item.getPublishedAt());
     }
