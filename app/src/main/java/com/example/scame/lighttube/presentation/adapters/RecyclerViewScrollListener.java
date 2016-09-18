@@ -70,7 +70,7 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
         if (dy < 0) { // scrolled up
             directionScrollListener.onDirectionScroll(true);
-        } else { // scrolled down
+        } else if (dy > 0) { // scrolled down
             directionScrollListener.onDirectionScroll(false);
         }
     }

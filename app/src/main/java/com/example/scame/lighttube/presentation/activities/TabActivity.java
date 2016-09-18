@@ -35,13 +35,13 @@ import butterknife.ButterKnife;
 import icepick.State;
 
 public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener,
-                                                    ITabActivityPresenter.ITabActivityView,
-                                                    SignInFragment.SignUpListener,
-                                                    SurpriseMeFragment.SurpriseMeListener,
-                                                    RecentVideosFragment.RecentVideosListener,
-                                                    ChannelVideosFragment.ChannelVideosListener,
-                                                    GridFragment.GridFragmentListener,
-                                                    NoInternetFragment.InternetConnectionListener {
+        ITabActivityPresenter.ITabActivityView,
+        SignInFragment.SignUpListener,
+        SurpriseMeFragment.SurpriseMeListener,
+        RecentVideosFragment.RecentVideosListener,
+        ChannelVideosFragment.ChannelVideosListener,
+        GridFragment.GridFragmentListener,
+        NoInternetFragment.InternetConnectionListener {
 
     public static final String VIDEO_LIST_FRAG_TAG = "videoListFragment";
     public static final String SIGN_IN_FRAG_TAG = "signInFragment";
@@ -61,7 +61,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private static final int ACCOUNT_TAB_SIGN_IN = 3;
     private static final int ACCOUNT_TAB_SIGN_OUT = 2;
 
-    @BindView(R.id.bottom_navigation_bar) BottomNavigationBar bottomNavigationBar;
+    @BindView(R.id.bottom_navigation_bar)
+    BottomNavigationBar bottomNavigationBar;
 
     @Inject
     ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> presenter;
@@ -80,7 +81,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     private GridComponent gridComponent;
     private RecentVideosComponent recentVideosComponent;
     private ChannelVideosComponent channelVideosComponent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +112,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
         presenter.checkLogin();
 
-        bottomBarItems = new BottomNavigationItem[] {
+        bottomBarItems = new BottomNavigationItem[]{
                 new BottomNavigationItem(R.drawable.ic_home_black_24dp, getString(R.string.home_item)),
                 new BottomNavigationItem(R.drawable.ic_video_library_black_24dp, getString(R.string.channels_item)),
                 new BottomNavigationItem(R.drawable.ic_lightbulb_outline_black_24dp, getString(R.string.discover_item)),
