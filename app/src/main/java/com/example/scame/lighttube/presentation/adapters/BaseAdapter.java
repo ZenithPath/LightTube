@@ -72,6 +72,10 @@ public abstract class BaseAdapter extends RecyclerView.Adapter<RecyclerView.View
         scrollListener.setCurrentPage(page);
     }
 
+    public void setDirectionScrollListener(RecyclerViewScrollListener.DirectionScrollListener directionListener) {
+        scrollListener.setDirectionScrollListener(directionListener);
+    }
+
     public void setNoConnectionListener(NoConnectionListener noConnectionListener) {
         scrollListener.setNoConnectionListener(noConnectionListener);
     }

@@ -23,6 +23,13 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
     private NoConnectionListener noConnectionListener;
 
+    private DirectionScrollListener directionScrollListener;
+
+    public interface DirectionScrollListener {
+
+        void onDirectionScroll(boolean scrollToTop);
+    }
+
     public RecyclerViewScrollListener(LinearLayoutManager layoutManager) {
         this.layoutManager = layoutManager;
     }
@@ -34,6 +41,8 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
+
+        notifyScrollDirection(dx, dy);
 
         totalItemCount = layoutManager.getItemCount();
         lastVisibleItem = layoutManager.findLastVisibleItemPosition();
@@ -55,6 +64,19 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
             connectedPreviously = false;
         }
+    }
+
+    private void notifyScrollDirection(int dx, int dy) {
+
+        if (dy < 0) { // scrolled up
+            directionScrollListener.onDirectionScroll(true);
+        } else { // scrolled down
+            directionScrollListener.onDirectionScroll(false);
+        }
+    }
+
+    public void setDirectionScrollListener(DirectionScrollListener directionScrollListener) {
+        this.directionScrollListener = directionScrollListener;
     }
 
     public void setLoading(boolean loading) {

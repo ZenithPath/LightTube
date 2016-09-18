@@ -62,7 +62,10 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     private GridFragmentListener gridFragmentListener;
 
     public interface GridFragmentListener {
+
         void onVideoClick(String id);
+
+        void onScrolled(boolean scrolledToTop);
     }
 
     @Override
@@ -143,11 +146,17 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         setupOnVideoClickListener();
         setupOnLoadMoreListener();
         setupNoConnectionListener();
+        setupDirectionScrollListener();
 
         gridRv.setAdapter(gridAdapter);
 
         stopRefreshing();
     }
+
+    private void setupDirectionScrollListener() {
+        gridAdapter.setDirectionScrollListener(scrollToTop -> gridFragmentListener.onScrolled(scrollToTop));
+    }
+
 
     private void setupOnVideoClickListener() {
         if (gridAdapter instanceof GridAdapter) {

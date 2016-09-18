@@ -61,6 +61,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         void onChannelClick(String channelId);
 
         void onVideoClick(String videoId);
+
+        void onScrolled(boolean scrolledToTop);
     }
 
     @Override
@@ -137,13 +139,19 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         progressBar.setVisibility(View.GONE);
         recentVideosRv.setVisibility(View.VISIBLE);
 
-        recentVideosAdapter = new RecentVideosAdapter(videoItems, getContext());
+
+        recentVideosRv.setLayoutManager(buildLayoutManager());
+        recentVideosAdapter = new RecentVideosAdapter(videoItems, getContext(), recentVideosRv);
+
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
                 recentVideosListener.onVideoClick(videoItems.get(position).getId()));
 
+
+        recentVideosAdapter.setDirectionScrollListener(scrollToTop ->
+                recentVideosListener.onScrolled(scrollToTop));
+
         recentVideosRv.setAdapter(recentVideosAdapter);
         recentVideosRv.setHasFixedSize(true);
-        recentVideosRv.setLayoutManager(buildLayoutManager());
 
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             appBarLayout.setExpanded(true, true);

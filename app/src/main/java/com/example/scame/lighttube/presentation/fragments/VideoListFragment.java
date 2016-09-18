@@ -58,7 +58,10 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     private VideoListActivityListener listActivityListener;
 
     public interface VideoListActivityListener {
+
         void onVideoClick(String id);
+
+        void onScrolled(boolean scrolledToTop);
     }
 
     @Override
@@ -143,10 +146,15 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         setupOnVideoClickListener();
         setupOnLoadMoreListener();
         setupNoConnectionListener();
+        setupDirectionScrollListener();
 
         recyclerView.setAdapter(adapter);
 
         stopRefreshing();
+    }
+
+    private void setupDirectionScrollListener() {
+        adapter.setDirectionScrollListener(scrollToTop -> listActivityListener.onScrolled(scrollToTop));
     }
 
     private void setupRetryListener() {

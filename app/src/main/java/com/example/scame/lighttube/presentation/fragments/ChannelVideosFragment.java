@@ -61,6 +61,8 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
     public interface ChannelVideosListener {
 
         void onVideoClick(String videoId);
+
+        void onScrolled(boolean scrolledToTop);
     }
 
     @Override
@@ -138,6 +140,7 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
         setupOnVideoClickListener();
         setupOnLoadMoreListener();
         setupNoConnectionListener();
+        setupDirectionScrollListener();
 
         recyclerView.setAdapter(channelAdapter);
 
@@ -153,6 +156,10 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
         channelAdapter.notifyItemRangeInserted(channelAdapter.getItemCount(), newItems.size());
 
         channelAdapter.setLoading(false);
+    }
+
+    private void setupDirectionScrollListener() {
+        channelAdapter.setDirectionScrollListener(scrollToTop -> channelVideosListener.onScrolled(scrollToTop));
     }
 
     private void setupRetryListener() {

@@ -18,14 +18,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RecentVideosAdapter extends RecyclerView.Adapter<RecentVideosAdapter.ViewHolder> {
+public class RecentVideosAdapter extends BaseAdapter {
 
     private List<SearchItemModel> items;
     private Context context;
 
     private static OnItemClickListener listener;
 
-    public RecentVideosAdapter(List<SearchItemModel> items, Context context) {
+    public RecentVideosAdapter(List<SearchItemModel> items, Context context, RecyclerView recyclerView) {
+        super(recyclerView, context, items);
         this.items = items;
         this.context = context;
     }
@@ -68,17 +69,20 @@ public class RecentVideosAdapter extends RecyclerView.Adapter<RecentVideosAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holderArg, int position) {
+        ViewHolder viewHolder = (ViewHolder) holderArg;
+
         SearchItemModel item = items.get(position);
 
-        ImageView imageView = holder.thumbnailsIv;
-        TextView titleTv = holder.titleTv;
-        TextView dateTv = holder.dateTv;
+        ImageView imageView = viewHolder.thumbnailsIv;
+        TextView titleTv = viewHolder.titleTv;
+        TextView dateTv = viewHolder.dateTv;
 
         Picasso.with(context).load(item.getImageUrl()).resize(650, 400).centerCrop().into(imageView);
         titleTv.setText(item.getTitle());
         dateTv.setText(item.getPublishedAt());
     }
+
 
     @Override
     public int getItemCount() {

@@ -274,6 +274,20 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     }
 
     @Override
+    public void onScrolled(boolean scrollToTop) {
+
+        if (scrollToTop) {
+            if (bottomNavigationBar.isHidden()) {
+                bottomNavigationBar.show();
+            }
+        } else {
+            if (!bottomNavigationBar.isHidden()) {
+                bottomNavigationBar.hide();
+            }
+        }
+    }
+
+    @Override
     public void onVideoClick(String id) {
         navigator.navigateToPlayVideo(this, id);
     }
