@@ -83,7 +83,12 @@ public class VideoListAdapter extends BaseAdapter {
             VideoItemModel videoItem = (VideoItemModel) items.get(position);
 
             videoViewHolder.titleTv.setText(videoItem.getTitle());
-            Picasso.with(context).load(videoItem.getImageUrl()).into(videoViewHolder.thumbnailsIv);
+            Picasso.with(context).load(videoItem.getImageUrl())
+                    .placeholder(R.drawable.colors_0011_pearl_grey)
+                    .resize(650, 400)
+                    .centerCrop()
+                    .into(videoViewHolder.thumbnailsIv);
+
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;
             progressViewHolder.progressBar.setIndeterminate(true);

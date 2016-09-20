@@ -85,8 +85,14 @@ public class ChannelVideosAdapter extends BaseAdapter {
             ImageView imageView = channelVideosHolder.thumbnailsIv;
             TextView textView = channelVideosHolder.title;
 
-            Picasso.with(context).load(item.getImageUrl()).into(imageView);
             textView.setText(item.getTitle());
+
+            Picasso.with(context).load(item.getImageUrl())
+                    .placeholder(R.drawable.colors_0011_pearl_grey)
+                    .resize(650, 400)
+                    .centerCrop()
+                    .into(imageView);
+
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) holder;
             progressViewHolder.progressBar.setIndeterminate(true);
@@ -94,7 +100,6 @@ public class ChannelVideosAdapter extends BaseAdapter {
             NoConnectionViewHolder noConnectionViewHolder = (NoConnectionViewHolder) holder;
             noConnectionViewHolder.setClickListener(onRetryClickListener);
         }
-
     }
 
     public void setupOnItemClickListener(OnItemClickListener listener) {

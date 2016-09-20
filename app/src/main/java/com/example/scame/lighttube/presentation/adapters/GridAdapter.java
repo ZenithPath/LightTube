@@ -85,8 +85,15 @@ public class GridAdapter extends BaseAdapter {
             ImageView imageView = gridVideoHolder.thumbnails;
             TextView textView = gridVideoHolder.title;
 
-            Picasso.with(context).load(searchItem.getImageUrl()).resize(300, 225).centerCrop().into(imageView);
+
             textView.setText(searchItem.getTitle());
+
+            Picasso.with(context).load(searchItem.getImageUrl())
+                    .placeholder(R.drawable.colors_0011_pearl_grey)
+                    .resize(300, 225)
+                    .centerCrop()
+                    .into(imageView);
+
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder progressHolder = (ProgressViewHolder) holder;
             progressHolder.progressBar.setIndeterminate(true);
