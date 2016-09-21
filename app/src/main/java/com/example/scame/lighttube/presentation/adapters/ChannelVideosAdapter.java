@@ -28,7 +28,8 @@ public class ChannelVideosAdapter extends BaseAdapter {
     public static class ChannelVideosHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.channels_item_iv) ImageView thumbnailsIv;
-        @BindView(R.id.channels_item_title) TextView title;
+        @BindView(R.id.channels_item_title) TextView titleTv;
+        @BindView(R.id.channels_item_duration) TextView durationTv;
 
         public ChannelVideosHolder(View itemView) {
             super(itemView);
@@ -83,9 +84,11 @@ public class ChannelVideosAdapter extends BaseAdapter {
             VideoModel videoModel = (VideoModel) items.get(position);
 
             ImageView imageView = channelVideosHolder.thumbnailsIv;
-            TextView textView = channelVideosHolder.title;
+            TextView titleTv = channelVideosHolder.titleTv;
+            TextView durationTv = channelVideosHolder.durationTv;
 
-            textView.setText(videoModel.getTitle());
+            titleTv.setText(videoModel.getTitle());
+            durationTv.setText(videoModel.getDuration());
 
             Picasso.with(context).load(videoModel.getImageUrl())
                     .placeholder(R.drawable.colors_0011_pearl_grey)

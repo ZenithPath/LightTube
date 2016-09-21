@@ -35,6 +35,18 @@
                 android:layout_margin="8dp"
                 android:gravity="top|left"
                 android:textColor="#ffffff" />
+
+            <TextView
+                android:id="@+id/recent_video_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/recent_video_item_iv"
+                android:layout_alignTop="@+id/recent_video_item_iv"
+                android:layout_alignRight="@+id/recent_video_item_iv"
+                android:layout_alignBottom="@+id/recent_video_item_iv"
+                android:layout_margin="8dp"
+                android:gravity="bottom|right"
+                android:textColor="#ffffff" />
         </RelativeLayout>
 
 

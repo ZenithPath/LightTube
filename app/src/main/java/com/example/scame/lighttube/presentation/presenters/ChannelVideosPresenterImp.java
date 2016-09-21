@@ -2,6 +2,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 
 import com.example.scame.lighttube.domain.usecases.ChannelVideosUseCase;
+import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 
@@ -16,18 +17,20 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
 
     private T view;
 
-    private String channelId;
-
     private ChannelVideosUseCase channelVideosUseCase;
 
-    public ChannelVideosPresenterImp(ChannelVideosUseCase channelVideosUseCase) {
+    private ContentDetailsUseCase contentDetailsUseCase;
+
+    public ChannelVideosPresenterImp(ChannelVideosUseCase channelVideosUseCase,
+                                     ContentDetailsUseCase detailsUseCase) {
+
         this.channelVideosUseCase = channelVideosUseCase;
+        this.contentDetailsUseCase = detailsUseCase;
     }
 
     @Override
     public void fetchChannelVideos(String channelId, int page) {
         currentPage = page;
-        this.channelId = channelId;
 
         channelVideosUseCase.setPage(page);
         channelVideosUseCase.setChannelId(channelId);
@@ -54,11 +57,18 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
 
     }
 
-    public void setChannelId(String channelId) {
-        this.channelId = channelId;
+    private final class ChannelsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+
+        @Override
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
+
+            contentDetailsUseCase.setVideoModels(videoModels);
+            contentDetailsUseCase.execute(new ContentDetailsSubscriber());
+        }
     }
 
-    private final class ChannelsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
         public void onNext(List<VideoModel> videoModels) {

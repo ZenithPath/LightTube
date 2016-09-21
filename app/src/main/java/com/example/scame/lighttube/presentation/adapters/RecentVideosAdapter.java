@@ -44,6 +44,7 @@ public class RecentVideosAdapter extends BaseAdapter {
         @BindView(R.id.recent_video_item_iv) ImageView thumbnailsIv;
         @BindView(R.id.recent_video_title) TextView titleTv;
         @BindView(R.id.recent_video_date) TextView dateTv;
+        @BindView(R.id.recent_video_duration) TextView durationTv;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -77,9 +78,11 @@ public class RecentVideosAdapter extends BaseAdapter {
         ImageView imageView = viewHolder.thumbnailsIv;
         TextView titleTv = viewHolder.titleTv;
         TextView dateTv = viewHolder.dateTv;
+        TextView durationTv = viewHolder.durationTv;
 
         titleTv.setText(videoModel.getTitle());
         dateTv.setText(videoModel.getPublishedAt());
+        durationTv.setText(videoModel.getDuration());
 
         Picasso.with(context).load(videoModel.getImageUrl())
                 .placeholder(R.drawable.colors_0011_pearl_grey)

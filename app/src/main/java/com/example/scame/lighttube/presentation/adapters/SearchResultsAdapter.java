@@ -30,6 +30,7 @@ public class SearchResultsAdapter extends BaseAdapter {
 
         @BindView(R.id.search_item_iv) ImageView searchIv;
         @BindView(R.id.search_item_title) TextView titleTv;
+        @BindView(R.id.search_item_duration) TextView durationTv;
 
         public SearchViewHolder(View itemView) {
             super(itemView);
@@ -84,9 +85,11 @@ public class SearchResultsAdapter extends BaseAdapter {
             SearchViewHolder viewHolder = (SearchViewHolder) holder;
 
             ImageView imageView = viewHolder.searchIv;
-            TextView textView = viewHolder.titleTv;
+            TextView titleTv = viewHolder.titleTv;
+            TextView durationTv = viewHolder.durationTv;
 
-            textView.setText(videoModel.getTitle());
+            titleTv.setText(videoModel.getTitle());
+            durationTv.setText(videoModel.getDuration());
 
             Picasso.with(context).load(videoModel.getImageUrl())
                     .placeholder(R.drawable.colors_0011_pearl_grey)

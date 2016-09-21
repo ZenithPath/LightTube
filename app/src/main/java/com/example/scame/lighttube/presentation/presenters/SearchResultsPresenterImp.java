@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
+import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.SearchUseCase;
 import com.example.scame.lighttube.presentation.model.VideoModel;
@@ -8,26 +9,29 @@ import com.example.scame.lighttube.presentation.model.VideoModel;
 import java.util.List;
 
 public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchResultsView>
-        implements ISearchResultsPresenter<V> {
+                                                    implements ISearchResultsPresenter<V> {
 
     private static final int FIRST_PAGE = 0;
 
-    private SearchUseCase useCase;
+    private SearchUseCase searchUseCase;
+
+    private ContentDetailsUseCase detailsUseCase;
 
     private V view;
 
     private int page;
 
-    public SearchResultsPresenterImp(SearchUseCase useCase) {
-        this.useCase = useCase;
+    public SearchResultsPresenterImp(SearchUseCase searchUseCase, ContentDetailsUseCase detailsUseCase) {
+        this.searchUseCase = searchUseCase;
+        this.detailsUseCase = detailsUseCase;
     }
 
     @Override
     public void fetchVideos(int page, String query) {
         this.page = page;
-        useCase.setQuery(query);
-        useCase.setPage(page);
-        useCase.execute(new SearchResultsSubscriber());
+        searchUseCase.setQuery(query);
+        searchUseCase.setPage(page);
+        searchUseCase.execute(new SearchResultsSubscriber());
     }
 
     @Override
@@ -53,13 +57,24 @@ public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchR
     private final class SearchResultsSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<VideoModel> items) {
-            super.onNext(items);
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
+
+            detailsUseCase.setVideoModels(videoModels);
+            detailsUseCase.execute(new ContentDetailsSubscriber());
+        }
+    }
+
+    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+
+        @Override
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
 
             if (page == FIRST_PAGE) {
-                view.initializeAdapter(items);
+                view.initializeAdapter(videoModels);
             } else {
-                view.updateAdapter(items);
+                view.updateAdapter(videoModels);
             }
         }
     }

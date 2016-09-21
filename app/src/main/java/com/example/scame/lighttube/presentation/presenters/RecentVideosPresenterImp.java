@@ -5,6 +5,7 @@ import com.example.scame.lighttube.data.entities.search.SearchEntity;
 import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionsEntity;
 import com.example.scame.lighttube.data.mappers.ChannelsMapper;
 import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
+import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
 import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
@@ -24,6 +25,8 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     private OrderByDateUseCase orderUseCase;
 
+    private ContentDetailsUseCase contentDetailsUseCase;
+
     private List<SearchEntity> searchEntities;
 
     private int subscriptionsNumber;
@@ -33,13 +36,17 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     public RecentVideosPresenterImp(SubscriptionsUseCase subscriptionsUseCase,
                                     RecentVideosUseCase recentVideosUseCase,
+                                    ContentDetailsUseCase contentDetailsUseCase,
                                     OrderByDateUseCase orderUseCase) {
 
+        this.contentDetailsUseCase = contentDetailsUseCase;
         this.subscriptionsUseCase = subscriptionsUseCase;
         this.recentVideosUseCase = recentVideosUseCase;
         this.orderUseCase = orderUseCase;
     }
 
+
+    // get a list of subscriptions (channels)
     @Override
     public void initialize() {
         subscriptionsCounter = 0; // presenter is singleton, so we must set a counter to zero
@@ -113,12 +120,11 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
             super.onCompleted();
 
             // when all threads are done, combine & sort search results by publishing date
-
             if (++subscriptionsCounter == subscriptionsNumber) {
                 orderUseCase.setSearchEntities(searchEntities);
                 orderUseCase.execute(new OrderSubscriber());
             }
-        }
+         }
     }
 
     private final class OrderSubscriber extends DefaultSubscriber<List<VideoModel>> {
@@ -127,6 +133,20 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
         public void onNext(List<VideoModel> videoModels) {
             super.onNext(videoModels);
 
+            // thanks to YouTube data API we need one more request to get duration of videos
+            contentDetailsUseCase.setVideoModels(videoModels);
+            contentDetailsUseCase.execute(new ContentDetailsSubscriber());
+        }
+    }
+
+
+    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+
+        @Override
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
+
+            // finally we can display the result
             view.populateAdapter(videoModels);
         }
     }

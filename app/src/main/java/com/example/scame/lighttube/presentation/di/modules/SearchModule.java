@@ -2,10 +2,12 @@ package com.example.scame.lighttube.presentation.di.modules;
 
 import android.app.Activity;
 
+import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.AutocompleteListUseCase;
+import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.SearchUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.AutocompletePresenterImp;
@@ -52,7 +54,17 @@ public class SearchModule {
 
     @PerActivity
     @Provides
-    ISearchResultsPresenter<SearchResultsView> provideSearchResultsPresenter(SearchUseCase useCase) {
-        return new SearchResultsPresenterImp<>(useCase);
+    ContentDetailsUseCase provideContentDetailsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                       IContentDetailsDataManager dataManager) {
+
+        return new ContentDetailsUseCase(subscribeOn, observeOn, dataManager);
+    }
+
+    @PerActivity
+    @Provides
+    ISearchResultsPresenter<SearchResultsView> provideSearchResultsPresenter(SearchUseCase searchUseCase,
+                                                                             ContentDetailsUseCase detailsUseCase) {
+
+        return new SearchResultsPresenterImp<>(searchUseCase, detailsUseCase);
     }
 }

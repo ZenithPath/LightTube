@@ -32,6 +32,18 @@
             android:layout_margin="8dp"
             android:gravity="top|left"
             android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/search_item_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/search_item_iv"
+            android:layout_alignTop="@+id/search_item_iv"
+            android:layout_alignRight="@+id/search_item_iv"
+            android:layout_alignBottom="@+id/search_item_iv"
+            android:layout_margin="8dp"
+            android:gravity="bottom|right"
+            android:textColor="#ffffff" />
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
