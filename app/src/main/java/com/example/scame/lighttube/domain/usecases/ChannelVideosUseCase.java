@@ -5,13 +5,13 @@ import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
 import rx.Observable;
 
-public class ChannelVideosUseCase extends UseCase<List<SearchItemModel>> {
+public class ChannelVideosUseCase extends UseCase<List<VideoModel>> {
 
     private IChannelVideosDataManager dataManager;
 
@@ -27,7 +27,7 @@ public class ChannelVideosUseCase extends UseCase<List<SearchItemModel>> {
     }
 
     @Override
-    protected Observable<List<SearchItemModel>> getUseCaseObservable() {
+    protected Observable<List<VideoModel>> getUseCaseObservable() {
         SearchListMapper mapper = new SearchListMapper();
 
         return dataManager.getChannelVideos(channelId, page)

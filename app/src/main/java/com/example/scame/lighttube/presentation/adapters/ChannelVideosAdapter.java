@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class ChannelVideosAdapter extends BaseAdapter {
     public int getItemViewType(int position) {
         if (items.get(position) instanceof NoConnectionMarker) {
             return VIEW_TYPE_NO_CONNECTION;
-        } else if (items.get(position) instanceof SearchItemModel) {
+        } else if (items.get(position) instanceof VideoModel) {
             return VIEW_TYPE_VIDEO;
         } else if (items.get(position) == null) {
             return VIEW_TYPE_PROGRESS;
@@ -80,14 +80,14 @@ public class ChannelVideosAdapter extends BaseAdapter {
 
         if (holder instanceof ChannelVideosHolder) {
             ChannelVideosHolder channelVideosHolder = (ChannelVideosHolder) holder;
-            SearchItemModel item = (SearchItemModel) items.get(position);
+            VideoModel videoModel = (VideoModel) items.get(position);
 
             ImageView imageView = channelVideosHolder.thumbnailsIv;
             TextView textView = channelVideosHolder.title;
 
-            textView.setText(item.getTitle());
+            textView.setText(videoModel.getTitle());
 
-            Picasso.with(context).load(item.getImageUrl())
+            Picasso.with(context).load(videoModel.getImageUrl())
                     .placeholder(R.drawable.colors_0011_pearl_grey)
                     .resize(650, 400)
                     .centerCrop()

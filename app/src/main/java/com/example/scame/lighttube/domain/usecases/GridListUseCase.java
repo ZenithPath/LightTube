@@ -6,13 +6,13 @@ import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
 import rx.Observable;
 
-public class GridListUseCase extends UseCase<List<SearchItemModel>> {
+public class GridListUseCase extends UseCase<List<VideoModel>> {
 
     private ICategoryDataManager categoryDataManager;
     private ISearchDataManager searchDataManager;
@@ -32,7 +32,7 @@ public class GridListUseCase extends UseCase<List<SearchItemModel>> {
     }
 
     @Override
-    protected Observable<List<SearchItemModel>> getUseCaseObservable() {
+    protected Observable<List<VideoModel>> getUseCaseObservable() {
         SearchListMapper mapper = new SearchListMapper();
 
         return categoryDataManager.getCategoryId(category)

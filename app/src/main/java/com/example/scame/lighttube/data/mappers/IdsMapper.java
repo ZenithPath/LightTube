@@ -10,7 +10,7 @@ public class IdsMapper {
         StringBuilder builder = new StringBuilder(videoModels.size());
 
         for (VideoModel videoModel : videoModels) {
-            builder.append(videoModel.getId()).append("%2C");
+            builder.append(videoModel.getVideoId()).append("%2C");
         }
 
         builder.delete(builder.length() - 3, builder.length());

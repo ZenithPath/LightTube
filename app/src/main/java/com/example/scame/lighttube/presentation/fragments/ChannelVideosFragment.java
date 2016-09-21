@@ -20,7 +20,7 @@ import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.ChannelVideosAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.IChannelVideosPresenter;
 
 import java.util.ArrayList;
@@ -188,7 +188,7 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
         if (channelAdapter instanceof ChannelVideosAdapter) {
             ChannelVideosAdapter videosAdapter = (ChannelVideosAdapter) channelAdapter;
             videosAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((SearchItemModel) searchItems.get(position)).getId();
+                String videoId = ((VideoModel) searchItems.get(position)).getVideoId();
                 channelVideosListener.onVideoClick(videoId);
             });
         }

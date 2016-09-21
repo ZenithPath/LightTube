@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class SearchResultsAdapter extends BaseAdapter {
     public int getItemViewType(int position) {
         if (items.get(position) instanceof NoConnectionMarker) {
             return VIEW_TYPE_NO_CONNECTION;
-        } else if (items.get(position) instanceof SearchItemModel) {
+        } else if (items.get(position) instanceof VideoModel) {
             return VIEW_TYPE_VIDEO;
         } else if (items.get(position) == null) {
             return VIEW_TYPE_PROGRESS;
@@ -80,15 +80,15 @@ public class SearchResultsAdapter extends BaseAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof SearchViewHolder) {
-            SearchItemModel searchItem = (SearchItemModel) items.get(position);
+            VideoModel videoModel = (VideoModel) items.get(position);
             SearchViewHolder viewHolder = (SearchViewHolder) holder;
 
             ImageView imageView = viewHolder.searchIv;
             TextView textView = viewHolder.titleTv;
 
-            textView.setText(searchItem.getTitle());
+            textView.setText(videoModel.getTitle());
 
-            Picasso.with(context).load(searchItem.getImageUrl())
+            Picasso.with(context).load(videoModel.getImageUrl())
                     .placeholder(R.drawable.colors_0011_pearl_grey)
                     .resize(650, 400)
                     .centerCrop()

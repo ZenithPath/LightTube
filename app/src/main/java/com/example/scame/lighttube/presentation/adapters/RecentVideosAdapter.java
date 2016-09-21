@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -20,12 +20,12 @@ import butterknife.ButterKnife;
 
 public class RecentVideosAdapter extends BaseAdapter {
 
-    private List<SearchItemModel> items;
+    private List<VideoModel> items;
     private Context context;
 
     private static OnItemClickListener listener;
 
-    public RecentVideosAdapter(List<SearchItemModel> items, Context context, RecyclerView recyclerView) {
+    public RecentVideosAdapter(List<VideoModel> items, Context context, RecyclerView recyclerView) {
         super(recyclerView, context, items);
         this.items = items;
         this.context = context;
@@ -72,20 +72,20 @@ public class RecentVideosAdapter extends BaseAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holderArg, int position) {
         ViewHolder viewHolder = (ViewHolder) holderArg;
 
-        SearchItemModel item = items.get(position);
+        VideoModel videoModel = items.get(position);
 
         ImageView imageView = viewHolder.thumbnailsIv;
         TextView titleTv = viewHolder.titleTv;
         TextView dateTv = viewHolder.dateTv;
 
-        Picasso.with(context).load(item.getImageUrl())
+        titleTv.setText(videoModel.getTitle());
+        dateTv.setText(videoModel.getPublishedAt());
+
+        Picasso.with(context).load(videoModel.getImageUrl())
                 .placeholder(R.drawable.colors_0011_pearl_grey)
                 .resize(650, 400)
                 .centerCrop()
                 .into(imageView);
-
-        titleTv.setText(item.getTitle());
-        dateTv.setText(item.getPublishedAt());
     }
 
 

@@ -19,7 +19,7 @@ import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.ISearchResultsPresenter;
 
 import java.util.ArrayList;
@@ -174,7 +174,7 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         if (adapter instanceof SearchResultsAdapter) {
             SearchResultsAdapter searchAdapter = (SearchResultsAdapter) adapter;
             searchAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((SearchItemModel) searchItems.get(position)).getId();
+                String videoId = ((VideoModel) searchItems.get(position)).getVideoId();
                 listener.onVideoClick(videoId);
             });
         }

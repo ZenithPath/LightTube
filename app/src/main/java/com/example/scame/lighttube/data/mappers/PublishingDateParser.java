@@ -1,20 +1,20 @@
 package com.example.scame.lighttube.data.mappers;
 
 
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.Date;
 import java.util.List;
 
 public class PublishingDateParser {
 
-    public List<SearchItemModel> parse(List<SearchItemModel> searchItems) {
+    public List<VideoModel> parse(List<VideoModel> videoModels) {
 
-        for (SearchItemModel item : searchItems) {
-            item.setDate(parseDateString(item.getPublishedAt()));
+        for (VideoModel model : videoModels) {
+            model.setDate(parseDateString(model.getPublishedAt()));
         }
 
-        return searchItems;
+        return videoModels;
     }
 
     private Date parseDateString(String publishedAt) {

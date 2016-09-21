@@ -3,7 +3,15 @@ package com.example.scame.lighttube.presentation.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class VideoModel implements Parcelable, ModelMarker {
+import java.util.Date;
+
+public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoModel> {
+
+    private String publishedAt;
+
+    private String channelTitle;
+
+    private String channelId;
 
     private String duration;
 
@@ -11,14 +19,25 @@ public class VideoModel implements Parcelable, ModelMarker {
 
     private String title;
 
-    private String id;
+    private String videoId;
 
-    public VideoModel() { }
+    private Date date;
 
-    public VideoModel(String imageUrl, String title, String id) {
-        this.imageUrl = imageUrl;
-        this.title = title;
-        this.id = id;
+    @Override
+    public int compareTo(VideoModel o) {
+        return date.compareTo(o.getDate());
+    }
+
+    public void setPublishedAt(String publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    public void setChannelTitle(String channelTitle) {
+        this.channelTitle = channelTitle;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
     }
 
     public void setDuration(String duration) {
@@ -33,8 +52,28 @@ public class VideoModel implements Parcelable, ModelMarker {
         this.title = title;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setVideoId(String videoId) {
+        this.videoId = videoId;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getPublishedAt() {
+        return publishedAt;
+    }
+
+    public String getChannelTitle() {
+        return channelTitle;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     public String getImageUrl() {
@@ -45,13 +84,14 @@ public class VideoModel implements Parcelable, ModelMarker {
         return title;
     }
 
-    public String getId() {
-        return id;
+    public String getVideoId() {
+        return videoId;
     }
 
-    public String getDuration() {
-        return duration;
+    public Date getDate() {
+        return date;
     }
+
 
     @Override
     public int describeContents() {
@@ -60,20 +100,32 @@ public class VideoModel implements Parcelable, ModelMarker {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.publishedAt);
+        dest.writeString(this.channelTitle);
+        dest.writeString(this.channelId);
         dest.writeString(this.duration);
         dest.writeString(this.imageUrl);
         dest.writeString(this.title);
-        dest.writeString(this.id);
+        dest.writeString(this.videoId);
+        dest.writeLong(this.date != null ? this.date.getTime() : -1);
+    }
+
+    public VideoModel() {
     }
 
     protected VideoModel(Parcel in) {
+        this.publishedAt = in.readString();
+        this.channelTitle = in.readString();
+        this.channelId = in.readString();
         this.duration = in.readString();
         this.imageUrl = in.readString();
         this.title = in.readString();
-        this.id = in.readString();
+        this.videoId = in.readString();
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate);
     }
 
-    public static final Parcelable.Creator<VideoModel> CREATOR = new Parcelable.Creator<VideoModel>() {
+    public static final Creator<VideoModel> CREATOR = new Creator<VideoModel>() {
         @Override
         public VideoModel createFromParcel(Parcel source) {
             return new VideoModel(source);

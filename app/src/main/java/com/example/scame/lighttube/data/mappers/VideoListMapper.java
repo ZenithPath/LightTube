@@ -17,7 +17,7 @@ public class VideoListMapper {
 
             itemModel.setImageUrl(entity.getSnippet().getThumbnails().getHigh().getUrl());
             itemModel.setTitle(entity.getSnippet().getTitle());
-            itemModel.setId(entity.getId());
+            itemModel.setVideoId(entity.getId());
 
             modelList.add(itemModel);
         }

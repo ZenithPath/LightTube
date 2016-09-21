@@ -21,7 +21,7 @@ import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.ChannelsViewAdapter;
 import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
 import com.example.scame.lighttube.presentation.model.ChannelModel;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @Inject
     IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
 
-    @State ArrayList<SearchItemModel> videoItems;
+    @State ArrayList<VideoModel> videoModels;
     @State ArrayList<ChannelModel> channelItems;
 
     private RecentVideosListener recentVideosListener;
@@ -104,8 +104,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     }
 
     private void instantiateFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null && videoItems != null && channelItems != null) {
-            populateAdapter(videoItems);
+        if (savedInstanceState != null && videoModels != null && channelItems != null) {
+            populateAdapter(videoModels);
             visualizeChannelsList(channelItems);
         } else {
             presenter.initialize();
@@ -133,18 +133,18 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     }
 
     @Override
-    public void populateAdapter(List<SearchItemModel> items) {
-        videoItems = new ArrayList<>(items);
+    public void populateAdapter(List<VideoModel> items) {
+        videoModels = new ArrayList<>(items);
 
         progressBar.setVisibility(View.GONE);
         recentVideosRv.setVisibility(View.VISIBLE);
 
 
         recentVideosRv.setLayoutManager(buildLayoutManager());
-        recentVideosAdapter = new RecentVideosAdapter(videoItems, getContext(), recentVideosRv);
+        recentVideosAdapter = new RecentVideosAdapter(videoModels, getContext(), recentVideosRv);
 
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
-                recentVideosListener.onVideoClick(videoItems.get(position).getId()));
+                recentVideosListener.onVideoClick(videoModels.get(position).getVideoId()));
 
 
         recentVideosAdapter.setDirectionScrollListener(scrollToTop ->
@@ -163,7 +163,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     }
 
     @Override
-    public void updateAdapter(List<SearchItemModel> items) {
+    public void updateAdapter(List<VideoModel> items) {
 
     }
 

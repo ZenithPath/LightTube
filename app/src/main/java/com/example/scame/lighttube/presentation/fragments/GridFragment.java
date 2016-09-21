@@ -22,7 +22,7 @@ import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.GridAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
 
 import java.util.ArrayList;
@@ -162,7 +162,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         if (gridAdapter instanceof GridAdapter) {
             GridAdapter adapter = (GridAdapter) gridAdapter;
             adapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((SearchItemModel) items.get(position)).getId();
+                String videoId = ((VideoModel) items.get(position)).getVideoId();
                 gridFragmentListener.onVideoClick(videoId);
             });
         }

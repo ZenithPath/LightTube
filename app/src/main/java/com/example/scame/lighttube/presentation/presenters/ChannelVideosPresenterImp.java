@@ -3,7 +3,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.domain.usecases.ChannelVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -58,16 +58,16 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
         this.channelId = channelId;
     }
 
-    private final class ChannelsSubscriber extends DefaultSubscriber<List<SearchItemModel>> {
+    private final class ChannelsSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<SearchItemModel> channelVideosModels) {
-            super.onNext(channelVideosModels);
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
 
             if (currentPage == FIRST_PAGE) {
-                view.initializeAdapter(channelVideosModels);
+                view.initializeAdapter(videoModels);
             } else {
-                view.updateAdapter(channelVideosModels);
+                view.updateAdapter(videoModels);
             }
         }
     }

@@ -3,7 +3,7 @@ package com.example.scame.lighttube.data.repository;
 
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
 import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionsEntity;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -15,5 +15,5 @@ public interface IRecentVideosDataManager {
 
     Observable<SearchEntity> getChannelsVideosByDate(String channelId);
 
-    Observable<List<SearchItemModel>> getOrderedSearchItems(List<SearchEntity> searchEntities);
+    Observable<List<VideoModel>> getOrderedVideoModels(List<SearchEntity> searchEntities);
 }

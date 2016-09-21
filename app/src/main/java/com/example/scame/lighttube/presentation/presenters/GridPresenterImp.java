@@ -3,7 +3,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.GridListUseCase;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -51,16 +51,16 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
         useCase.execute(new GridSubscriber());
     }
 
-    private final class GridSubscriber extends DefaultSubscriber<List<SearchItemModel>> {
+    private final class GridSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<SearchItemModel> searchItems) {
-            super.onNext(searchItems);
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
 
             if (page == FIRST_PAGE) {
-                view.initializeAdapter(searchItems);
+                view.initializeAdapter(videoModels);
             } else {
-                view.updateAdapter(searchItems);
+                view.updateAdapter(videoModels);
             }
         }
     }

@@ -5,13 +5,13 @@ import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
 import rx.Observable;
 
-public class SearchUseCase extends UseCase<List<SearchItemModel>> {
+public class SearchUseCase extends UseCase<List<VideoModel>> {
 
     private ISearchDataManager dataManager;
 
@@ -27,7 +27,7 @@ public class SearchUseCase extends UseCase<List<SearchItemModel>> {
     }
 
     @Override
-    protected Observable<List<SearchItemModel>> getUseCaseObservable() {
+    protected Observable<List<VideoModel>> getUseCaseObservable() {
         SearchListMapper mapper = new SearchListMapper(); // add to dagger
 
         return dataManager.search(query, page).map(mapper::convert);

@@ -3,7 +3,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.SearchUseCase;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -50,10 +50,10 @@ public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchR
 
     }
 
-    private final class SearchResultsSubscriber extends DefaultSubscriber<List<SearchItemModel>> {
+    private final class SearchResultsSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<SearchItemModel> items) {
+        public void onNext(List<VideoModel> items) {
             super.onNext(items);
 
             if (page == FIRST_PAGE) {

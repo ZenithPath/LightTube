@@ -81,12 +81,12 @@ public class VideoListAdapter extends BaseAdapter {
 
         if (holder instanceof VideoViewHolder) {
             VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
-            VideoModel videoItem = (VideoModel) items.get(position);
+            VideoModel videoModel = (VideoModel) items.get(position);
 
-            videoViewHolder.titleTv.setText(videoItem.getTitle());
-            videoViewHolder.durationTv.setText(videoItem.getDuration());
+            videoViewHolder.titleTv.setText(videoModel.getTitle());
+            videoViewHolder.durationTv.setText(videoModel.getDuration());
 
-            Picasso.with(context).load(videoItem.getImageUrl())
+            Picasso.with(context).load(videoModel.getImageUrl())
                     .placeholder(R.drawable.colors_0011_pearl_grey)
                     .resize(650, 400)
                     .centerCrop()

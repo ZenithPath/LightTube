@@ -117,7 +117,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         if (adapter instanceof VideoListAdapter) {
             VideoListAdapter videoAdapter = (VideoListAdapter) adapter;
             videoAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((VideoModel) items.get(position)).getId();
+                String videoId = ((VideoModel) items.get(position)).getVideoId();
                 listActivityListener.onVideoClick(videoId);
             });
         }

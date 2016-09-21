@@ -10,7 +10,7 @@ import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
 import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
 import com.example.scame.lighttube.presentation.model.ChannelModel;
-import com.example.scame.lighttube.presentation.model.SearchItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +113,7 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
             super.onCompleted();
 
             // when all threads are done, combine & sort search results by publishing date
+
             if (++subscriptionsCounter == subscriptionsNumber) {
                 orderUseCase.setSearchEntities(searchEntities);
                 orderUseCase.execute(new OrderSubscriber());
@@ -120,13 +121,13 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
         }
     }
 
-    private final class OrderSubscriber extends DefaultSubscriber<List<SearchItemModel>> {
+    private final class OrderSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<SearchItemModel> searchItems) {
-            super.onNext(searchItems);
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
 
-            view.populateAdapter(searchItems);
+            view.populateAdapter(videoModels);
         }
     }
 }
