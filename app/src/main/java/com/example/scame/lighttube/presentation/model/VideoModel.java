@@ -3,7 +3,9 @@ package com.example.scame.lighttube.presentation.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class VideoItemModel implements Parcelable, ModelMarker {
+public class VideoModel implements Parcelable, ModelMarker {
+
+    private String duration;
 
     private String imageUrl;
 
@@ -11,12 +13,16 @@ public class VideoItemModel implements Parcelable, ModelMarker {
 
     private String id;
 
-    public VideoItemModel() { }
+    public VideoModel() { }
 
-    public VideoItemModel(String imageUrl, String title, String id) {
+    public VideoModel(String imageUrl, String title, String id) {
         this.imageUrl = imageUrl;
         this.title = title;
         this.id = id;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public void setImageUrl(String imageUrl) {
@@ -43,6 +49,9 @@ public class VideoItemModel implements Parcelable, ModelMarker {
         return id;
     }
 
+    public String getDuration() {
+        return duration;
+    }
 
     @Override
     public int describeContents() {
@@ -51,26 +60,28 @@ public class VideoItemModel implements Parcelable, ModelMarker {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.duration);
         dest.writeString(this.imageUrl);
         dest.writeString(this.title);
         dest.writeString(this.id);
     }
 
-    protected VideoItemModel(Parcel in) {
+    protected VideoModel(Parcel in) {
+        this.duration = in.readString();
         this.imageUrl = in.readString();
         this.title = in.readString();
         this.id = in.readString();
     }
 
-    public static final Parcelable.Creator<VideoItemModel> CREATOR = new Parcelable.Creator<VideoItemModel>() {
+    public static final Parcelable.Creator<VideoModel> CREATOR = new Parcelable.Creator<VideoModel>() {
         @Override
-        public VideoItemModel createFromParcel(Parcel source) {
-            return new VideoItemModel(source);
+        public VideoModel createFromParcel(Parcel source) {
+            return new VideoModel(source);
         }
 
         @Override
-        public VideoItemModel[] newArray(int size) {
-            return new VideoItemModel[size];
+        public VideoModel[] newArray(int size) {
+            return new VideoModel[size];
         }
     };
 }

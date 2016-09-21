@@ -2,17 +2,19 @@ package com.example.scame.lighttube.data.di;
 
 import com.example.scame.lighttube.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttube.data.interceptors.TokenAuthenticator;
+import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
 import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
 import com.example.scame.lighttube.data.repository.ChannelVideosDataManagerImp;
+import com.example.scame.lighttube.data.repository.ContentDetailsDataManagerImp;
+import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
+import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
 import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
-import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
 import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
 
 import java.util.concurrent.TimeUnit;
@@ -87,5 +89,11 @@ public class DataModule {
     @Provides
     IChannelVideosDataManager provideChannelVideosRepository() {
         return new ChannelVideosDataManagerImp();
+    }
+
+    @Singleton
+    @Provides
+    IContentDetailsDataManager provideContentDetailsManager() {
+        return new ContentDetailsDataManagerImp();
     }
 }

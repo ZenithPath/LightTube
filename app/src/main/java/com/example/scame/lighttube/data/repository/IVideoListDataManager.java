@@ -1,7 +1,7 @@
 package com.example.scame.lighttube.data.repository;
 
 
-import com.example.scame.lighttube.presentation.model.VideoItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ import rx.Observable;
 
 public interface IVideoListDataManager {
 
-    Observable<List<VideoItemModel>> getVideoItemsList(int page);
+    Observable<List<VideoModel>> getVideoItemsList(int page);
 }

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.model.VideoItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -29,6 +29,7 @@ public class VideoListAdapter extends BaseAdapter {
 
         @BindView(R.id.video_list_item_iv) ImageView thumbnailsIv;
         @BindView(R.id.video_list_item_title) TextView titleTv;
+        @BindView(R.id.video_list_item_duration) TextView durationTv;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
@@ -47,7 +48,7 @@ public class VideoListAdapter extends BaseAdapter {
     public int getItemViewType(int position) {
         if (items.get(position) instanceof NoConnectionMarker) {
             return VIEW_TYPE_NO_CONNECTION;
-        } else if (items.get(position) instanceof VideoItemModel) {
+        } else if (items.get(position) instanceof VideoModel) {
             return VIEW_TYPE_VIDEO;
         } else if (items.get(position) == null) {
             return VIEW_TYPE_PROGRESS;
@@ -80,9 +81,11 @@ public class VideoListAdapter extends BaseAdapter {
 
         if (holder instanceof VideoViewHolder) {
             VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
-            VideoItemModel videoItem = (VideoItemModel) items.get(position);
+            VideoModel videoItem = (VideoModel) items.get(position);
 
             videoViewHolder.titleTv.setText(videoItem.getTitle());
+            videoViewHolder.durationTv.setText(videoItem.getDuration());
+
             Picasso.with(context).load(videoItem.getImageUrl())
                     .placeholder(R.drawable.colors_0011_pearl_grey)
                     .resize(650, 400)

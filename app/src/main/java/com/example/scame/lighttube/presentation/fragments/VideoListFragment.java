@@ -21,7 +21,7 @@ import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.adapters.VideoListAdapter;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
-import com.example.scame.lighttube.presentation.model.VideoItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.IVideoListPresenter;
 
 import java.util.ArrayList;
@@ -182,7 +182,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         if (adapter instanceof VideoListAdapter) {
             VideoListAdapter videoAdapter = (VideoListAdapter) adapter;
             videoAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((VideoItemModel) items.get(position)).getId();
+                String videoId = ((VideoModel) items.get(position)).getId();
                 listActivityListener.onVideoClick(videoId);
             });
         }
@@ -232,7 +232,6 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
         adapter.setLoading(false);
     }
-
 
     private LinearLayoutManager buildLayoutManager() {
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

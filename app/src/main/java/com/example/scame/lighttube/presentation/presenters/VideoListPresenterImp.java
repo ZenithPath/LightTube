@@ -1,9 +1,10 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
+import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.VideoListUseCase;
-import com.example.scame.lighttube.presentation.model.VideoItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -16,10 +17,13 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
 
     private int page;
 
-    private VideoListUseCase useCase;
+    private VideoListUseCase videosUseCase;
 
-    public VideoListPresenterImp(VideoListUseCase useCase) {
-        this.useCase = useCase;
+    private ContentDetailsUseCase contentUseCase;
+
+    public VideoListPresenterImp(VideoListUseCase videosUseCase, ContentDetailsUseCase contentUseCase) {
+        this.videosUseCase = videosUseCase;
+        this.contentUseCase = contentUseCase;
     }
 
     @Override
@@ -30,8 +34,8 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
     @Override
     public void fetchVideos(int page) {
         this.page = page;
-        useCase.setPage(page);
-        useCase.execute(new VideoListSubscriber());
+        videosUseCase.setPage(page);
+        videosUseCase.execute(new VideoListSubscriber());
     }
 
     @Override
@@ -43,16 +47,28 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
     @Override
     public void destroy() { }
 
-    private final class VideoListSubscriber extends DefaultSubscriber<List<VideoItemModel>> {
+    private final class VideoListSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<VideoItemModel> list) {
+        public void onNext(List<VideoModel> list) {
             super.onNext(list);
 
+            contentUseCase.setVideoModels(list);
+            contentUseCase.execute(new ContentDetailsSubscriber());
+        }
+    }
+
+
+    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+
+        @Override
+        public void onNext(List<VideoModel> videoModels) {
+            super.onNext(videoModels);
+
             if (page == FIRST_PAGE) {
-                view.initializeAdapter(list);
+                view.initializeAdapter(videoModels);
             } else {
-                view.updateAdapter(list);
+                view.updateAdapter(videoModels);
             }
         }
     }

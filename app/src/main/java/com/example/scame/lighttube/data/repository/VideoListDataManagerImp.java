@@ -11,7 +11,7 @@ import com.example.scame.lighttube.data.entities.videolist.VideoEntityList;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
 import com.example.scame.lighttube.data.rest.VideoListApi;
 import com.example.scame.lighttube.presentation.LightTubeApp;
-import com.example.scame.lighttube.presentation.model.VideoItemModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class VideoListDataManagerImp implements IVideoListDataManager {
     private static final int MAX_RESULTS = 10;
 
     @Override
-    public Observable<List<VideoItemModel>> getVideoItemsList(int page) {
+    public Observable<List<VideoModel>> getVideoItemsList(int page) {
         String nextPageToken = getNextPageToken(page);
         Retrofit retrofit = LightTubeApp.getAppComponent().getRetrofit();
         VideoListMapper mapper = new VideoListMapper();
