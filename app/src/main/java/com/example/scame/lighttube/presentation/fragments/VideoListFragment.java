@@ -122,8 +122,11 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        isLoading = adapter.isLoading();
-        isConnectedPreviously = adapter.isConnectedPreviously();
+
+        if (adapter != null) {
+            isLoading = adapter.isLoading();
+            isConnectedPreviously = adapter.isConnectedPreviously();
+        }
 
         super.onSaveInstanceState(outState);
     }

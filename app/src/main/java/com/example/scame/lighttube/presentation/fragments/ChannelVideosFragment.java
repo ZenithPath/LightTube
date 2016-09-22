@@ -231,8 +231,11 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        isLoading = channelAdapter.isLoading();
-        isConnectedPreviously = channelAdapter.isConnectedPreviously();
+
+        if (channelAdapter != null) {
+            isLoading = channelAdapter.isLoading();
+            isConnectedPreviously = channelAdapter.isConnectedPreviously();
+        }
 
         super.onSaveInstanceState(outState);
     }

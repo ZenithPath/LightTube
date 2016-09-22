@@ -101,8 +101,11 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        isLoading = adapter.isLoading();
-        isConnectedPreviously = adapter.isConnectedPreviously();
+
+        if (adapter != null) {
+            isLoading = adapter.isLoading();
+            isConnectedPreviously = adapter.isConnectedPreviously();
+        }
 
         super.onSaveInstanceState(outState);
     }

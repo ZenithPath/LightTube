@@ -268,8 +268,11 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        isLoading = gridAdapter.isLoading();
-        isConnectedPreviously = gridAdapter.isConnectedPreviously();
+
+        if (gridAdapter != null) {
+            isLoading = gridAdapter.isLoading();
+            isConnectedPreviously = gridAdapter.isConnectedPreviously();
+        }
 
         super.onSaveInstanceState(outState);
     }
