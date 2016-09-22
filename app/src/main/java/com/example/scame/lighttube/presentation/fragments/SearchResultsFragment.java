@@ -219,4 +219,11 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
             return new LinearLayoutManager(getContext());
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
+    }
 }

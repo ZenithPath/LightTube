@@ -277,4 +277,11 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     public void scrollToTop() {
         gridRv.smoothScrollToPosition(0);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
+    }
 }

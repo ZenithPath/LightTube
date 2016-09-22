@@ -8,6 +8,7 @@ import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.VideoListUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IVideoListPresenter;
+import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 import com.example.scame.lighttube.presentation.presenters.VideoListPresenterImp;
 
 import dagger.Module;
@@ -36,9 +37,18 @@ public class VideoListModule {
 
     @PerActivity
     @Provides
-    IVideoListPresenter<VideoListView> provideVideoListPresenter(VideoListUseCase videosUseCase,
-                                                                 ContentDetailsUseCase contentUseCase) {
+    SubscriptionsHandler provideSubscriptionsHandler(VideoListUseCase videosUseCase,
+                                                     ContentDetailsUseCase detailsUseCase) {
 
-        return new VideoListPresenterImp<>(videosUseCase, contentUseCase);
+        return new SubscriptionsHandler(videosUseCase, detailsUseCase);
+    }
+
+    @PerActivity
+    @Provides
+    IVideoListPresenter<VideoListView> provideVideoListPresenter(VideoListUseCase videosUseCase,
+                                                                 ContentDetailsUseCase contentUseCase,
+                                                                 SubscriptionsHandler subscriptionsHandler) {
+
+        return new VideoListPresenterImp<>(videosUseCase, contentUseCase, subscriptionsHandler);
     }
 }

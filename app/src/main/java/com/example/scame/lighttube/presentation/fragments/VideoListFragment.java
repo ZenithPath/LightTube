@@ -244,4 +244,11 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
     public void scrollToTop() {
         recyclerView.smoothScrollToPosition(0);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
+    }
 }

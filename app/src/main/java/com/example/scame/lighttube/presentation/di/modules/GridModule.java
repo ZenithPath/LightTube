@@ -8,6 +8,7 @@ import com.example.scame.lighttube.domain.usecases.GridListUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.GridPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
+import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,8 +18,14 @@ public class GridModule {
 
     @PerActivity
     @Provides
-    IGridPresenter<IGridPresenter.GridView> provideGridPresenter(GridListUseCase useCase) {
-        return new GridPresenterImp<>(useCase);
+    IGridPresenter<IGridPresenter.GridView> provideGridPresenter(GridListUseCase useCase, SubscriptionsHandler handler) {
+        return new GridPresenterImp<>(useCase, handler);
+    }
+
+    @PerActivity
+    @Provides
+    SubscriptionsHandler provideSubscriptionsHandler(GridListUseCase gridUseCase) {
+        return new SubscriptionsHandler(gridUseCase);
     }
 
     @PerActivity

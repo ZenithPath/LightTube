@@ -21,11 +21,16 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
 
     private ContentDetailsUseCase contentDetailsUseCase;
 
+    private SubscriptionsHandler subscriptionsHandler;
+
     public ChannelVideosPresenterImp(ChannelVideosUseCase channelVideosUseCase,
-                                     ContentDetailsUseCase detailsUseCase) {
+                                     ContentDetailsUseCase detailsUseCase,
+                                     SubscriptionsHandler subscriptionsHandler) {
 
         this.channelVideosUseCase = channelVideosUseCase;
         this.contentDetailsUseCase = detailsUseCase;
+
+        this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
@@ -54,7 +59,8 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
 
     @Override
     public void destroy() {
-
+        subscriptionsHandler.unsubscribe();
+        view = null;
     }
 
     private final class ChannelsSubscriber extends DefaultSubscriber<List<VideoModel>> {

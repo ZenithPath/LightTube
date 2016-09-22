@@ -2,17 +2,21 @@ package com.example.scame.lighttube.presentation.presenters;
 
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
-import com.example.scame.lighttube.domain.usecases.SignInCheckUseCase;
+import com.example.scame.lighttube.domain.usecases.CheckLoginUseCase;
 
 public class TabActivityPresenterImp<T extends ITabActivityPresenter.ITabActivityView>
                                             implements ITabActivityPresenter<T> {
 
 
-    private SignInCheckUseCase useCase;
+    private CheckLoginUseCase useCase;
+
+    private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
 
-    public TabActivityPresenterImp(SignInCheckUseCase useCase) {
+    public TabActivityPresenterImp(CheckLoginUseCase useCase, SubscriptionsHandler subscriptionsHandler) {
+
+        this.subscriptionsHandler = subscriptionsHandler;
         this.useCase = useCase;
     }
 
@@ -38,7 +42,8 @@ public class TabActivityPresenterImp<T extends ITabActivityPresenter.ITabActivit
 
     @Override
     public void destroy() {
-
+        subscriptionsHandler.unsubscribe();
+        view = null;
     }
 
     private final class SignInCheckSubscriber extends DefaultSubscriber<Boolean> {

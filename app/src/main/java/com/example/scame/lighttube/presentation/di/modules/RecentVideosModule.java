@@ -11,6 +11,7 @@ import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
 import com.example.scame.lighttube.presentation.presenters.RecentVideosPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import dagger.Module;
 import dagger.Provides;
@@ -25,9 +26,19 @@ public class RecentVideosModule {
     IRecentVideosPresenter<RecentVideosView> provideRecentVideosPresenter(SubscriptionsUseCase subscriptionsUseCase,
                                                                           RecentVideosUseCase recentVideosUseCase,
                                                                           OrderByDateUseCase orderUseCase,
-                                                                          ContentDetailsUseCase detailsUseCase) {
+                                                                          ContentDetailsUseCase detailsUseCase,
+                                                                          SubscriptionsHandler subscriptionsHandler) {
 
-        return new RecentVideosPresenterImp<>(subscriptionsUseCase, recentVideosUseCase, detailsUseCase, orderUseCase);
+        return new RecentVideosPresenterImp<>(subscriptionsUseCase, recentVideosUseCase,
+                detailsUseCase, orderUseCase, subscriptionsHandler);
+    }
+
+    @PerActivity
+    @Provides
+    SubscriptionsHandler provideSubscriptionsHandler(ContentDetailsUseCase detailsUseCase, SubscriptionsUseCase subscriptionsUseCase,
+                                                     RecentVideosUseCase recentVideosUseCase, OrderByDateUseCase orderUseCase) {
+
+        return new SubscriptionsHandler(detailsUseCase, subscriptionsUseCase, recentVideosUseCase, orderUseCase);
     }
 
     @PerActivity

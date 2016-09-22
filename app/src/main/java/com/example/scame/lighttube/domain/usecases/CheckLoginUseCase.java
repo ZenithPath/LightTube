@@ -7,12 +7,12 @@ import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
 import rx.Observable;
 
-public class SignInCheckUseCase extends UseCase<Boolean> {
+public class CheckLoginUseCase extends UseCase<Boolean> {
 
     private IAccountDataManager dataManager;
 
-    public SignInCheckUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                              IAccountDataManager dataManager) {
+    public CheckLoginUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                             IAccountDataManager dataManager) {
         super(subscribeOn, observeOn);
 
         this.dataManager = dataManager;

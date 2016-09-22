@@ -6,13 +6,14 @@ import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.domain.usecases.SignInCheckUseCase;
+import com.example.scame.lighttube.domain.usecases.CheckLoginUseCase;
 import com.example.scame.lighttube.domain.usecases.SignInUseCase;
 import com.example.scame.lighttube.domain.usecases.SignOutUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
 import com.example.scame.lighttube.presentation.presenters.ISignInPresenter;
 import com.example.scame.lighttube.presentation.presenters.SignInPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -64,16 +65,26 @@ public class SignInModule {
 
     @PerActivity
     @Provides
-    SignInCheckUseCase provideSignInCheckUseCase(IAccountDataManager dataManager,
-                                                 ObserveOn observeOn, SubscribeOn subscribeOn) {
-        return new SignInCheckUseCase(subscribeOn, observeOn, dataManager);
+    CheckLoginUseCase provideSignInCheckUseCase(IAccountDataManager dataManager,
+                                                ObserveOn observeOn, SubscribeOn subscribeOn) {
+        return new CheckLoginUseCase(subscribeOn, observeOn, dataManager);
+    }
+
+    @PerActivity
+    @Provides
+    SubscriptionsHandler provideSubscriptionsHandler(SignInUseCase signInUseCase, SignOutUseCase signOutUseCase,
+                                                     CheckLoginUseCase checkLoginUseCase) {
+
+        return new SubscriptionsHandler(signInUseCase, signOutUseCase, checkLoginUseCase);
     }
 
     @PerActivity
     @Provides
     ISignInPresenter<ISignInPresenter.SignInView> provideSignInPresenter(SignInUseCase signInUseCase,
                                                                          SignOutUseCase signOutUseCase,
-                                                                         SignInCheckUseCase signInCheckUseCase) {
-        return new SignInPresenterImp<>(signInUseCase, signOutUseCase, signInCheckUseCase);
+                                                                         CheckLoginUseCase checkLoginUseCase,
+                                                                         SubscriptionsHandler subscriptionsHandler) {
+
+        return new SignInPresenterImp<>(signInUseCase, signOutUseCase, checkLoginUseCase, subscriptionsHandler);
     }
 }

@@ -21,9 +21,14 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
 
     private ContentDetailsUseCase contentUseCase;
 
-    public VideoListPresenterImp(VideoListUseCase videosUseCase, ContentDetailsUseCase contentUseCase) {
+    private SubscriptionsHandler subscriptionsHandler;
+
+    public VideoListPresenterImp(VideoListUseCase videosUseCase, ContentDetailsUseCase contentUseCase,
+                                 SubscriptionsHandler subscriptionsHandler) {
+
         this.videosUseCase = videosUseCase;
         this.contentUseCase = contentUseCase;
+        this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
@@ -45,7 +50,10 @@ public class VideoListPresenterImp<V extends IVideoListPresenter.VideoListView>
     public void pause() { }
 
     @Override
-    public void destroy() { }
+    public void destroy() {
+        subscriptionsHandler.unsubscribe();
+        view = null;
+    }
 
     private final class VideoListSubscriber extends DefaultSubscriber<List<VideoModel>> {
 

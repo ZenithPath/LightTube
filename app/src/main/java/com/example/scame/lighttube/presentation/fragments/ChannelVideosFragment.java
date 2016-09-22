@@ -236,4 +236,11 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
 
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
+    }
 }

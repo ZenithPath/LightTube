@@ -9,6 +9,7 @@ import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.ChannelVideosPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.IChannelVideosPresenter;
+import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import dagger.Module;
 import dagger.Provides;
@@ -32,10 +33,18 @@ public class ChannelVideosModule {
         return new ContentDetailsUseCase(subscribeOn, observeOn, dataManager);
     }
 
+
+    @Provides
+    @PerActivity
+    SubscriptionsHandler provideSubscriptionsHandler(ChannelVideosUseCase videosUseCase, ContentDetailsUseCase detailsUseCase) {
+        return new SubscriptionsHandler(videosUseCase, detailsUseCase);
+    }
+
     @Provides
     @PerActivity
     IChannelVideosPresenter<IChannelVideosPresenter.ChannelsView> provideChannelsPresenter(ChannelVideosUseCase videosUseCase,
-                                                                                           ContentDetailsUseCase detailsUseCase) {
-        return new ChannelVideosPresenterImp<>(videosUseCase, detailsUseCase);
+                                                                                           ContentDetailsUseCase detailsUseCase,
+                                                                                           SubscriptionsHandler handler) {
+        return new ChannelVideosPresenterImp<>(videosUseCase, detailsUseCase, handler);
     }
 }

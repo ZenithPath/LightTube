@@ -17,7 +17,10 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
 
     private GridListUseCase useCase;
 
-    public GridPresenterImp(GridListUseCase useCase) {
+    private SubscriptionsHandler subscriptionsHandler;
+
+    public GridPresenterImp(GridListUseCase useCase, SubscriptionsHandler subscriptionsHandler) {
+        this.subscriptionsHandler = subscriptionsHandler;
         this.useCase = useCase;
     }
 
@@ -38,7 +41,8 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
 
     @Override
     public void destroy() {
-
+        subscriptionsHandler.unsubscribe();
+        view = null;
     }
 
     @Override

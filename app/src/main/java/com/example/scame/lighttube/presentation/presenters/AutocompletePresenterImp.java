@@ -12,7 +12,10 @@ public class AutocompletePresenterImp<V extends IAutocompletePresenter.Autocompl
 
     private AutocompleteListUseCase useCase;
 
-    public AutocompletePresenterImp(AutocompleteListUseCase useCase) {
+    private SubscriptionsHandler subscriptionsHandler;
+
+    public AutocompletePresenterImp(AutocompleteListUseCase useCase, SubscriptionsHandler subscriptionsHandler) {
+        this.subscriptionsHandler = subscriptionsHandler;
         this.useCase = useCase;
     }
 
@@ -39,7 +42,8 @@ public class AutocompletePresenterImp<V extends IAutocompletePresenter.Autocompl
 
     @Override
     public void destroy() {
-
+        subscriptionsHandler.unsubscribe();
+        view = null;
     }
 
     private final class AutocompleteListSubscriber extends DefaultSubscriber<List<String>> {

@@ -22,7 +22,7 @@ public class ComponentsManager {
     public SearchComponent provideSearchComponent() {
         return DaggerSearchComponent.builder()
                 .applicationComponent(LightTubeApp.getAppComponent())
-                .searchModule(new SearchModule(activity))
+                .searchModule(new SearchModule())
                 .build();
     }
 

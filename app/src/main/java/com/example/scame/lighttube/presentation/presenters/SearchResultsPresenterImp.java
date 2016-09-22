@@ -1,6 +1,8 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
+import android.util.Log;
+
 import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.SearchUseCase;
@@ -17,13 +19,17 @@ public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchR
 
     private ContentDetailsUseCase detailsUseCase;
 
+    private SubscriptionsHandler subscriptionsHandler;
+
     private V view;
 
     private int page;
 
-    public SearchResultsPresenterImp(SearchUseCase searchUseCase, ContentDetailsUseCase detailsUseCase) {
+    public SearchResultsPresenterImp(SearchUseCase searchUseCase, ContentDetailsUseCase detailsUseCase,
+                                     SubscriptionsHandler subscriptionsHandler) {
         this.searchUseCase = searchUseCase;
         this.detailsUseCase = detailsUseCase;
+        this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
@@ -51,7 +57,8 @@ public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchR
 
     @Override
     public void destroy() {
-
+        subscriptionsHandler.unsubscribe();
+        view = null;
     }
 
     private final class SearchResultsSubscriber extends DefaultSubscriber<List<VideoModel>> {

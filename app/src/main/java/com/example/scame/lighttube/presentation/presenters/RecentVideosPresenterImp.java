@@ -27,6 +27,8 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     private ContentDetailsUseCase contentDetailsUseCase;
 
+    private SubscriptionsHandler subscriptionsHandler;
+
     private List<SearchEntity> searchEntities;
 
     private int subscriptionsNumber;
@@ -37,19 +39,22 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
     public RecentVideosPresenterImp(SubscriptionsUseCase subscriptionsUseCase,
                                     RecentVideosUseCase recentVideosUseCase,
                                     ContentDetailsUseCase contentDetailsUseCase,
-                                    OrderByDateUseCase orderUseCase) {
+                                    OrderByDateUseCase orderUseCase,
+                                    SubscriptionsHandler subscriptionsHandler) {
 
         this.contentDetailsUseCase = contentDetailsUseCase;
         this.subscriptionsUseCase = subscriptionsUseCase;
         this.recentVideosUseCase = recentVideosUseCase;
         this.orderUseCase = orderUseCase;
+
+        this.subscriptionsHandler = subscriptionsHandler;
     }
 
 
     // get a list of subscriptions (channels)
     @Override
     public void initialize() {
-        subscriptionsCounter = 0; // presenter is singleton, so we must set a counter to zero
+        subscriptionsCounter = 0; // presenter is a singleton, so we must set a counter to zero
         subscriptionsUseCase.execute(new SubscriptionsSubscriber());
     }
 
@@ -70,7 +75,8 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
 
     @Override
     public void destroy() {
-
+        subscriptionsHandler.unsubscribe();
+        view = null;
     }
 
     private final class SubscriptionsSubscriber extends DefaultSubscriber<SubscriptionsEntity> {

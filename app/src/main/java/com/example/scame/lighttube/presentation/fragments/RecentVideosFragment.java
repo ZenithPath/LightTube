@@ -178,4 +178,11 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     public void scrollToTop() {
         recentVideosRv.smoothScrollToPosition(0);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
+    }
 }

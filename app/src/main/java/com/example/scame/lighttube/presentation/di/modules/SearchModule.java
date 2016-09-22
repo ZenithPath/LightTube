@@ -1,7 +1,5 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
-import android.app.Activity;
-
 import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
@@ -14,6 +12,9 @@ import com.example.scame.lighttube.presentation.presenters.AutocompletePresenter
 import com.example.scame.lighttube.presentation.presenters.IAutocompletePresenter;
 import com.example.scame.lighttube.presentation.presenters.ISearchResultsPresenter;
 import com.example.scame.lighttube.presentation.presenters.SearchResultsPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,10 +25,18 @@ import static com.example.scame.lighttube.presentation.presenters.ISearchResults
 @Module
 public class SearchModule {
 
-    private Activity activity;
+    @PerActivity
+    @Provides
+    @Named("autocomplete")
+    SubscriptionsHandler provideAutocompleteHandler(AutocompleteListUseCase autocompleteUseCase) {
+        return new SubscriptionsHandler(autocompleteUseCase);
+    }
 
-    public SearchModule(Activity activity) {
-        this.activity = activity;
+    @PerActivity
+    @Provides
+    @Named("search")
+    SubscriptionsHandler provideSearchHandler(SearchUseCase searchUseCase, ContentDetailsUseCase detailsUseCase) {
+        return new SubscriptionsHandler(searchUseCase, detailsUseCase);
     }
 
     @PerActivity
@@ -40,8 +49,9 @@ public class SearchModule {
 
     @PerActivity
     @Provides
-    IAutocompletePresenter<AutocompleteView> provideAutocompletePresenter(AutocompleteListUseCase useCase) {
-        return new AutocompletePresenterImp<>(useCase);
+    IAutocompletePresenter<AutocompleteView> provideAutocompletePresenter(@Named("autocomplete") SubscriptionsHandler handler,
+                                                                          AutocompleteListUseCase useCase) {
+        return new AutocompletePresenterImp<>(useCase, handler);
     }
 
     @PerActivity
@@ -63,8 +73,9 @@ public class SearchModule {
     @PerActivity
     @Provides
     ISearchResultsPresenter<SearchResultsView> provideSearchResultsPresenter(SearchUseCase searchUseCase,
-                                                                             ContentDetailsUseCase detailsUseCase) {
+                                                                             ContentDetailsUseCase detailsUseCase,
+                                                                             @Named("search") SubscriptionsHandler handler) {
 
-        return new SearchResultsPresenterImp<>(searchUseCase, detailsUseCase);
+        return new SearchResultsPresenterImp<>(searchUseCase, detailsUseCase, handler);
     }
 }

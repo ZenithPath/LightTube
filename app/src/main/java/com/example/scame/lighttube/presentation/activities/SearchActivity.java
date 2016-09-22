@@ -67,7 +67,7 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
     protected void inject(ApplicationComponent appComponent) {
         component = DaggerSearchComponent.builder()
                 .applicationComponent(appComponent)
-                .searchModule(new SearchModule(this))
+                .searchModule(new SearchModule())
                 .build();
 
 

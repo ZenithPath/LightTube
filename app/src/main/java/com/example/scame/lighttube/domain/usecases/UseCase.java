@@ -37,6 +37,7 @@ public abstract class UseCase<T> {
     protected abstract Observable<T> getUseCaseObservable();
 
     public void unsubscribe() {
+
         if (!subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }

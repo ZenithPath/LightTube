@@ -125,4 +125,11 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
             }
         };
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
+    }
 }

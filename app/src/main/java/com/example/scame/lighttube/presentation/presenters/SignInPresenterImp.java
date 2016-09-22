@@ -1,8 +1,8 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.data.entities.TokenEntity;
+import com.example.scame.lighttube.domain.usecases.CheckLoginUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
-import com.example.scame.lighttube.domain.usecases.SignInCheckUseCase;
 import com.example.scame.lighttube.domain.usecases.SignInUseCase;
 import com.example.scame.lighttube.domain.usecases.SignOutUseCase;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -15,16 +15,19 @@ public class SignInPresenterImp<V extends ISignInPresenter.SignInView> implement
 
     private SignOutUseCase signOutUseCase;
 
-    private SignInCheckUseCase signInCheckUseCase;
+    private CheckLoginUseCase checkLoginUseCase;
+
+    private SubscriptionsHandler subscriptionsHandler;
 
     private V signInView;
 
     public SignInPresenterImp(SignInUseCase signInUseCase, SignOutUseCase signOutUseCase,
-                              SignInCheckUseCase signInCheckUseCase) {
+                              CheckLoginUseCase checkLoginUseCase, SubscriptionsHandler subscriptionsHandler) {
 
         this.signInUseCase = signInUseCase;
         this.signOutUseCase = signOutUseCase;
-        this.signInCheckUseCase = signInCheckUseCase;
+        this.checkLoginUseCase = checkLoginUseCase;
+        this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class SignInPresenterImp<V extends ISignInPresenter.SignInView> implement
 
     @Override
     public void isSignedIn() {
-        signInCheckUseCase.execute(new SignInCheckSubscriber());
+        checkLoginUseCase.execute(new SignInCheckSubscriber());
     }
 
     @Override
@@ -67,9 +70,7 @@ public class SignInPresenterImp<V extends ISignInPresenter.SignInView> implement
 
     @Override
     public void destroy() {
-        signInUseCase.unsubscribe();
-        signOutUseCase.unsubscribe();
-        signInCheckUseCase.unsubscribe();
+        subscriptionsHandler.unsubscribe();
         signInView = null;
     }
 

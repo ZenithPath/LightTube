@@ -8,10 +8,13 @@ import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.subscriptions.CompositeSubscription;
 
 public class RecentVideosUseCase extends UseCase<SearchEntity> {
 
     private IRecentVideosDataManager dataManager;
+
+    private CompositeSubscription compositeSubscription;
 
     private String channelId;
 
@@ -19,7 +22,9 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
                                IRecentVideosDataManager dataManager) {
 
         super(subscribeOn, observeOn);
+
         this.dataManager = dataManager;
+        compositeSubscription = new CompositeSubscription();
     }
 
     @Override
@@ -39,6 +44,14 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
                 .observeOn(observeOn.getScheduler())
                 .cache();
 
-        observable.subscribe(subscriber);
+        compositeSubscription.add(observable.subscribe(subscriber));
+    }
+
+    @Override
+    public void unsubscribe() {
+
+        if (!compositeSubscription.isUnsubscribed()) {
+            compositeSubscription.unsubscribe();
+        }
     }
 }
