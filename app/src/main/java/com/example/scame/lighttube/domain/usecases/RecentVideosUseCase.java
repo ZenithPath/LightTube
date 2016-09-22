@@ -24,7 +24,6 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
         super(subscribeOn, observeOn);
 
         this.dataManager = dataManager;
-        compositeSubscription = new CompositeSubscription();
     }
 
     @Override
@@ -49,9 +48,12 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
 
     @Override
     public void unsubscribe() {
-
         if (!compositeSubscription.isUnsubscribed()) {
             compositeSubscription.unsubscribe();
         }
+    }
+
+    public void createSubscriptiosHolder() {
+        compositeSubscription = new CompositeSubscription();
     }
 }

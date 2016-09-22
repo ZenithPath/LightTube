@@ -99,6 +99,9 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
             subscriptionsNumber = subscriptionsIds.size();
             searchEntities = new ArrayList<>();
 
+            // to bypass unreusability of CompositeSubscription
+            recentVideosUseCase.createSubscriptiosHolder();
+
             // make concurrent searches on each channel
             for (String channelId : subscriptionsIds) {
                 recentVideosUseCase.setChannelId(channelId);
