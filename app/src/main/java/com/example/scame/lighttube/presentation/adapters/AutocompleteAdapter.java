@@ -15,7 +15,7 @@ import java.util.List;
 public class AutocompleteAdapter extends ArrayAdapter<String> {
 
     private static class ViewHolder {
-        public TextView tvTitle;
+        TextView tvTitle;
     }
 
     public AutocompleteAdapter(Context context, int resource, List<String> objects) {
@@ -25,11 +25,10 @@ public class AutocompleteAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         String searchItem = getItem(position);
-
         AutocompleteAdapter.ViewHolder viewHolder;
+
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater)getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             convertView = inflater.inflate(R.layout.autocomplete_item, parent, false);
             viewHolder = new ViewHolder();

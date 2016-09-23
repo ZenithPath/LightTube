@@ -16,10 +16,9 @@ public class AutocompleteListUseCase extends UseCase<List<String>> {
 
     private String query;
 
-    public AutocompleteListUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                   ISearchDataManager dataManager) {
-
+    public AutocompleteListUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ISearchDataManager dataManager) {
         super(subscribeOn, observeOn);
+
         this.dataManager = dataManager;
     }
 

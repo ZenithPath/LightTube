@@ -1,99 +1,33 @@
 package com.example.scame.lighttube.data.di;
 
-import com.example.scame.lighttube.data.interceptors.AccessTokenInterceptor;
-import com.example.scame.lighttube.data.interceptors.TokenAuthenticator;
-import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
-import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
-import com.example.scame.lighttube.data.repository.ChannelVideosDataManagerImp;
-import com.example.scame.lighttube.data.repository.ContentDetailsDataManagerImp;
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
-import com.example.scame.lighttube.data.repository.ICategoryDataManager;
-import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
-import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
-import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
-import com.example.scame.lighttube.data.repository.ISearchDataManager;
-import com.example.scame.lighttube.data.repository.IVideoListDataManager;
-import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
-import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
-import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
-import java.util.concurrent.TimeUnit;
+import com.example.scame.lighttube.R;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-@Module
+@Module(includes = {DataManagersModule.class, MappersModule.class, NetworkingModule.class})
 public class DataModule {
 
     @Singleton
     @Provides
-    OkHttpClient provideOkHttp() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        return new OkHttpClient.Builder()
-                .readTimeout(10, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
-                .addInterceptor(new AccessTokenInterceptor())
-                .authenticator(new TokenAuthenticator())
-                .build();
+    @Named("category")
+    List<String> provideCategoryKeys(Context context) {
+        return Arrays.asList(context.getResources().getStringArray(R.array.category_items));
     }
 
     @Singleton
     @Provides
-    Retrofit provideRetrofit(OkHttpClient client) {
-        return new Retrofit.Builder()
-                .baseUrl("https://www.googleapis.com/")
-                .client(client)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-    }
-
-    @Singleton
-    @Provides
-    IAccountDataManager provideSignInDataManager() {
-        return new AccountDataManagerImp();
-    }
-
-    @Singleton
-    @Provides
-    IVideoListDataManager provideVideoListDataManager() {
-        return new VideoListDataManagerImp();
-    }
-
-    @Singleton
-    @Provides
-    ISearchDataManager provideSearchDataManager() { return new SearchDataManagerImp(); }
-
-    @Singleton
-    @Provides
-    ICategoryDataManager provideCategoryDataManager() {
-        return new CategoryDataManagerImp();
-    }
-
-    @Singleton
-    @Provides
-    IRecentVideosDataManager provideRecentVideosDataManager() {
-        return new RecentVideosDataManagerImp();
-    }
-
-    @Singleton
-    @Provides
-    IChannelVideosDataManager provideChannelVideosRepository() {
-        return new ChannelVideosDataManagerImp();
-    }
-
-    @Singleton
-    @Provides
-    IContentDetailsDataManager provideContentDetailsManager() {
-        return new ContentDetailsDataManagerImp();
+    SharedPreferences provideSharedPrefs(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }

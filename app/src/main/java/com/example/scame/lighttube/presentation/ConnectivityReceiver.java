@@ -31,7 +31,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 
     public static boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) LightTubeApp.getAppComponent()
-                .getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
+                .getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         return networkInfo != null && networkInfo.isConnectedOrConnecting();

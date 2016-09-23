@@ -9,12 +9,17 @@ import java.util.List;
 
 public class RecentVideosMapper {
 
+    private SearchListMapper searchListMapper;
+
+    public RecentVideosMapper(SearchListMapper searchListMapper) {
+        this.searchListMapper = searchListMapper;
+    }
+
     public List<VideoModel> convert(List<SearchEntity> searchEntities) {
         List<VideoModel> videoModels = new ArrayList<>();
-        SearchListMapper mapper = new SearchListMapper();
 
         for (SearchEntity searchEntity : searchEntities) {
-            videoModels.addAll(mapper.convert(searchEntity));
+            videoModels.addAll(searchListMapper.convert(searchEntity));
         }
 
         return videoModels;

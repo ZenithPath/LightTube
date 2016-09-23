@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
-import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
@@ -19,18 +18,15 @@ public class SearchUseCase extends UseCase<List<VideoModel>> {
 
     private int page;
 
-    public SearchUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                         ISearchDataManager dataManager) {
-
+    public SearchUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ISearchDataManager dataManager) {
         super(subscribeOn, observeOn);
+
         this.dataManager = dataManager;
     }
 
     @Override
     protected Observable<List<VideoModel>> getUseCaseObservable() {
-        SearchListMapper mapper = new SearchListMapper(); // add to dagger
-
-        return dataManager.search(query, page).map(mapper::convert);
+        return dataManager.search(query, page);
     }
 
     public void setQuery(String query) {

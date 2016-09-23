@@ -2,20 +2,18 @@ package com.example.scame.lighttube.data.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.entities.search.CategoryPairs;
 import com.example.scame.lighttube.data.mappers.CategoryPairsMapper;
+import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.rest.SearchApi;
-import com.example.scame.lighttube.presentation.LightTubeApp;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import retrofit2.Retrofit;
 import rx.Observable;
 
 public class CategoryDataManagerImp implements ICategoryDataManager {
@@ -25,26 +23,50 @@ public class CategoryDataManagerImp implements ICategoryDataManager {
 
     private static final String PART = "snippet";
 
+    private SearchApi searchApi;
+
+    private CategoryPairsMapper pairsMapper;
+
+    private ISearchDataManager searchDataManager;
+
+    private SearchListMapper searchListMapper;
+
     private List<String> categoryKeys;
 
     private SharedPreferences sharedPrefs;
 
     private Context context;
 
-    public CategoryDataManagerImp() {
-        context = LightTubeApp.getAppComponent().getApp();
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public CategoryDataManagerImp(SharedPreferences sharedPrefs, Context context,
+                                  SearchApi searchApi, CategoryPairsMapper pairsMapper,
+                                  List<String> categoryKeys,
+                                  ISearchDataManager searchDataManager,
+                                  SearchListMapper searchListMapper) {
 
-        categoryKeys = Arrays.asList(context.getResources().getStringArray(R.array.category_items));
+        this.sharedPrefs = sharedPrefs;
+        this.context = context;
+
+        this.searchApi = searchApi;
+        this.pairsMapper = pairsMapper;
+
+        this.searchDataManager = searchDataManager;
+        this.searchListMapper = searchListMapper;
+
+        this.categoryKeys = categoryKeys;
     }
 
     @Override
-    public Observable<String> getCategoryId(String category) {
+    public Observable<List<VideoModel>> getVideosByCategory(String category, String duration, int page) {
+        return getCategoryId(category)
+                .flatMap(categoryId -> searchDataManager.searchByCategory(categoryId, duration, page))
+                .map(searchListMapper::convert);
+    }
+
+    private Observable<String> getCategoryId(String category) {
         return getCategoriesIds(REGION_CODE)
                 .filter(entry -> entry.getKey().equals(category))
                 .map(Map.Entry::getValue);
     }
-
 
     private Observable<Map.Entry<String, String>> getCategoriesIds(String regionCode) {
 
@@ -68,12 +90,9 @@ public class CategoryDataManagerImp implements ICategoryDataManager {
     }
 
     private Observable<Map.Entry<String, String>> getFromRemote(String regionCode) {
-        Retrofit retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        SearchApi searchApi = retrofit.create(SearchApi.class);
-        CategoryPairsMapper mapper = new CategoryPairsMapper();
 
         return searchApi.getCategoriesId(PART, regionCode, PrivateValues.API_KEY)
-                .map(mapper::convert)
+                .map(pairsMapper::convert)
                 .flatMap(Observable::from)
                 .filter(this::filterCategoryId)
                 .doOnNext(this::saveCategoryId)

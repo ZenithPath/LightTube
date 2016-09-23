@@ -139,27 +139,38 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         progressBar.setVisibility(View.GONE);
         recentVideosRv.setVisibility(View.VISIBLE);
 
-
         recentVideosRv.setLayoutManager(buildLayoutManager());
         recentVideosAdapter = new RecentVideosAdapter(videoModels, getContext(), recentVideosRv);
 
+        setAdapterListeners();
+
+        expandToolbar();
+
+        recentVideosRv.setAdapter(recentVideosAdapter);
+        recentVideosRv.setHasFixedSize(true);
+
+        stopRefreshing();
+    }
+
+    private void expandToolbar() {
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            appBarLayout.setExpanded(true, true);
+        }
+    }
+
+    private void stopRefreshing() {
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void setAdapterListeners() {
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
                 recentVideosListener.onVideoClick(videoModels.get(position).getVideoId()));
 
 
         recentVideosAdapter.setDirectionScrollListener(scrollToTop ->
                 recentVideosListener.onScrolled(scrollToTop));
-
-        recentVideosRv.setAdapter(recentVideosAdapter);
-        recentVideosRv.setHasFixedSize(true);
-
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            appBarLayout.setExpanded(true, true);
-        }
-
-        if (refreshLayout.isRefreshing()) {
-            refreshLayout.setRefreshing(false);
-        }
     }
 
     @Override

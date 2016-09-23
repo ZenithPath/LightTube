@@ -70,7 +70,6 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
                 .searchModule(new SearchModule())
                 .build();
 
-
         component.inject(this);
     }
 
@@ -78,10 +77,9 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.videolist_menu, menu);
 
-        final MenuItem menuItem = menu.findItem(R.id.action_search);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
 
         searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-
         searchView.setQueryHint(getString(R.string.search_hint));
 
         if (savedState == null) {

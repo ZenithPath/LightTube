@@ -18,9 +18,7 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
 
     private String channelId;
 
-    public RecentVideosUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                               IRecentVideosDataManager dataManager) {
-
+    public RecentVideosUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, IRecentVideosDataManager dataManager) {
         super(subscribeOn, observeOn);
 
         this.dataManager = dataManager;
@@ -48,7 +46,7 @@ public class RecentVideosUseCase extends UseCase<SearchEntity> {
 
     @Override
     public void unsubscribe() {
-        if (!compositeSubscription.isUnsubscribed()) {
+        if (compositeSubscription!= null && !compositeSubscription.isUnsubscribed()) {
             compositeSubscription.unsubscribe();
         }
     }

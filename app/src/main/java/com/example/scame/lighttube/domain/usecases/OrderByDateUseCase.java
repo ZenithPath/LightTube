@@ -17,10 +17,9 @@ public class OrderByDateUseCase extends UseCase<List<VideoModel>> {
 
     private List<SearchEntity> searchEntities;
 
-    public OrderByDateUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                              IRecentVideosDataManager dataManager) {
-
+    public OrderByDateUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, IRecentVideosDataManager dataManager) {
         super(subscribeOn, observeOn);
+
         this.dataManager = dataManager;
     }
 

@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.data.interceptors;
 
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 
 import java.io.IOException;
 
@@ -12,7 +11,13 @@ import okhttp3.Route;
 
 public class TokenAuthenticator implements Authenticator {
 
+    private IAccountDataManager accountDataManager;
+
     private String newToken;
+
+    public TokenAuthenticator(IAccountDataManager accountDataManager) {
+        this.accountDataManager = accountDataManager;
+    }
 
     @Override
     public Request authenticate(Route route, Response response) throws IOException {
@@ -24,12 +29,10 @@ public class TokenAuthenticator implements Authenticator {
     }
 
     private void updateToken() {
-        IAccountDataManager dataManager = LightTubeApp.getAppComponent().getSignInDataManager();
-
-        dataManager.getTokenEntity()
+        accountDataManager.getTokenEntity()
                 .filter(tokenEntity -> !tokenEntity.getRefreshToken().equals(""))
-                .doOnNext(dataManager::refreshToken)
-                .flatMap(tokenEntity2 -> dataManager.getTokenEntity())
-                .subscribe(tokenEntity3 -> newToken = tokenEntity3.getAccessToken());
+                .doOnNext(accountDataManager::refreshToken)
+                .flatMap(refreshedEntity -> accountDataManager.getTokenEntity())
+                .subscribe(finalEntity -> newToken = finalEntity.getAccessToken());
     }
 }

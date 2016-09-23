@@ -2,7 +2,6 @@ package com.example.scame.lighttube.data.repository;
 
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
@@ -11,13 +10,11 @@ import com.example.scame.lighttube.data.mappers.PublishingDateParser;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
 import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.Collections;
 import java.util.List;
 
-import retrofit2.Retrofit;
 import rx.Observable;
 
 public class RecentVideosDataManagerImp implements IRecentVideosDataManager {
@@ -32,17 +29,28 @@ public class RecentVideosDataManagerImp implements IRecentVideosDataManager {
     private static final String ORDER = "date";
     private static final String TYPE = "video";
 
-    private Retrofit retrofit;
     private RecentVideosApi recentVideosApi;
+    private RecentVideosMapper recentVideosMapper;
 
-    public RecentVideosDataManagerImp() {
-        retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        recentVideosApi = retrofit.create(RecentVideosApi.class);
+    private PublishingDateParser publishingDateParser;
+
+    private SharedPreferences sharedPrefs;
+
+    public RecentVideosDataManagerImp(RecentVideosApi recentVideosApi, RecentVideosMapper recentVideosMapper,
+                                      PublishingDateParser publishingDateParser, SharedPreferences sharedPrefs) {
+
+        this.recentVideosApi = recentVideosApi;
+        this.recentVideosMapper = recentVideosMapper;
+        this.publishingDateParser = publishingDateParser;
+        this.sharedPrefs = sharedPrefs;
     }
 
     @Override
     public Observable<SubscriptionsEntity> getSubscriptions() {
-        return recentVideosApi.getSubscriptions(PART, MAX_RESULTS_SUBS, MINE, PrivateValues.API_KEY);
+        return recentVideosApi.getSubscriptions(PART, MAX_RESULTS_SUBS, MINE, PrivateValues.API_KEY)
+                .doOnNext(subscriptionsEntity -> {
+                    saveSubscriptionsNumber(subscriptionsEntity.getItems().size());
+                });
     }
 
     @Override
@@ -52,26 +60,25 @@ public class RecentVideosDataManagerImp implements IRecentVideosDataManager {
 
     @Override
     public Observable<List<VideoModel>> getOrderedVideoModels(List<SearchEntity> searchEntities) {
-        RecentVideosMapper mapper = new RecentVideosMapper();
-        PublishingDateParser parser = new PublishingDateParser();
 
         return Observable.just(searchEntities)
-                .map(mapper::convert) // convert to video models list
-                .map(parser::parse) // parse publishedAt strings & set parsed date fields
+                .map(recentVideosMapper::convert) // convert to video models list
+                .map(publishingDateParser::parse) // parse publishedAt strings & set parsed date fields
                 .map(videoModels -> {
                     Collections.sort(videoModels, Collections.reverseOrder()); // sort video items by date
                     return videoModels;
                 });
     }
 
-    // YouTube Data API doesn't allow to include more than 50 ids
+    // YouTube Data API doesn't allow to include more than 50 ids in one request
     private int computeMaxSearchResults() {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(LightTubeApp.getAppComponent().getApp());
+        int subsNumber = sharedPrefs.getInt(SubscriptionsUseCase.class.getCanonicalName(), DEFAULT_SUBSCRIPTIONS_NUMBER);
 
-        int subscriptionsNumber = sharedPrefs
-                .getInt(SubscriptionsUseCase.class.getCanonicalName(), DEFAULT_SUBSCRIPTIONS_NUMBER);
+        return MAX_IDS_NUMBER / subsNumber;
+    }
 
-        return MAX_IDS_NUMBER / subscriptionsNumber;
+    @Override
+    public void saveSubscriptionsNumber(int subscriptions) {
+        sharedPrefs.edit().putInt(SubscriptionsUseCase.class.getCanonicalName(), subscriptions).apply();
     }
 }

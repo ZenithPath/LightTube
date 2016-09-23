@@ -11,6 +11,8 @@ import rx.Observable;
 
 public interface IRecentVideosDataManager {
 
+    void saveSubscriptionsNumber(int subscriptions);
+
     Observable<SubscriptionsEntity> getSubscriptions();
 
     Observable<SearchEntity> getChannelsVideosByDate(String channelId);

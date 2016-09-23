@@ -1,15 +1,13 @@
 package com.example.scame.lighttube.data.repository;
 
 import com.example.scame.lighttube.PrivateValues;
-import com.example.scame.lighttube.data.entities.content.ContentEntity;
+import com.example.scame.lighttube.data.mappers.DurationsCombiner;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
 import com.example.scame.lighttube.data.rest.VideoListApi;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import java.util.List;
 
-import retrofit2.Retrofit;
 import rx.Observable;
 
 public class ContentDetailsDataManagerImp implements IContentDetailsDataManager {
@@ -18,15 +16,25 @@ public class ContentDetailsDataManagerImp implements IContentDetailsDataManager 
 
     private VideoListApi videoListApi;
 
-    public ContentDetailsDataManagerImp() {
-        Retrofit retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        videoListApi = retrofit.create(VideoListApi.class);
+    private IdsMapper idsMapper;
+
+    private DurationsCombiner combiner;
+
+    private List<VideoModel> videoModels;
+
+    public ContentDetailsDataManagerImp(VideoListApi videoListApi, IdsMapper idsMapper, DurationsCombiner durationsCombiner) {
+        this.videoListApi = videoListApi;
+        this.idsMapper = idsMapper;
+        this.combiner = durationsCombiner;
     }
 
     @Override
-    public Observable<ContentEntity> getContentDetails(List<VideoModel> videoModels) {
-        IdsMapper idsMapper = new IdsMapper();
+    public Observable<List<VideoModel>> getContentDetails(List<VideoModel> videoModels) {
+        return videoListApi.getContentEntity(idsMapper.convert(videoModels), part, PrivateValues.API_KEY)
+                .map(contentEntity -> combiner.combine(contentEntity, videoModels)); // combine old video models and durations
+    }
 
-        return videoListApi.getContentEntity(idsMapper.convert(videoModels), part, PrivateValues.API_KEY);
+    public void setVideoModels(List<VideoModel> videoModels) {
+        this.videoModels = videoModels;
     }
 }

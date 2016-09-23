@@ -16,5 +16,6 @@ public interface IAccountDataManager {
 
     Observable<TokenEntity> getTokenEntity();
 
-    Observable<TokenEntity> fetchWithServerAuthCode(String authServerCode);
+    // main method, entity used only by interceptor
+    Observable<TokenEntity> getToken(String serverAuthCode);
 }

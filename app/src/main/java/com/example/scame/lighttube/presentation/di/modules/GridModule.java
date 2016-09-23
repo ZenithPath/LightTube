@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
-import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.GridListUseCase;
@@ -30,10 +29,8 @@ public class GridModule {
 
     @PerActivity
     @Provides
-    GridListUseCase provideGridUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                       ISearchDataManager searchDataManager,
-                                       ICategoryDataManager categoryDataManager) {
+    GridListUseCase provideGridUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICategoryDataManager categoryDataManager) {
 
-        return new GridListUseCase(subscribeOn, observeOn, categoryDataManager, searchDataManager);
+        return new GridListUseCase(subscribeOn, observeOn, categoryDataManager);
     }
 }

@@ -8,16 +8,16 @@ import rx.Observable;
 
 public class SignOutUseCase extends UseCase<Void> {
 
-    private IAccountDataManager dataManager;
+    private IAccountDataManager accountDataManager;
 
-    public SignOutUseCase(IAccountDataManager dataManager, SubscribeOn subscribeOn, ObserveOn observeOn) {
+    public SignOutUseCase(IAccountDataManager accountDataManager, SubscribeOn subscribeOn, ObserveOn observeOn) {
         super(subscribeOn, observeOn);
 
-        this.dataManager = dataManager;
+        this.accountDataManager = accountDataManager;
     }
 
     @Override
     protected Observable<Void> getUseCaseObservable() {
-        return dataManager.signOut();
+        return accountDataManager.signOut();
     }
 }

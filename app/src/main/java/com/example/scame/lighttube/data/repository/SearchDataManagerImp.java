@@ -8,17 +8,17 @@ import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.entities.search.AutocompleteEntity;
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
-import com.example.scame.lighttube.data.mappers.JsonDeserializer;
+import com.example.scame.lighttube.data.mappers.AutocompleteDeserializer;
+import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.rest.SearchApi;
 import com.example.scame.lighttube.presentation.LightTubeApp;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
-import retrofit2.Retrofit;
+import java.util.List;
+
 import rx.Observable;
 
 public class SearchDataManagerImp implements ISearchDataManager {
-
-    private Retrofit retrofit;
-    private SearchApi searchApi;
 
     private static final String CLIENT = "firefox";
     private static final String RESTRICT_TO = "yt";
@@ -29,9 +29,13 @@ public class SearchDataManagerImp implements ISearchDataManager {
 
     private static final String TYPE = "video";
 
-    public SearchDataManagerImp() {
-        retrofit = LightTubeApp.getAppComponent().getRetrofit();
-        searchApi = retrofit.create(SearchApi.class);
+    private SearchListMapper searchListMapper;
+
+    private SearchApi searchApi;
+
+    public SearchDataManagerImp(SearchApi searchApi, SearchListMapper searchListMapper) {
+        this.searchListMapper = searchListMapper;
+        this.searchApi = searchApi;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class SearchDataManagerImp implements ISearchDataManager {
     @Override
     public Observable<AutocompleteEntity> autocomplete(String query) {
 
-        JsonDeserializer deserializer = new JsonDeserializer();
+        AutocompleteDeserializer deserializer = new AutocompleteDeserializer();
 
         return searchApi.autocomplete(query, CLIENT, RESTRICT_TO, LANGUAGE)
                 .map(deserializer::convert);
@@ -56,13 +60,13 @@ public class SearchDataManagerImp implements ISearchDataManager {
 
 
     @Override
-    public Observable<SearchEntity> search(String query, int page) {
+    public Observable<List<VideoModel>> search(String query, int page) {
 
         return searchApi.searchVideo(PART, query, MAX_RESULTS, getNextPageToken(page), PrivateValues.API_KEY)
                 .doOnNext(searchEntity -> {
                     saveNextPageToken(searchEntity.getNextPageToken());
                     savePageNumber(page);
-                });
+                }).map(searchListMapper::convert);
     }
 
     private String getNextPageToken(int page) {
@@ -85,12 +89,12 @@ public class SearchDataManagerImp implements ISearchDataManager {
     }
 
     private SharedPreferences getSharedPrefs() {
-        Context context = LightTubeApp.getAppComponent().getApp();
+        Context context = LightTubeApp.getAppComponent().getContext();
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     private Context getContext() {
-        return LightTubeApp.getAppComponent().getApp();
+        return LightTubeApp.getAppComponent().getContext();
     }
 
     private String matchDuration(String duration) {

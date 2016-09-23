@@ -15,7 +15,7 @@ import okhttp3.ResponseBody;
 
 // TODO: replace with gson deserializer
 
-public class JsonDeserializer {
+public class AutocompleteDeserializer {
 
     public AutocompleteEntity convert(ResponseBody responseBody) {
 

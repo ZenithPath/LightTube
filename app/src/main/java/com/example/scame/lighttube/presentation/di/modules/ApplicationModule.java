@@ -1,8 +1,9 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
+import android.content.Context;
+
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 
 import javax.inject.Singleton;
 
@@ -14,16 +15,16 @@ import rx.schedulers.Schedulers;
 @Module
 public class ApplicationModule {
 
-    private LightTubeApp lightTubeApp;
+    private Context context;
 
-    public ApplicationModule(LightTubeApp lightTubeApp) {
-        this.lightTubeApp = lightTubeApp;
+    public ApplicationModule(Context context) {
+        this.context = context;
     }
 
     @Singleton
     @Provides
-    LightTubeApp provideApplication() {
-        return lightTubeApp;
+    Context provideContext() {
+        return context;
     }
 
     @Singleton

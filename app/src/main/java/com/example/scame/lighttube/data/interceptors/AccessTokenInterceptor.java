@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.data.interceptors;
 
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 
 import java.io.IOException;
 
@@ -13,13 +12,18 @@ public class AccessTokenInterceptor implements Interceptor {
 
     private String accessToken;
 
+    private IAccountDataManager accountDataManager;
+
+    public AccessTokenInterceptor(IAccountDataManager accountDataManager) {
+        this.accountDataManager = accountDataManager;
+    }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         Request authorisedRequest;
 
-        IAccountDataManager dataManager = LightTubeApp.getAppComponent().getSignInDataManager();
-        dataManager.getTokenEntity()
+        accountDataManager.getTokenEntity()
                 .subscribe(tokenEntity -> accessToken = tokenEntity.getAccessToken());
 
         if (!accessToken.equals("")) {
