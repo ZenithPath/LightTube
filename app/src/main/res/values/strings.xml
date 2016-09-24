@@ -85,4 +85,7 @@
 
     <string name="cannot_load">Cannot load data. Please, check your connection</string>
 
+    <string name="enter_fullscreen">Enter Fullscreen</string>
+    <string name="landscape_fullscreen">Always fullscreen in landscape</string>
+
 </resources>
