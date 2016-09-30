@@ -2,9 +2,12 @@ package com.example.scame.lighttube.presentation.activities;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatCallback;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,39 +25,42 @@ import butterknife.ButterKnife;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class PlayVideoActivity extends YouTubeFailureRecoverActivity implements CompoundButton.OnCheckedChangeListener,
-                                                                                YouTubePlayer.OnFullscreenListener {
+public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
+        CompoundButton.OnCheckedChangeListener,
+        YouTubePlayer.OnFullscreenListener,
+        AppCompatCallback {
 
-    private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
-            ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            : ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+    private static final int PORTRAIT_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
-    @BindView(R.id.player)
-    YouTubePlayerView playerView;
+    @BindView(R.id.player) YouTubePlayerView playerView;
 
-    @BindView(R.id.fullscreen_button)
-    Button fullscreenButton;
+    @BindView(R.id.fullscreen_button) Button fullscreenButton;
 
-    @BindView(R.id.landscape_fullscreen_checkbox)
-    CompoundButton fullscreenCheckBox;
+    @BindView(R.id.landscape_fullscreen_checkbox) CompoundButton fullscreenCheckBox;
 
-    @BindView(R.id.other_views)
-    View otherViews;
+    @BindView(R.id.other_views) View otherViews;
 
-    @BindView(R.id.play_base_layout)
-    LinearLayout baseLayout;
+    @BindView(R.id.player_base_layout) LinearLayout baseLayout;
+
+    @BindView(R.id.player_toolbar) Toolbar toolbar;
 
     private YouTubePlayer youTubePlayer;
 
     private boolean fullscreen;
 
+    private AppCompatDelegate delegate;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.play_video_activity);
+
+        delegate = AppCompatDelegate.create(this, this);
+        delegate.onCreate(savedInstanceState);
+        delegate.setContentView(R.layout.player_activity);
 
         ButterKnife.bind(this);
 
+        delegate.setSupportActionBar(toolbar);
         fullscreenCheckBox.setOnCheckedChangeListener(this);
         fullscreenButton.setOnClickListener(view -> youTubePlayer.setFullscreen(!fullscreen));
 
@@ -89,6 +95,7 @@ public class PlayVideoActivity extends YouTubeFailureRecoverActivity implements 
 
         setControlsEnabled();
         // Specify that we want to handle fullscreen behavior ourselves.
+        this.youTubePlayer.setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION);
         this.youTubePlayer.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
         this.youTubePlayer.setOnFullscreenListener(this);
 
@@ -99,34 +106,55 @@ public class PlayVideoActivity extends YouTubeFailureRecoverActivity implements 
 
     private void doLayout() {
         LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) playerView.getLayoutParams();
+
         if (fullscreen) {
-            // When in fullscreen, the visibility of all other views than the player should be set to
-            // GONE and the player should be laid out across the whole screen.
+            hideAllViews();
             playerParams.width = MATCH_PARENT;
             playerParams.height = MATCH_PARENT;
-
-            otherViews.setVisibility(View.GONE);
         } else {
-            otherViews.setVisibility(View.VISIBLE);
-            ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
-
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                playerParams.width = otherViewsParams.width = 0;
-                playerParams.height = WRAP_CONTENT;
-                otherViewsParams.height = MATCH_PARENT;
-                playerParams.weight = 1;
-
-                baseLayout.setOrientation(LinearLayout.HORIZONTAL);
-            } else {
-                playerParams.width = otherViewsParams.width = MATCH_PARENT;
-                playerParams.height = WRAP_CONTENT;
-                playerParams.weight = 0;
-                otherViewsParams.height = 0;
-
-                baseLayout.setOrientation(LinearLayout.VERTICAL);
-            }
+            showAllViews();
+            handleOrientation(playerParams);
             setControlsEnabled();
         }
+    }
+
+    private void handleOrientation(LinearLayout.LayoutParams playerParams) {
+        ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            playerParams.width = otherViewsParams.width = 0;
+            playerParams.height = WRAP_CONTENT;
+            otherViewsParams.height = MATCH_PARENT;
+            playerParams.weight = 1;
+
+            baseLayout.setOrientation(LinearLayout.HORIZONTAL);
+        } else {
+            playerParams.width = otherViewsParams.width = MATCH_PARENT;
+            playerParams.height = WRAP_CONTENT;
+            playerParams.weight = 0;
+            otherViewsParams.height = 0;
+
+            baseLayout.setOrientation(LinearLayout.VERTICAL);
+        }
+    }
+
+    private void hideAllViews() {
+
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
+        delegate.getSupportActionBar().hide();
+        otherViews.setVisibility(View.GONE);
+    }
+
+    private void showAllViews() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+        decorView.setSystemUiVisibility(uiOptions);
+
+        delegate.getSupportActionBar().show();
+        otherViews.setVisibility(View.VISIBLE);
     }
 
     private void setControlsEnabled() {
@@ -145,5 +173,22 @@ public class PlayVideoActivity extends YouTubeFailureRecoverActivity implements 
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         doLayout();
+    }
+
+
+    @Override
+    public void onSupportActionModeStarted(ActionMode mode) {
+
+    }
+
+    @Override
+    public void onSupportActionModeFinished(ActionMode mode) {
+
+    }
+
+    @Nullable
+    @Override
+    public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
+        return null;
     }
 }

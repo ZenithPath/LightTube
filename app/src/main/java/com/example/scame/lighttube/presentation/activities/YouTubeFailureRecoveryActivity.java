@@ -8,7 +8,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 
-public abstract class YouTubeFailureRecoverActivity extends YouTubeBaseActivity
+public abstract class YouTubeFailureRecoveryActivity extends YouTubeBaseActivity
                                     implements YouTubePlayer.OnInitializedListener {
 
     private static final int RECOVERY_DIALOG_REQUEST = 1;

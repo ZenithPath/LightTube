@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.activities.PlayVideoActivity;
+import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.activities.SearchActivity;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 
@@ -18,7 +18,7 @@ public class Navigator {
 
     public void navigateToPlayVideo(Context context, String videoId) {
         if (context != null) {
-            Intent intentToLaunch = new Intent(context, PlayVideoActivity.class);
+            Intent intentToLaunch = new Intent(context, PlayerActivity.class);
             intentToLaunch.putExtra(context.getString(R.string.video_id), videoId);
             context.startActivity(intentToLaunch);
         }
