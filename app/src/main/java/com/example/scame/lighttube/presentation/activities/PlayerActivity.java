@@ -1,7 +1,9 @@
 package com.example.scame.lighttube.presentation.activities;
 
+import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatCallback;
@@ -9,10 +11,9 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
@@ -21,12 +22,11 @@ import com.google.android.youtube.player.YouTubePlayerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
-        CompoundButton.OnCheckedChangeListener,
         YouTubePlayer.OnFullscreenListener,
         AppCompatCallback {
 
@@ -34,15 +34,13 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     @BindView(R.id.player) YouTubePlayerView playerView;
 
-    @BindView(R.id.fullscreen_button) Button fullscreenButton;
-
-    @BindView(R.id.landscape_fullscreen_checkbox) CompoundButton fullscreenCheckBox;
-
-    @BindView(R.id.other_views) View otherViews;
-
-    @BindView(R.id.player_base_layout) LinearLayout baseLayout;
-
     @BindView(R.id.player_toolbar) Toolbar toolbar;
+
+    @BindView(R.id.video_title_player) TextView videoTitle;
+
+    @BindView(R.id.like_btn) ImageButton likeBtn;
+
+    @BindView(R.id.dislike_btn) ImageButton dislikeBtn;
 
     private YouTubePlayer youTubePlayer;
 
@@ -61,27 +59,32 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         ButterKnife.bind(this);
 
         delegate.setSupportActionBar(toolbar);
-        fullscreenCheckBox.setOnCheckedChangeListener(this);
-        fullscreenButton.setOnClickListener(view -> youTubePlayer.setFullscreen(!fullscreen));
 
         playerView.initialize(PrivateValues.API_KEY, this);
 
         doLayout();
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        int controlFlags = youTubePlayer.getFullscreenControlFlags();
-
-        if (isChecked) {
-            setRequestedOrientation(PORTRAIT_ORIENTATION);
-            controlFlags |= YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE;
+    @SuppressLint("NewApi")
+    @OnClick(R.id.like_btn)
+    public void onLikeClick() {
+        if (likeBtn.getColorFilter() != null) {
+            likeBtn.setColorFilter(null);
         } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-            controlFlags &= ~YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE;
+            likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            dislikeBtn.setColorFilter(null);
         }
+    }
 
-        youTubePlayer.setFullscreenControlFlags(controlFlags);
+    @SuppressLint("NewApi")
+    @OnClick(R.id.dislike_btn)
+    public void onDislikeClick() {
+        if (dislikeBtn.getColorFilter() != null) {
+            dislikeBtn.setColorFilter(null);
+        } else {
+            dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            likeBtn.setColorFilter(null);
+        }
     }
 
     @Override
@@ -93,15 +96,23 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
         this.youTubePlayer = youTubePlayer;
 
-        setControlsEnabled();
-        // Specify that we want to handle fullscreen behavior ourselves.
+        // specify that we want to handle fullscreen behavior ourselves
         this.youTubePlayer.setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION);
         this.youTubePlayer.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
         this.youTubePlayer.setOnFullscreenListener(this);
 
+        setPortraitFullscreen();
+
         if (!wasRestored) {
             this.youTubePlayer.cueVideo(getIntent().getStringExtra(getString(R.string.video_id)));
         }
+    }
+
+    private void setPortraitFullscreen() {
+        int controlFlags = youTubePlayer.getFullscreenControlFlags();
+        setRequestedOrientation(PORTRAIT_ORIENTATION);
+        controlFlags |= YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE;
+        youTubePlayer.setFullscreenControlFlags(controlFlags);
     }
 
     private void doLayout() {
@@ -113,39 +124,17 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
             playerParams.height = MATCH_PARENT;
         } else {
             showAllViews();
-            handleOrientation(playerParams);
-            setControlsEnabled();
-        }
-    }
-
-    private void handleOrientation(LinearLayout.LayoutParams playerParams) {
-        ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            playerParams.width = otherViewsParams.width = 0;
-            playerParams.height = WRAP_CONTENT;
-            otherViewsParams.height = MATCH_PARENT;
-            playerParams.weight = 1;
-
-            baseLayout.setOrientation(LinearLayout.HORIZONTAL);
-        } else {
-            playerParams.width = otherViewsParams.width = MATCH_PARENT;
-            playerParams.height = WRAP_CONTENT;
-            playerParams.weight = 0;
-            otherViewsParams.height = 0;
-
-            baseLayout.setOrientation(LinearLayout.VERTICAL);
         }
     }
 
     private void hideAllViews() {
-
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
-        delegate.getSupportActionBar().hide();
-        otherViews.setVisibility(View.GONE);
+        if (delegate.getSupportActionBar() != null) {
+            delegate.getSupportActionBar().hide();
+        }
     }
 
     private void showAllViews() {
@@ -153,15 +142,11 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
         decorView.setSystemUiVisibility(uiOptions);
 
-        delegate.getSupportActionBar().show();
-        otherViews.setVisibility(View.VISIBLE);
+        if (delegate.getSupportActionBar() != null) {
+            delegate.getSupportActionBar().show();
+        }
     }
 
-    private void setControlsEnabled() {
-        fullscreenCheckBox.setEnabled(youTubePlayer != null
-                && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
-        fullscreenButton.setEnabled(youTubePlayer != null);
-    }
 
     @Override
     public void onFullscreen(boolean isFullscreen) {

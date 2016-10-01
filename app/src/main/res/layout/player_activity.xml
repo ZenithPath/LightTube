@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/player_base_layout"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/player_toolbar"
         style="@style/custom_toolbar"
-        app:layout_scrollFlags="scroll|enterAlways"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize" />
+        android:minHeight="?attr/actionBarSize"
+        app:layout_scrollFlags="scroll|enterAlways" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/player_base_layout"
+    <LinearLayout
+        android:id="@+id/player_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.google.android.youtube.player.YouTubePlayerView
@@ -28,25 +27,33 @@
             android:layout_height="match_parent" />
 
         <LinearLayout
-            android:id="@+id/other_views"
+            android:id="@+id/video_footer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <CheckBox
-                android:id="@+id/landscape_fullscreen_checkbox"
+            <TextView
+                android:id="@+id/video_title_player"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Video title" />
+
+            <ImageButton
+                android:id="@+id/like_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/landscape_fullscreen" />
+                android:padding="9dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_thumb_up_black_24dp" />
 
-            <Button
-                android:id="@+id/fullscreen_button"
+            <ImageButton
+                android:id="@+id/dislike_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/enter_fullscreen" />
+                android:padding="9dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_thumb_down_black_24dp" />
 
         </LinearLayout>
 
