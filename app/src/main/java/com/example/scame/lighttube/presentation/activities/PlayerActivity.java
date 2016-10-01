@@ -17,8 +17,14 @@ import android.widget.TextView;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.LightTubeApp;
+import com.example.scame.lighttube.presentation.di.components.DaggerPlayerComponent;
+import com.example.scame.lighttube.presentation.di.components.PlayerComponent;
+import com.example.scame.lighttube.presentation.presenters.IPlayerPresenter;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,9 +34,17 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         YouTubePlayer.OnFullscreenListener,
-        AppCompatCallback {
+        AppCompatCallback,
+        IPlayerPresenter.PlayerView {
 
     private static final int PORTRAIT_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+
+    private static final String LIKE = "like";
+    private static final String DISLIKE = "dislike";
+    private static final String NONE = "none";
+
+    @Inject
+    IPlayerPresenter<IPlayerPresenter.PlayerView> presenter;
 
     @BindView(R.id.player) YouTubePlayerView playerView;
 
@@ -46,17 +60,25 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private boolean fullscreen;
 
+    private String videoId;
+
     private AppCompatDelegate delegate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        videoId = getIntent().getStringExtra(getString(R.string.video_id));
+
         delegate = AppCompatDelegate.create(this, this);
         delegate.onCreate(savedInstanceState);
         delegate.setContentView(R.layout.player_activity);
 
         ButterKnife.bind(this);
+        buildPlayerComponent().inject(this);
+
+        presenter.setView(this);
+        presenter.getVideoRating(videoId);
 
         delegate.setSupportActionBar(toolbar);
 
@@ -70,9 +92,11 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     public void onLikeClick() {
         if (likeBtn.getColorFilter() != null) {
             likeBtn.setColorFilter(null);
+            presenter.rateVideo(videoId, NONE);
         } else {
             likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
             dislikeBtn.setColorFilter(null);
+            presenter.rateVideo(videoId, LIKE);
         }
     }
 
@@ -81,9 +105,20 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     public void onDislikeClick() {
         if (dislikeBtn.getColorFilter() != null) {
             dislikeBtn.setColorFilter(null);
+            presenter.rateVideo(videoId, NONE);
         } else {
             dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
             likeBtn.setColorFilter(null);
+            presenter.rateVideo(videoId, DISLIKE);
+        }
+    }
+
+    @Override
+    public void displayRating(String rating) {
+        if (rating.equals(LIKE)) {
+            likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+        } else if (rating.equals(DISLIKE)) {
+            dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         }
     }
 
@@ -104,7 +139,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         setPortraitFullscreen();
 
         if (!wasRestored) {
-            this.youTubePlayer.cueVideo(getIntent().getStringExtra(getString(R.string.video_id)));
+            this.youTubePlayer.cueVideo(videoId);
         }
     }
 
@@ -160,6 +195,11 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         doLayout();
     }
 
+    private PlayerComponent buildPlayerComponent() {
+        return DaggerPlayerComponent.builder()
+                .applicationComponent(LightTubeApp.getAppComponent())
+                .build();
+    }
 
     @Override
     public void onSupportActionModeStarted(ActionMode mode) {

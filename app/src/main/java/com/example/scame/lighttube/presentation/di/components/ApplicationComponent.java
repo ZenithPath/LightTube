@@ -7,6 +7,7 @@ import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
 import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
+import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
@@ -44,4 +45,6 @@ public interface ApplicationComponent {
     IChannelVideosDataManager getChannelVideosDataManager();
 
     IContentDetailsDataManager getContentDetailsDataManager();
+
+    IRatingDataManager getRatingDataManager();
 }

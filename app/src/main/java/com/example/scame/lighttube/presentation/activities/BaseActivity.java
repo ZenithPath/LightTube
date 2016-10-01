@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected ApplicationComponent getAppComponent() {
-        return ((LightTubeApp) getApplication()).getAppComponent();
+        return LightTubeApp.getAppComponent();
     }
 
     protected abstract void inject(ApplicationComponent appComponent);

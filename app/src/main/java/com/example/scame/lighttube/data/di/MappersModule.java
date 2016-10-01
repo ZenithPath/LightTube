@@ -6,6 +6,7 @@ import com.example.scame.lighttube.data.mappers.DurationsCombiner;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
 import com.example.scame.lighttube.data.mappers.AutocompleteDeserializer;
 import com.example.scame.lighttube.data.mappers.PublishingDateParser;
+import com.example.scame.lighttube.data.mappers.RatingMapper;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
@@ -67,5 +68,10 @@ public class MappersModule {
     @Singleton @Provides
     VideoListMapper provideVideoListMapper() {
         return new VideoListMapper();
+    }
+
+    @Singleton @Provides
+    RatingMapper provideRatingMapper() {
+        return new RatingMapper();
     }
 }

@@ -8,6 +8,7 @@ import com.example.scame.lighttube.data.mappers.CategoryPairsMapper;
 import com.example.scame.lighttube.data.mappers.DurationsCombiner;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
 import com.example.scame.lighttube.data.mappers.PublishingDateParser;
+import com.example.scame.lighttube.data.mappers.RatingMapper;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
@@ -19,12 +20,15 @@ import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
 import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
+import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
+import com.example.scame.lighttube.data.repository.RatingDataManagerImp;
 import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
 import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
+import com.example.scame.lighttube.data.rest.RatingApi;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
 import com.example.scame.lighttube.data.rest.SearchApi;
 import com.example.scame.lighttube.data.rest.VideoListApi;
@@ -92,5 +96,11 @@ public class DataManagersModule {
                                                             DurationsCombiner combiner) {
 
         return new ContentDetailsDataManagerImp(videoListApi, idsMapper, combiner);
+    }
+
+    @Singleton
+    @Provides
+    IRatingDataManager provideRatingDataManager(RatingApi ratingApi, RatingMapper ratingMapper) {
+        return new RatingDataManagerImp(ratingApi, ratingMapper);
     }
 }
