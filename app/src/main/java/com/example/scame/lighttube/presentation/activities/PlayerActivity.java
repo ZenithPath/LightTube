@@ -1,9 +1,7 @@
 package com.example.scame.lighttube.presentation.activities;
 
-import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatCallback;
@@ -11,50 +9,32 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.di.components.DaggerPlayerComponent;
 import com.example.scame.lighttube.presentation.di.components.PlayerComponent;
-import com.example.scame.lighttube.presentation.presenters.IPlayerPresenter;
+import com.example.scame.lighttube.presentation.di.modules.PlayerModule;
+import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         YouTubePlayer.OnFullscreenListener,
-        AppCompatCallback,
-        IPlayerPresenter.PlayerView {
+        AppCompatCallback {
 
     private static final int PORTRAIT_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-
-    private static final String LIKE = "like";
-    private static final String DISLIKE = "dislike";
-    private static final String NONE = "none";
-
-    @Inject
-    IPlayerPresenter<IPlayerPresenter.PlayerView> presenter;
 
     @BindView(R.id.player) YouTubePlayerView playerView;
 
     @BindView(R.id.player_toolbar) Toolbar toolbar;
-
-    @BindView(R.id.video_title_player) TextView videoTitle;
-
-    @BindView(R.id.like_btn) ImageButton likeBtn;
-
-    @BindView(R.id.dislike_btn) ImageButton dislikeBtn;
 
     private YouTubePlayer youTubePlayer;
 
@@ -63,6 +43,8 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     private String videoId;
 
     private AppCompatDelegate delegate;
+
+    private PlayerComponent playerComponent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,51 +57,20 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         delegate.setContentView(R.layout.player_activity);
 
         ButterKnife.bind(this);
-        buildPlayerComponent().inject(this);
-
-        presenter.setView(this);
-        presenter.getVideoRating(videoId);
 
         delegate.setSupportActionBar(toolbar);
 
         playerView.initialize(PrivateValues.API_KEY, this);
 
         doLayout();
+        instantiateFooterFragment();
     }
 
-    @SuppressLint("NewApi")
-    @OnClick(R.id.like_btn)
-    public void onLikeClick() {
-        if (likeBtn.getColorFilter() != null) {
-            likeBtn.setColorFilter(null);
-            presenter.rateVideo(videoId, NONE);
-        } else {
-            likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-            dislikeBtn.setColorFilter(null);
-            presenter.rateVideo(videoId, LIKE);
-        }
-    }
-
-    @SuppressLint("NewApi")
-    @OnClick(R.id.dislike_btn)
-    public void onDislikeClick() {
-        if (dislikeBtn.getColorFilter() != null) {
-            dislikeBtn.setColorFilter(null);
-            presenter.rateVideo(videoId, NONE);
-        } else {
-            dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-            likeBtn.setColorFilter(null);
-            presenter.rateVideo(videoId, DISLIKE);
-        }
-    }
-
-    @Override
-    public void displayRating(String rating) {
-        if (rating.equals(LIKE)) {
-            likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-        } else if (rating.equals(DISLIKE)) {
-            dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-        }
+    private void instantiateFooterFragment() {
+        PlayerFooterFragment fragment = PlayerFooterFragment.newInstance(videoId);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.player_activity_fl, fragment)
+                .commit();
     }
 
     @Override
@@ -195,10 +146,15 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         doLayout();
     }
 
-    private PlayerComponent buildPlayerComponent() {
-        return DaggerPlayerComponent.builder()
-                .applicationComponent(LightTubeApp.getAppComponent())
-                .build();
+    public PlayerComponent getPlayerComponent() {
+        if (playerComponent == null) {
+            playerComponent = DaggerPlayerComponent.builder()
+                    .applicationComponent(LightTubeApp.getAppComponent())
+                    .playerModule(new PlayerModule())
+                    .build();
+        }
+
+        return playerComponent;
     }
 
     @Override

@@ -26,36 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <LinearLayout
-            android:id="@+id/video_footer"
+        <FrameLayout
+            android:id="@+id/player_activity_fl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/video_title_player"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Video title" />
+        </FrameLayout>
 
-            <ImageButton
-                android:id="@+id/like_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="9dp"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_thumb_up_black_24dp" />
-
-            <ImageButton
-                android:id="@+id/dislike_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="9dp"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_thumb_down_black_24dp" />
-
-        </LinearLayout>
 
     </LinearLayout>
 
