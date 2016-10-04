@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.scame.lighttube.data.mappers.CategoryPairsMapper;
+import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.DurationsCombiner;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
 import com.example.scame.lighttube.data.mappers.PublishingDateParser;
@@ -15,10 +16,12 @@ import com.example.scame.lighttube.data.mappers.VideoListMapper;
 import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
 import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
 import com.example.scame.lighttube.data.repository.ChannelVideosDataManagerImp;
+import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.data.repository.ContentDetailsDataManagerImp;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
+import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
@@ -28,6 +31,7 @@ import com.example.scame.lighttube.data.repository.RatingDataManagerImp;
 import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
 import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
+import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.data.rest.RatingApi;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
 import com.example.scame.lighttube.data.rest.SearchApi;
@@ -102,5 +106,11 @@ public class DataManagersModule {
     @Provides
     IRatingDataManager provideRatingDataManager(RatingApi ratingApi, RatingMapper ratingMapper) {
         return new RatingDataManagerImp(ratingApi, ratingMapper);
+    }
+
+    @Singleton
+    @Provides
+    ICommentsDataManager provideCommentsDataManager(CommentsApi commentsApi, CommentListMapper commentListMapper) {
+        return new CommentsDataManagerImp(commentsApi, commentListMapper);
     }
 }

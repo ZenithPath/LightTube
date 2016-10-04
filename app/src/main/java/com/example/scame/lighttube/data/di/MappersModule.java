@@ -2,6 +2,7 @@ package com.example.scame.lighttube.data.di;
 
 import com.example.scame.lighttube.data.mappers.CategoryPairsMapper;
 import com.example.scame.lighttube.data.mappers.ChannelsMapper;
+import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.DurationsCombiner;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
 import com.example.scame.lighttube.data.mappers.AutocompleteDeserializer;
@@ -73,5 +74,10 @@ public class MappersModule {
     @Singleton @Provides
     RatingMapper provideRatingMapper() {
         return new RatingMapper();
+    }
+
+    @Singleton @Provides
+    CommentListMapper provideCommentListMapper() {
+        return new CommentListMapper();
     }
 }

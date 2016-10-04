@@ -32,6 +32,8 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private static final int PORTRAIT_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
+    private static final String PLAYER_FOOTER_TAG = "playerFooter";
+
     @BindView(R.id.player) YouTubePlayerView playerView;
 
     @BindView(R.id.player_toolbar) Toolbar toolbar;
@@ -67,10 +69,12 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     }
 
     private void instantiateFooterFragment() {
-        PlayerFooterFragment fragment = PlayerFooterFragment.newInstance(videoId);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.player_activity_fl, fragment)
-                .commit();
+        if (getFragmentManager().findFragmentByTag(PLAYER_FOOTER_TAG) == null) {
+            PlayerFooterFragment fragment = PlayerFooterFragment.newInstance(videoId);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.player_activity_fl, fragment, PLAYER_FOOTER_TAG)
+                    .commit();
+        }
     }
 
     @Override

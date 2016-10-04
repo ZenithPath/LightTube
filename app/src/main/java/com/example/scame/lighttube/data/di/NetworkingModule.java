@@ -3,6 +3,7 @@ package com.example.scame.lighttube.data.di;
 import com.example.scame.lighttube.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttube.data.interceptors.TokenAuthenticator;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
+import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.data.rest.RatingApi;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
 import com.example.scame.lighttube.data.rest.SearchApi;
@@ -81,6 +82,12 @@ public class NetworkingModule {
     @Provides
     RatingApi provideRatingsApi(Retrofit retrofit) {
         return retrofit.create(RatingApi.class);
+    }
+
+    @Singleton
+    @Provides
+    CommentsApi provideCommentsApi(Retrofit retrofit) {
+        return retrofit.create(CommentsApi.class);
     }
 
     @Singleton
