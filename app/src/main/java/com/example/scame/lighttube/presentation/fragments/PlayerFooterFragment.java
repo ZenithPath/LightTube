@@ -1,25 +1,24 @@
 package com.example.scame.lighttube.presentation.fragments;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
+import com.example.scame.lighttube.presentation.adapters.player.CommentsAdapter;
+import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.presenters.IPlayerPresenter;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class PlayerFooterFragment extends Fragment implements IPlayerPresenter.PlayerView {
 
@@ -30,13 +29,21 @@ public class PlayerFooterFragment extends Fragment implements IPlayerPresenter.P
     @Inject
     IPlayerPresenter<IPlayerPresenter.PlayerView> presenter;
 
-    @BindView(R.id.video_title_player) TextView videoTitle;
-
-    @BindView(R.id.like_btn) ImageButton likeBtn;
-
-    @BindView(R.id.dislike_btn) ImageButton dislikeBtn;
+    @BindView(R.id.player_footer_rv) RecyclerView recyclerView;
 
     private String videoId;
+
+    @FunctionalInterface
+    public interface LikeListener {
+
+        void onLikeClick(boolean ratedPositively);
+    }
+
+    @FunctionalInterface
+    public interface DislikeListener {
+
+        void onDislikeClick(boolean ratedNegatively);
+    }
 
     public static PlayerFooterFragment newInstance(String videoId) {
         PlayerFooterFragment fragment = new PlayerFooterFragment();
@@ -59,32 +66,33 @@ public class PlayerFooterFragment extends Fragment implements IPlayerPresenter.P
 
         presenter.setView(this);
         presenter.getVideoRating(videoId);
+        presenter.getCommentList(videoId);
 
         return fragmentView;
     }
 
-    @SuppressLint("NewApi")
-    @OnClick(R.id.like_btn)
-    public void onLikeClick() {
-        if (likeBtn.getColorFilter() != null) {
-            likeBtn.setColorFilter(null);
+
+    @Override
+    public void displayComments(CommentListModel commentListModel) {
+        CommentsAdapter commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
+                getActivity(), this::onLikeClick, this::onDislikeClick, "Some title");
+
+        recyclerView.setAdapter(commentsAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    public void onLikeClick(boolean ratedPositively) {
+        if (!ratedPositively) {
             presenter.rateVideo(videoId, NONE);
         } else {
-            likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-            dislikeBtn.setColorFilter(null);
             presenter.rateVideo(videoId, LIKE);
         }
     }
 
-    @SuppressLint("NewApi")
-    @OnClick(R.id.dislike_btn)
-    public void onDislikeClick() {
-        if (dislikeBtn.getColorFilter() != null) {
-            dislikeBtn.setColorFilter(null);
+    public void onDislikeClick(boolean ratedNegatively) {
+        if (!ratedNegatively) {
             presenter.rateVideo(videoId, NONE);
         } else {
-            dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-            likeBtn.setColorFilter(null);
             presenter.rateVideo(videoId, DISLIKE);
         }
     }
@@ -92,9 +100,16 @@ public class PlayerFooterFragment extends Fragment implements IPlayerPresenter.P
     @Override
     public void displayRating(String rating) {
         if (rating.equals(LIKE)) {
-            likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+       //     likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         } else if (rating.equals(DISLIKE)) {
-            dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+       //     dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        presenter.destroy();
     }
 }

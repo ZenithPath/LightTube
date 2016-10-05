@@ -1,9 +1,11 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
+import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
+import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IPlayerPresenter;
@@ -34,11 +36,20 @@ public class PlayerModule {
 
     @Provides
     @PerActivity
+    RetrieveCommentsUseCase provideRetrieveCommentsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                           ICommentsDataManager commentsDataManager) {
+
+        return new RetrieveCommentsUseCase(subscribeOn, observeOn, commentsDataManager);
+    }
+
+    @Provides
+    @PerActivity
     IPlayerPresenter<IPlayerPresenter.PlayerView> providePlayerPresenter(RetrieveRatingUseCase retrieveRatingUseCase,
                                                                          RateVideoUseCase rateVideoUseCase,
+                                                                         RetrieveCommentsUseCase retrieveCommentsUseCase,
                                                                          SubscriptionsHandler subscriptionsHandler) {
 
-        return new PlayerPresenterImp<>(retrieveRatingUseCase, rateVideoUseCase, subscriptionsHandler);
+        return new PlayerPresenterImp<>(retrieveRatingUseCase, rateVideoUseCase, retrieveCommentsUseCase, subscriptionsHandler);
     }
 
     @Provides

@@ -10,7 +10,7 @@ import rx.Observable;
 
 public class CommentsDataManagerImp implements ICommentsDataManager {
 
-    private static final String PART = "snippet,replies";
+    private static final String PART = "snippet%2Creplies";
 
     private static final int MAX_RES = 50;
 
