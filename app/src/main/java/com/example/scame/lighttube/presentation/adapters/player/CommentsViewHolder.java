@@ -15,6 +15,9 @@ import butterknife.ButterKnife;
 
 class CommentsViewHolder extends RecyclerView.ViewHolder {
 
+    private static final int LAST_REPLY = 0;
+    private static final int PENULTIMATE_REPLY = 1;
+
     @BindView(R.id.thread_comment_tv) TextView threadCommentTv;
 
     @BindView(R.id.first_reply_tv) TextView firstReplyTv;
@@ -38,31 +41,25 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     void bindOneReplyView(int position, List<ThreadCommentModel> comments) {
-        int replyCount = comments.get(position - 1).getReplyCount();
-
         threadCommentTv.setText(comments.get(position - 1).getTextDisplay());
-        firstReplyTv.setText(comments.get(position - 1).getReplies().get(replyCount - 1).getTextDisplay());
+        firstReplyTv.setText(comments.get(position - 1).getReplies().get(LAST_REPLY).getTextDisplay());
 
         secondReplyTv.setVisibility(View.GONE);
         allRepliesTv.setVisibility(View.GONE);
     }
 
     void bindTwoRepliesView(int position, List<ThreadCommentModel> comments) {
-        int replyCount = comments.get(position - 1).getReplyCount();
-
         threadCommentTv.setText(comments.get(position - 1).getTextDisplay());
-        firstReplyTv.setText(comments.get(position - 1).getReplies().get(replyCount - 2).getTextDisplay());
-        secondReplyTv.setText(comments.get(position - 1).getReplies().get(replyCount - 1).getTextDisplay());
+        firstReplyTv.setText(comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY).getTextDisplay());
+        secondReplyTv.setText(comments.get(position - 1).getReplies().get(LAST_REPLY).getTextDisplay());
 
         allRepliesTv.setVisibility(View.GONE);
     }
 
     void bindAllRepliesView(int position, List<ThreadCommentModel> comments) {
-        int replyCount = comments.get(position -1).getReplyCount();
-
         threadCommentTv.setText(comments.get(position - 1).getTextDisplay());
-        firstReplyTv.setText(comments.get(position - 1).getReplies().get(replyCount - 2).getTextDisplay());
-        secondReplyTv.setText(comments.get(position - 1).getReplies().get(replyCount - 1).getTextDisplay());
+        firstReplyTv.setText(comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY).getTextDisplay());
+        secondReplyTv.setText(comments.get(position - 1).getReplies().get(LAST_REPLY).getTextDisplay());
         allRepliesTv.setText("SHOW ALL REPLIES");
     }
 }

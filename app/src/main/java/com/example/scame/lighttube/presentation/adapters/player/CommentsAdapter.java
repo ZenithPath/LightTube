@@ -96,11 +96,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if (position == 0) {
             return VIEW_TYPE_HEADER;
-        } else if (threadCommentModels.get(position - 1).getReplyCount() == 0) {
+        } else if (threadCommentModels.get(position - 1).getReplies().size() == 0) {
             return VIEW_TYPE_THREAD_COMMENT;
-        } else if (threadCommentModels.get(position - 1).getReplyCount() == 1) {
+        } else if (threadCommentModels.get(position - 1).getReplies().size() == 1) {
             return VIEW_TYPE_ONE_REPLY;
-        } else if (threadCommentModels.get(position - 1).getReplyCount() == 2) {
+        } else if (threadCommentModels.get(position - 1).getReplies().size() == 2) {
             return VIEW_TYPE_TWO_REPLIES;
         } else {
             return VIEW_TYPE_ALL_REPLIES;
