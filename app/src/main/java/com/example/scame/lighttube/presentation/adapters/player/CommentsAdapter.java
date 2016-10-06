@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
@@ -22,23 +21,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<ThreadCommentModel> threadCommentModels;
 
-    private PlayerFooterFragment.LikeListener likeListener;
-
-    private PlayerFooterFragment.DislikeListener dislikeListener;
-
     private String videoTitle;
+
+    private String videoId;
 
     private Context context;
 
     public CommentsAdapter(List<ThreadCommentModel> threadCommentModels, Context context,
-                           PlayerFooterFragment.LikeListener likeListener,
-                           PlayerFooterFragment.DislikeListener dislikeListener,
-                           String videoTitle) {
-
-        this.dislikeListener = dislikeListener;
-        this.likeListener = likeListener;
+                           String videoTitle, String videoId) {
         this.videoTitle = videoTitle;
-
+        this.videoId = videoId;
         this.threadCommentModels = threadCommentModels;
         this.context = context;
     }
@@ -79,7 +71,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (holder instanceof HeaderViewHolder) {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-            headerViewHolder.bindHeaderViewHolder(videoTitle, likeListener, dislikeListener);
+            headerViewHolder.bindHeaderViewHolder(videoId, videoTitle);
         } else if (holder instanceof ThreadCommentViewHolder) {
             ThreadCommentViewHolder threadCommentViewHolder = (ThreadCommentViewHolder) holder;
             threadCommentViewHolder.bindThreadCommentView(position, threadCommentModels);

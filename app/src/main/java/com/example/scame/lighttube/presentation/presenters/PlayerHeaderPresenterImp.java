@@ -5,12 +5,10 @@ import android.util.Log;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
-import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
-import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.RatingModel;
 
-public class PlayerPresenterImp<T extends IPlayerPresenter.PlayerView> implements IPlayerPresenter<T> {
+public class PlayerHeaderPresenterImp<T extends IPlayerHeaderPresenter.PlayerView> implements IPlayerHeaderPresenter<T> {
 
     private T view;
 
@@ -20,14 +18,12 @@ public class PlayerPresenterImp<T extends IPlayerPresenter.PlayerView> implement
 
     private SubscriptionsHandler subscriptionsHandler;
 
-    private RetrieveCommentsUseCase retrieveCommentsUseCase;
 
-    public PlayerPresenterImp(RetrieveRatingUseCase retrieveRatingUseCase,
-                              RateVideoUseCase rateVideoUseCase,
-                              RetrieveCommentsUseCase retrieveCommentsUseCase,
-                              SubscriptionsHandler subscriptionsHandler) {
 
-        this.retrieveCommentsUseCase = retrieveCommentsUseCase;
+    public PlayerHeaderPresenterImp(RetrieveRatingUseCase retrieveRatingUseCase,
+                                    RateVideoUseCase rateVideoUseCase,
+                                    SubscriptionsHandler subscriptionsHandler) {
+
         this.retrieveRatingUseCase = retrieveRatingUseCase;
         this.rateVideoUseCase = rateVideoUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
@@ -44,12 +40,6 @@ public class PlayerPresenterImp<T extends IPlayerPresenter.PlayerView> implement
         rateVideoUseCase.setVideoId(videoId);
         rateVideoUseCase.setRating(rating);
         rateVideoUseCase.execute(new RateVideoSubscriber());
-    }
-
-    @Override
-    public void getCommentList(String videoId) {
-        retrieveCommentsUseCase.setVideoId(videoId);
-        retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
     }
 
     @Override
@@ -72,22 +62,6 @@ public class PlayerPresenterImp<T extends IPlayerPresenter.PlayerView> implement
         subscriptionsHandler.unsubscribe();
     }
 
-    private final class RetrieveCommentsSubscriber extends DefaultSubscriber<CommentListModel> {
-
-        @Override
-        public void onError(Throwable e) {
-            super.onError(e);
-
-            Log.i("onxCommentsError", e.getLocalizedMessage());
-        }
-
-        @Override
-        public void onNext(CommentListModel commentListModel) {
-            super.onNext(commentListModel);
-
-            view.displayComments(commentListModel);
-        }
-    }
 
     private final class RetrieveRatingSubscriber extends DefaultSubscriber<RatingModel> {
 
@@ -103,6 +77,13 @@ public class PlayerPresenterImp<T extends IPlayerPresenter.PlayerView> implement
             super.onNext(ratingModel);
 
             view.displayRating(ratingModel.getRating());
+        }
+
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+
+            Log.i("onxRatingComp", "true");
         }
     }
 

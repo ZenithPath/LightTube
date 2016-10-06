@@ -13,37 +13,21 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.CommentsAdapter;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
-import com.example.scame.lighttube.presentation.presenters.IPlayerPresenter;
+import com.example.scame.lighttube.presentation.presenters.ICommentsPresenter;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlayerFooterFragment extends Fragment implements IPlayerPresenter.PlayerView {
-
-    private static final String LIKE = "like";
-    private static final String DISLIKE = "dislike";
-    private static final String NONE = "none";
+public class PlayerFooterFragment extends Fragment implements ICommentsPresenter.CommentsView {
 
     @Inject
-    IPlayerPresenter<IPlayerPresenter.PlayerView> presenter;
+    ICommentsPresenter<ICommentsPresenter.CommentsView> presenter;
 
     @BindView(R.id.player_footer_rv) RecyclerView recyclerView;
 
     private String videoId;
-
-    @FunctionalInterface
-    public interface LikeListener {
-
-        void onLikeClick(boolean ratedPositively);
-    }
-
-    @FunctionalInterface
-    public interface DislikeListener {
-
-        void onDislikeClick(boolean ratedNegatively);
-    }
 
     public static PlayerFooterFragment newInstance(String videoId) {
         PlayerFooterFragment fragment = new PlayerFooterFragment();
@@ -63,47 +47,19 @@ public class PlayerFooterFragment extends Fragment implements IPlayerPresenter.P
         videoId = getArguments().getString(PlayerFooterFragment.class.getCanonicalName());
         ((PlayerActivity) getActivity()).getPlayerComponent().inject(this);
         ButterKnife.bind(this, fragmentView);
-
         presenter.setView(this);
-        presenter.getVideoRating(videoId);
         presenter.getCommentList(videoId);
 
         return fragmentView;
     }
 
-
     @Override
     public void displayComments(CommentListModel commentListModel) {
         CommentsAdapter commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
-                getActivity(), this::onLikeClick, this::onDislikeClick, "Some title");
+                getActivity(), "Some title", videoId);
 
         recyclerView.setAdapter(commentsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-    }
-
-    public void onLikeClick(boolean ratedPositively) {
-        if (!ratedPositively) {
-            presenter.rateVideo(videoId, NONE);
-        } else {
-            presenter.rateVideo(videoId, LIKE);
-        }
-    }
-
-    public void onDislikeClick(boolean ratedNegatively) {
-        if (!ratedNegatively) {
-            presenter.rateVideo(videoId, NONE);
-        } else {
-            presenter.rateVideo(videoId, DISLIKE);
-        }
-    }
-
-    @Override
-    public void displayRating(String rating) {
-        if (rating.equals(LIKE)) {
-       //     likeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-        } else if (rating.equals(DISLIKE)) {
-       //     dislikeBtn.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-        }
     }
 
     @Override

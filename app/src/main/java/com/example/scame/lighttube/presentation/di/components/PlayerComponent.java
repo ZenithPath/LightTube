@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.presentation.di.components;
 
 
+import com.example.scame.lighttube.presentation.adapters.player.HeaderViewHolder;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.di.modules.PlayerModule;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
@@ -12,4 +13,6 @@ import dagger.Component;
 public interface PlayerComponent {
 
     void inject(PlayerFooterFragment fragment);
+
+    void inject(HeaderViewHolder headerViewHolder);
 }

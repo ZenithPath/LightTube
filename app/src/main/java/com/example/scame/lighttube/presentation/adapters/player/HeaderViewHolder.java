@@ -9,12 +9,23 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
+import com.example.scame.lighttube.presentation.activities.PlayerActivity;
+import com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-class HeaderViewHolder extends RecyclerView.ViewHolder {
+public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayerHeaderPresenter.PlayerView {
+
+    private static final String LIKE = "like";
+    private static final String DISLIKE = "dislike";
+    private static final String NONE = "none";
+
+    @Inject
+    IPlayerHeaderPresenter<IPlayerHeaderPresenter.PlayerView> presenter;
 
     @BindView(R.id.like_btn) ImageButton likeButton;
 
@@ -24,40 +35,60 @@ class HeaderViewHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    HeaderViewHolder(View itemView, Context context) {
+    private String videoId;
+
+    public HeaderViewHolder(View itemView, Context context) {
         super(itemView);
 
         this.context = context;
         ButterKnife.bind(this, itemView);
+
+        inject();
+        presenter.getVideoRating(videoId);
     }
 
-    void bindHeaderViewHolder(String videoTitle, PlayerFooterFragment.LikeListener likeListener,
-                                            PlayerFooterFragment.DislikeListener dislikeListener) {
-
-        videoTitleTv.setText(videoTitle);
-        likeButton.setOnClickListener((view) -> likeClickHandler(likeListener));
-        dislikeButton.setOnClickListener((view) -> dislikeClickHandler(dislikeListener));
-    }
-
-    private void likeClickHandler(PlayerFooterFragment.LikeListener likeListener) {
-        if (likeButton.getColorFilter() != null) {
-            likeButton.setColorFilter(null);
-            likeListener.onLikeClick(false);
-        } else {
-            likeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-            dislikeButton.setColorFilter(null);
-            likeListener.onLikeClick(true);
+    private void inject() {
+        if (context instanceof PlayerActivity) {
+            ((PlayerActivity) context).getPlayerComponent().inject(this);
         }
     }
 
-    private void dislikeClickHandler(PlayerFooterFragment.DislikeListener dislikeListener) {
+    void bindHeaderViewHolder(String videoId, String videoTitle) {
+        videoTitleTv.setText(videoTitle);
+        this.videoId = videoId;
+    }
+
+    @OnClick(R.id.like_btn)
+    public void onLikeClick() {
+        if (likeButton.getColorFilter() != null) {
+            likeButton.setColorFilter(null);
+            presenter.rateVideo(videoId, NONE);
+        } else {
+            likeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            dislikeButton.setColorFilter(null);
+            presenter.rateVideo(videoId, LIKE);
+        }
+    }
+
+
+    @OnClick(R.id.dislike_btn)
+    public void onDislikeClick() {
         if (dislikeButton.getColorFilter() != null) {
             dislikeButton.setColorFilter(null);
-            dislikeListener.onDislikeClick(false);
+            presenter.rateVideo(videoId, NONE);
         } else {
             dislikeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
             likeButton.setColorFilter(null);
-            dislikeListener.onDislikeClick(true);
+            presenter.rateVideo(videoId, DISLIKE);
+        }
+    }
+
+    @Override
+    public void displayRating(String rating) {
+        if (rating.equals(LIKE)) {
+            likeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+        } else if (rating.equals(DISLIKE)) {
+            dislikeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         }
     }
 }
