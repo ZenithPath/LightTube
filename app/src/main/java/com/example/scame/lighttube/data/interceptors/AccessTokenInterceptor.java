@@ -26,7 +26,7 @@ public class AccessTokenInterceptor implements Interceptor {
         accountDataManager.getTokenEntity()
                 .subscribe(tokenEntity -> accessToken = tokenEntity.getAccessToken());
 
-        if (!accessToken.equals("")) {
+        if (!accessToken.equals("") && !isCommentThreadsRequest(originalRequest)) {
             authorisedRequest = originalRequest.newBuilder()
                     .header("Authorization", "Bearer " + accessToken)
                     .build();
@@ -36,5 +36,16 @@ public class AccessTokenInterceptor implements Interceptor {
         }
 
         return chain.proceed(authorisedRequest);
+    }
+
+    // adding a token to this request causes 403 forbidden response code
+    private boolean isCommentThreadsRequest(Request request) {
+        String searchSequence = "commentThreads".toLowerCase();
+        String url = request.url().toString().toLowerCase();
+
+        String searchMethod = "GET".toLowerCase();
+        String requestMethod = request.method().toLowerCase();
+
+        return url.contains(searchSequence) && searchMethod.equals(requestMethod);
     }
 }

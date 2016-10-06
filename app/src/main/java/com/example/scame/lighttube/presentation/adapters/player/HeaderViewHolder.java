@@ -42,9 +42,7 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
 
         this.context = context;
         ButterKnife.bind(this, itemView);
-
         inject();
-        presenter.getVideoRating(videoId);
     }
 
     private void inject() {
@@ -54,8 +52,11 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
     }
 
     void bindHeaderViewHolder(String videoId, String videoTitle) {
-        videoTitleTv.setText(videoTitle);
         this.videoId = videoId;
+        videoTitleTv.setText(videoTitle);
+
+        presenter.setView(this);
+        presenter.getVideoRating(videoId);
     }
 
     @OnClick(R.id.like_btn)
