@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="9dp">
+
+    <include
+        android:id="@+id/thread_comment_root"
+        layout="@layout/comment_item" />
+
+    <include
+        android:id="@+id/first_reply_root"
+        layout="@layout/comment_item" />
+
+    <include
+        android:id="@+id/second_reply_root"
+        layout="@layout/comment_item" />
+
+    <TextView
+        android:id="@+id/all_replies_tv"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/all_replies_text"
+        android:layout_margin="6dp"
+        android:gravity="center_horizontal"/>
+</LinearLayout>

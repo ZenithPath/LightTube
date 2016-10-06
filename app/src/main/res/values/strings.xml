@@ -88,4 +88,6 @@
     <string name="enter_fullscreen">Enter Fullscreen</string>
     <string name="landscape_fullscreen">Always fullscreen in landscape</string>
 
+    <string name="all_replies_text">SHOW ALL REPLIES</string>
+
 </resources>

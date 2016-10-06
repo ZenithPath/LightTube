@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="9dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:columnCount="4"
+    android:rowCount="2"
+    android:orientation="horizontal">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_rowSpan="2"
+        app:civ_border_width="1dp"
+        app:civ_border_color="#FF000000"
+        android:layout_margin="6dp" />
 
     <TextView
-        android:id="@+id/thread_comment_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"/>
+        android:id="@+id/comment_text_tv"
+        android:layout_columnSpan="3"
+        android:textColor="@color/textPrimary"
+        android:textSize="14sp"
+        android:layout_margin="6dp"
+        android:paddingRight="40dp"/>
 
     <TextView
-        android:id="@+id/first_reply_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:paddingLeft="16dp"/>
+        android:id="@+id/author_name_tv"
+        android:textColor="@color/textSecondary"
+        android:textSize="12sp"
+        android:layout_margin="6dp"/>
 
     <TextView
-        android:id="@+id/second_reply_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:paddingLeft="16dp"/>
+        android:id="@+id/comment_date_tv"
+        android:textColor="@color/textSecondary"
+        android:layout_margin="6dp"/>
 
-    <TextView
-        android:id="@+id/all_replies_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:paddingLeft="16dp"/>
+    <ImageView
+        android:id="@+id/replies_iv"
+        android:layout_margin="6dp"/>
+</GridLayout>
 
-</LinearLayout>

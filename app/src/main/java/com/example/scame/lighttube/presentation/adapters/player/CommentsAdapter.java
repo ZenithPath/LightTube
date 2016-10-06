@@ -46,19 +46,19 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder = new HeaderViewHolder(headerView, context);
                 break;
             case VIEW_TYPE_THREAD_COMMENT:
-                View threadCommentView = inflater.inflate(R.layout.comment_item, parent, false);
+                View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new ThreadCommentViewHolder(threadCommentView);
                 break;
             case VIEW_TYPE_ONE_REPLY:
-                View oneReplyView = inflater.inflate(R.layout.comment_item, parent, false);
+                View oneReplyView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new OneReplyViewHolder(oneReplyView);
                 break;
             case VIEW_TYPE_TWO_REPLIES:
-                View twoRepliesView = inflater.inflate(R.layout.comment_item, parent, false);
+                View twoRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new TwoRepliesViewHolder(twoRepliesView);
                 break;
             case VIEW_TYPE_ALL_REPLIES:
-                View allRepliesView = inflater.inflate(R.layout.comment_item, parent, false);
+                View allRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new AllRepliesViewHolder(allRepliesView);
                 break;
         }
@@ -113,28 +113,28 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private class ThreadCommentViewHolder extends CommentsViewHolder {
 
         ThreadCommentViewHolder(View itemView) {
-            super(itemView);
+            super(itemView, context);
         }
     }
 
     private class OneReplyViewHolder extends CommentsViewHolder {
 
         OneReplyViewHolder(View itemView) {
-            super(itemView);
+            super(itemView, context);
         }
     }
 
     private class TwoRepliesViewHolder extends CommentsViewHolder {
 
         TwoRepliesViewHolder(View itemView) {
-            super(itemView);
+            super(itemView, context);
         }
     }
 
     private class AllRepliesViewHolder extends CommentsViewHolder {
 
         AllRepliesViewHolder(View itemView) {
-            super(itemView);
+            super(itemView, context);
         }
     }
 }

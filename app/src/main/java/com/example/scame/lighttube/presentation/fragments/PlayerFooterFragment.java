@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.CommentsAdapter;
+import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecoration;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.presenters.ICommentsPresenter;
 
@@ -59,6 +60,7 @@ public class PlayerFooterFragment extends Fragment implements ICommentsPresenter
                 getActivity(), "Some title", videoId);
 
         recyclerView.setAdapter(commentsAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
