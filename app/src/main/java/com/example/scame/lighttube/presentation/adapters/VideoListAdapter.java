@@ -87,7 +87,7 @@ public class VideoListAdapter extends BaseAdapter {
             videoViewHolder.durationTv.setText(videoModel.getDuration());
 
             Picasso.with(context).load(videoModel.getImageUrl())
-                    .placeholder(R.drawable.colors_0011_pearl_grey)
+                    .placeholder(R.drawable.placeholder_grey)
                     .resize(650, 400)
                     .centerCrop()
                     .into(videoViewHolder.thumbnailsIv);

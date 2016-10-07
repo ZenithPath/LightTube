@@ -7,37 +7,36 @@
     android:rowCount="2"
     android:orientation="horizontal">
 
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_iv"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/profile_image_size"
+        android:layout_height="@dimen/profile_image_size"
         android:layout_rowSpan="2"
         app:civ_border_width="1dp"
         app:civ_border_color="#FF000000"
-        android:layout_margin="6dp" />
+        android:layout_margin="@dimen/comment_elem_margin" />
 
     <TextView
         android:id="@+id/comment_text_tv"
         android:layout_columnSpan="3"
         android:textColor="@color/textPrimary"
-        android:textSize="14sp"
-        android:layout_margin="6dp"
-        android:paddingRight="40dp"/>
+        android:textSize="@dimen/comment_text"
+        android:layout_margin="@dimen/comment_elem_margin"
+        android:paddingRight="@dimen/text_clipping_padding"/>
 
     <TextView
         android:id="@+id/author_name_tv"
         android:textColor="@color/textSecondary"
-        android:textSize="12sp"
-        android:layout_margin="6dp"/>
+        android:textSize="@dimen/comment_meta_text"
+        android:layout_margin="@dimen/comment_elem_margin"/>
 
     <TextView
         android:id="@+id/comment_date_tv"
         android:textColor="@color/textSecondary"
-        android:layout_margin="6dp"/>
+        android:layout_margin="@dimen/comment_elem_margin"/>
 
     <ImageView
         android:id="@+id/replies_iv"
-        android:layout_margin="6dp"/>
+        android:layout_margin="@dimen/comment_elem_margin"/>
 </GridLayout>
 

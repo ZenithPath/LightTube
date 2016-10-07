@@ -88,7 +88,7 @@ public class GridAdapter extends BaseAdapter {
             textView.setText(videoModel.getTitle());
 
             Picasso.with(context).load(videoModel.getImageUrl())
-                    .placeholder(R.drawable.colors_0011_pearl_grey)
+                    .placeholder(R.drawable.placeholder_grey)
                     .resize(300, 225)
                     .centerCrop()
                     .into(imageView);

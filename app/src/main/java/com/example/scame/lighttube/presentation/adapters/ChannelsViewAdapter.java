@@ -72,7 +72,7 @@ public class ChannelsViewAdapter extends RecyclerView.Adapter<ChannelsViewAdapte
         ImageView imageView = holder.thumbnailsIv;
 
         Picasso.with(context).load(item.getImageUrl())
-                .placeholder(R.drawable.colors_0011_pearl_grey)
+                .placeholder(R.drawable.placeholder_grey)
                 .noFade()
                 .resize(70, 70)
                 .centerCrop()

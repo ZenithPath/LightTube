@@ -7,4 +7,14 @@
     <dimen name="headers">20sp</dimen>
     <dimen name="regular_text">16sp</dimen>
 
+    <dimen name="comment_text">14sp</dimen>
+    <dimen name="comment_meta_text">12sp</dimen>
+
+    <dimen name="comment_elem_margin">6dp</dimen>
+    <dimen name="comment_padding">9dp</dimen>
+
+    <dimen name="text_clipping_padding">40dp</dimen>
+
+    <dimen name="profile_image_size">30dp</dimen>
+
 </resources>

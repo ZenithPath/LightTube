@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.squareup.picasso.Picasso;
 
@@ -21,6 +22,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private static final int LAST_REPLY = 0;
     private static final int PENULTIMATE_REPLY = 1;
+
+    private static int IMAGE_SIZE;
 
     @BindView(R.id.thread_comment_root) GridLayout threadRoot;
     @BindView(R.id.first_reply_root) GridLayout firstReplyRoot;
@@ -53,6 +56,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
         this.context = context;
         ButterKnife.bind(this, itemView);
+
+        IMAGE_SIZE = context.getResources().getDimensionPixelSize(R.dimen.profile_image_size);
 
         threadProfileIv = ButterKnife.findById(threadRoot, R.id.profile_iv);
         threadCommentText = ButterKnife.findById(threadRoot, R.id.comment_text_tv);
@@ -102,40 +107,42 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
-        Picasso.with(context).load(comments.get(position - 1).getProfileImageUrl())
-                .noFade().resize(30, 30).centerCrop()
-                .placeholder(R.drawable.colors_0011_pearl_grey)
+        ThreadCommentModel commentModel = comments.get(position - 1);
+
+        Picasso.with(context).load(commentModel.getProfileImageUrl())
+                .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
+                .placeholder(R.drawable.placeholder_grey)
                 .into(threadProfileIv);
 
-        threadCommentText.setText(comments.get(position - 1).getTextDisplay());
-        threadCommentDate.setText(comments.get(position - 1).getDate());
-        threadCommentAuthor.setText(comments.get(position - 1).getAuthorName());
+        threadCommentText.setText(commentModel.getTextDisplay());
+        threadCommentDate.setText(commentModel.getDate());
+        threadCommentAuthor.setText(commentModel.getAuthorName());
         // add replies IV
     }
 
     private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments) {
-        Picasso.with(context).load(comments.get(position - 1)
-                .getReplies().get(LAST_REPLY)
-                .getProfileImageUrl())
-                .noFade().resize(30, 30).centerCrop()
-                .placeholder(R.drawable.colors_0011_pearl_grey)
+        ReplyModel replyModel = comments.get(position - 1).getReplies().get(LAST_REPLY);
+
+        Picasso.with(context).load(replyModel.getProfileImageUrl())
+                .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
+                .placeholder(R.drawable.placeholder_grey)
                 .into(firstReplyProfileIv);
 
-        firstReplyText.setText(comments.get(position - 1).getReplies().get(LAST_REPLY).getTextDisplay());
-        firstReplyDate.setText(comments.get(position - 1).getReplies().get(LAST_REPLY).getDate());
-        firstReplyAuthor.setText(comments.get(position - 1).getReplies().get(LAST_REPLY).getAuthorName());
+        firstReplyText.setText(replyModel.getTextDisplay());
+        firstReplyDate.setText(replyModel.getDate());
+        firstReplyAuthor.setText(replyModel.getAuthorName());
     }
 
     private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments) {
-        Picasso.with(context).load(comments.get(position - 1)
-                .getReplies().get(PENULTIMATE_REPLY)
-                .getProfileImageUrl())
-                .noFade().resize(30, 30).centerCrop()
-                .placeholder(R.drawable.colors_0011_pearl_grey)
+        ReplyModel replyModel = comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY);
+
+        Picasso.with(context).load(replyModel.getProfileImageUrl())
+                .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
+                .placeholder(R.drawable.placeholder_grey)
                 .into(secondReplyProfileIv);
 
-        secondReplyText.setText(comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY).getTextDisplay());
-        secondReplyDate.setText(comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY).getDate());
-        secondReplyAuthor.setText(comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY).getAuthorName());
+        secondReplyText.setText(replyModel.getTextDisplay());
+        secondReplyDate.setText(replyModel.getDate());
+        secondReplyAuthor.setText(replyModel.getAuthorName());
     }
 }

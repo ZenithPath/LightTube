@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="9dp">
+    android:padding="@dimen/comment_padding">
 
     <include
         android:id="@+id/thread_comment_root"
@@ -22,6 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:text="@string/all_replies_text"
-        android:layout_margin="6dp"
+        android:layout_margin="@dimen/comment_elem_margin"
         android:gravity="center_horizontal"/>
 </LinearLayout>

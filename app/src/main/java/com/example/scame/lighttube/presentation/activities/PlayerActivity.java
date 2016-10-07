@@ -25,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         YouTubePlayer.OnFullscreenListener,
@@ -37,6 +38,8 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     @BindView(R.id.player) YouTubePlayerView playerView;
 
     @BindView(R.id.player_toolbar) Toolbar toolbar;
+
+    @BindView(R.id.player_container) LinearLayout playerContainer;
 
     private YouTubePlayer youTubePlayer;
 
@@ -107,12 +110,16 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private void doLayout() {
         LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) playerView.getLayoutParams();
+        LinearLayout.LayoutParams containerParams = (LinearLayout.LayoutParams) playerContainer.getLayoutParams();
 
         if (fullscreen) {
             hideAllViews();
+            containerParams.height = MATCH_PARENT;
             playerParams.width = MATCH_PARENT;
             playerParams.height = MATCH_PARENT;
+
         } else {
+            containerParams.height = WRAP_CONTENT;
             showAllViews();
         }
     }
