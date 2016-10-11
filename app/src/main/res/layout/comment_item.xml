@@ -28,6 +28,7 @@
         android:id="@+id/author_name_tv"
         android:textColor="@color/textSecondary"
         android:textSize="@dimen/comment_meta_text"
+        android:clickable="true"
         android:layout_margin="@dimen/comment_elem_margin"/>
 
     <TextView

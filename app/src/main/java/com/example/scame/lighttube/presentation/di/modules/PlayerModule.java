@@ -7,11 +7,14 @@ import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
+import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
-import com.example.scame.lighttube.presentation.presenters.CommentsPresenterImp;
-import com.example.scame.lighttube.presentation.presenters.ICommentsPresenter;
+import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
+import com.example.scame.lighttube.presentation.presenters.PlayerFooterPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter;
 import com.example.scame.lighttube.presentation.presenters.PlayerHeaderPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.RepliesPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import javax.inject.Named;
@@ -19,8 +22,10 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 
-import static com.example.scame.lighttube.presentation.presenters.ICommentsPresenter.*;
+import static com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter.*;
 import static com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter.*;
+
+import static com.example.scame.lighttube.presentation.presenters.IRepliesPresenter.*;
 
 @Module
 public class PlayerModule {
@@ -51,6 +56,20 @@ public class PlayerModule {
 
     @Provides
     @PerActivity
+    RetrieveRepliesUseCase provideRetrieveRepliesUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                         ICommentsDataManager commentsDataManager) {
+        return new RetrieveRepliesUseCase(subscribeOn, observeOn, commentsDataManager);
+    }
+
+    @Provides
+    @PerActivity
+    IRepliesPresenter<RepliesView> provideRepliesPresenter(RetrieveRepliesUseCase retrieveRepliesUseCase,
+                                                           @Named("replies")SubscriptionsHandler subscriptionsHandler) {
+        return new RepliesPresenterImp<>(retrieveRepliesUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
     IPlayerHeaderPresenter<PlayerView> providePlayerPresenter(RetrieveRatingUseCase retrieveRatingUseCase,
                                                               RateVideoUseCase rateVideoUseCase,
                                                               @Named("header")SubscriptionsHandler subscriptionsHandler) {
@@ -60,10 +79,10 @@ public class PlayerModule {
 
     @Provides
     @PerActivity
-    ICommentsPresenter<CommentsView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
-                                                              @Named("comments")SubscriptionsHandler subscriptionsHandler) {
+    IPlayerFooterPresenter<CommentsView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                                                  @Named("comments")SubscriptionsHandler subscriptionsHandler) {
 
-        return new CommentsPresenterImp<>(retrieveCommentsUseCase, subscriptionsHandler);
+        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, subscriptionsHandler);
     }
 
     @Provides
@@ -80,5 +99,12 @@ public class PlayerModule {
     @PerActivity
     SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase) {
         return new SubscriptionsHandler(retrieveCommentsUseCase);
+    }
+
+    @Provides
+    @Named("replies")
+    @PerActivity
+    SubscriptionsHandler provideRepliesSubscriptionsHandler(RetrieveRepliesUseCase retrieveRepliesUseCase) {
+        return new SubscriptionsHandler(retrieveRepliesUseCase);
     }
 }

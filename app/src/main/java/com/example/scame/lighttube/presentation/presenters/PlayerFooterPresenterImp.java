@@ -7,7 +7,7 @@ import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 
-public class CommentsPresenterImp<T extends ICommentsPresenter.CommentsView> implements ICommentsPresenter<T> {
+public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.CommentsView> implements IPlayerFooterPresenter<T> {
 
     private RetrieveCommentsUseCase retrieveCommentsUseCase;
 
@@ -15,8 +15,8 @@ public class CommentsPresenterImp<T extends ICommentsPresenter.CommentsView> imp
 
     private T view;
 
-    public CommentsPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
-                                SubscriptionsHandler subscriptionsHandler) {
+    public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                    SubscriptionsHandler subscriptionsHandler) {
 
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
@@ -45,6 +45,7 @@ public class CommentsPresenterImp<T extends ICommentsPresenter.CommentsView> imp
 
     @Override
     public void destroy() {
+        view = null;
         subscriptionsHandler.unsubscribe();
     }
 

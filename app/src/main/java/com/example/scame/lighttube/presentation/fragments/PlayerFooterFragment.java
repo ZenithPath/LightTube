@@ -14,17 +14,17 @@ import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.CommentsAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecoration;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
-import com.example.scame.lighttube.presentation.presenters.ICommentsPresenter;
+import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlayerFooterFragment extends Fragment implements ICommentsPresenter.CommentsView {
+public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.CommentsView {
 
     @Inject
-    ICommentsPresenter<ICommentsPresenter.CommentsView> presenter;
+    IPlayerFooterPresenter<IPlayerFooterPresenter.CommentsView> presenter;
 
     @BindView(R.id.player_footer_rv) RecyclerView recyclerView;
 
@@ -67,7 +67,6 @@ public class PlayerFooterFragment extends Fragment implements ICommentsPresenter
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         presenter.destroy();
     }
 }

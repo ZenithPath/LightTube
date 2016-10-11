@@ -7,9 +7,9 @@ public class CommentItem {
 
     private ThreadSnippet snippet;
 
-    private ReplyEntity replies;
+    private NestedReplyEntity replies;
 
-    public void setReplies(ReplyEntity replies) {
+    public void setReplies(NestedReplyEntity replies) {
         this.replies = replies;
     }
 
@@ -28,7 +28,7 @@ public class CommentItem {
         return id;
     }
 
-    public ReplyEntity getReplies() {
+    public NestedReplyEntity getReplies() {
         return replies;
     }
 }
