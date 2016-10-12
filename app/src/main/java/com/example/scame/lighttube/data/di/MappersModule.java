@@ -12,6 +12,8 @@ import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
+import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
+import com.example.scame.lighttube.data.mappers.ThreadRequestMapper;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
 
 import javax.inject.Singleton;
@@ -85,5 +87,15 @@ public class MappersModule {
     @Singleton @Provides
     ReplyListMapper provideReplyListMapper() {
         return new ReplyListMapper();
+    }
+
+    @Singleton @Provides
+    ThreadRequestMapper provideThreadRequestMapper() {
+        return new ThreadRequestMapper();
+    }
+
+    @Singleton @Provides
+    ThreadRequestBuilder provideThreadCommentBuilder() {
+        return new ThreadRequestBuilder();
     }
 }

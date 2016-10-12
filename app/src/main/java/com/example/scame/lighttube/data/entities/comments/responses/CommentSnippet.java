@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.data.entities.comments;
+package com.example.scame.lighttube.data.entities.comments.responses;
 
 
 public class CommentSnippet {
@@ -11,7 +11,7 @@ public class CommentSnippet {
 
     private String videoId;
 
-    private String textDisplay;
+    private String textDisplay; // used in GET requests
 
     private boolean canRate;
 
@@ -24,6 +24,12 @@ public class CommentSnippet {
     private String updatedAt;
 
     private String parentId;
+
+    private String textOriginal; // used in POST requests
+
+    public void setTextOriginal(String textOriginal) {
+        this.textOriginal = textOriginal;
+    }
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
@@ -71,6 +77,10 @@ public class CommentSnippet {
 
     public String getParentId() {
         return parentId;
+    }
+
+    public String getTextOriginal() {
+        return textOriginal;
     }
 
     public String getAuthorDisplayName() {

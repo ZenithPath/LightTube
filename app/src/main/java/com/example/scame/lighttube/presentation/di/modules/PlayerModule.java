@@ -4,6 +4,7 @@ import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
@@ -63,6 +64,14 @@ public class PlayerModule {
 
     @Provides
     @PerActivity
+    PostThreadCommentUseCase providePostCommentUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                       ICommentsDataManager commentsDataManager) {
+        return new PostThreadCommentUseCase(subscribeOn, observeOn, commentsDataManager);
+    }
+
+
+    @Provides
+    @PerActivity
     IRepliesPresenter<RepliesView> provideRepliesPresenter(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                                            @Named("replies")SubscriptionsHandler subscriptionsHandler) {
         return new RepliesPresenterImp<>(retrieveRepliesUseCase, subscriptionsHandler);
@@ -80,9 +89,10 @@ public class PlayerModule {
     @Provides
     @PerActivity
     IPlayerFooterPresenter<CommentsView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                                                  PostThreadCommentUseCase postCommentUseCase,
                                                                   @Named("comments")SubscriptionsHandler subscriptionsHandler) {
 
-        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, subscriptionsHandler);
+        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, postCommentUseCase, subscriptionsHandler);
     }
 
     @Provides
@@ -97,8 +107,9 @@ public class PlayerModule {
     @Provides
     @Named("comments")
     @PerActivity
-    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase) {
-        return new SubscriptionsHandler(retrieveCommentsUseCase);
+    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                                             PostThreadCommentUseCase postCommentUseCase) {
+        return new SubscriptionsHandler(retrieveCommentsUseCase, postCommentUseCase);
     }
 
     @Provides

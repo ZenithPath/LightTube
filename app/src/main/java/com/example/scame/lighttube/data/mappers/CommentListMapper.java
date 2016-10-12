@@ -1,9 +1,9 @@
 package com.example.scame.lighttube.data.mappers;
 
 
-import com.example.scame.lighttube.data.entities.comments.CommentItem;
-import com.example.scame.lighttube.data.entities.comments.CommentSnippetHolder;
-import com.example.scame.lighttube.data.entities.comments.CommentThreadsEntity;
+import com.example.scame.lighttube.data.entities.comments.responses.CommentItem;
+import com.example.scame.lighttube.data.entities.comments.responses.CommentSnippetHolder;
+import com.example.scame.lighttube.data.entities.comments.responses.CommentThreadsEntity;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;

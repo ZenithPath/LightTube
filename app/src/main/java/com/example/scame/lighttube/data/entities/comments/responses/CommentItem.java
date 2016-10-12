@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.data.entities.comments;
+package com.example.scame.lighttube.data.entities.comments.responses;
 
 
 public class CommentItem {

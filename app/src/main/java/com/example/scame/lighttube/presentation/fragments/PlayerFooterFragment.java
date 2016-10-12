@@ -15,6 +15,7 @@ import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.CommentsAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecoration;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 
 import javax.inject.Inject;
@@ -93,6 +94,10 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         recyclerView.setAdapter(commentsAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    @Override
+    public void displayPostedComment(ThreadCommentModel threadComment) {
     }
 
     @Override

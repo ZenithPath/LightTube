@@ -35,8 +35,8 @@ public class SignInFragment extends BaseFragment implements ISignInPresenter.Sig
 
     private static final String SIGN_IN_TAG = "sign_in_log";
 
-    public static final String YOUTUBE_SCOPE = "https://www.googleapis.com/auth/youtube";
     public static final String YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube.upload";
+    public static final String YOUTUBE_FORCE_SSL_SCOPE = "https://www.googleapis.com/auth/youtube.force-ssl";
 
     private View fragmentView;
 

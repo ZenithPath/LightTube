@@ -42,8 +42,9 @@ public class SignInModule {
     @Provides
     GoogleSignInOptions provideGoogleSignInOptions() {
         return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(SignInFragment.YOUTUBE_SCOPE),
-                        new Scope(SignInFragment.YOUTUBE_UPLOAD_SCOPE))
+                .requestScopes(
+                        new Scope(SignInFragment.YOUTUBE_UPLOAD_SCOPE),
+                        new Scope(SignInFragment.YOUTUBE_FORCE_SSL_SCOPE))
                 .requestServerAuthCode(PrivateValues.CLIENT_ID, true)
                 .requestEmail()
                 .build();
