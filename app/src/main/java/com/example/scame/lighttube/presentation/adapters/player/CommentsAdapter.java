@@ -14,15 +14,23 @@ import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public static final int VIEW_ABOVE_NUMBER = 2;
+
+    private static final int HEADER_LAYOUT_POSITION = 0;
+    private static final int COMMENT_INPUT_POSITION = 1;
+
     private static final int VIEW_TYPE_HEADER = 0;
     private static final int VIEW_TYPE_THREAD_COMMENT = 1;
     private static final int VIEW_TYPE_ONE_REPLY = 2;
     private static final int VIEW_TYPE_TWO_REPLIES = 3;
     private static final int VIEW_TYPE_ALL_REPLIES = 4;
+    private static final int VIEW_TYPE_COMMENT_INPUT = 5;
 
     private List<ThreadCommentModel> threadCommentModels;
 
     PlayerFooterFragment.PlayerFooterListener footerListener;
+
+    PlayerFooterFragment.CommentInputListener inputListener;
 
     private String videoTitle;
 
@@ -32,8 +40,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public CommentsAdapter(List<ThreadCommentModel> threadCommentModels,
                            Context context, PlayerFooterFragment.PlayerFooterListener footerListener,
+                           PlayerFooterFragment.CommentInputListener inputListener,
                            String videoTitle, String videoId) {
 
+        this.inputListener = inputListener;
         this.footerListener = footerListener;
         this.videoTitle = videoTitle;
         this.videoId = videoId;
@@ -50,6 +60,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_HEADER:
                 View headerView = inflater.inflate(R.layout.player_header_item, parent, false);
                 viewHolder = new HeaderViewHolder(headerView, context);
+                break;
+            case VIEW_TYPE_COMMENT_INPUT:
+                View inputView = inflater.inflate(R.layout.comment_input_item, parent, false);
+                viewHolder = new CommentInputViewHolder(inputView);
                 break;
             case VIEW_TYPE_THREAD_COMMENT:
                 View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
@@ -78,6 +92,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (holder instanceof HeaderViewHolder) {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
             headerViewHolder.bindHeaderViewHolder(videoId, videoTitle);
+        } else if (holder instanceof CommentInputViewHolder) {
+            CommentInputViewHolder inputViewHolder = (CommentInputViewHolder) holder;
+            inputViewHolder.bindInputView(inputListener);
         } else if (holder instanceof ThreadCommentViewHolder) {
             ThreadCommentViewHolder threadCommentViewHolder = (ThreadCommentViewHolder) holder;
             threadCommentViewHolder.bindThreadCommentView(position, threadCommentModels);
@@ -95,18 +112,20 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return threadCommentModels.size() + 1;
+        return threadCommentModels.size() + VIEW_ABOVE_NUMBER;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (position == HEADER_LAYOUT_POSITION) {
             return VIEW_TYPE_HEADER;
-        } else if (threadCommentModels.get(position - 1).getReplies().size() == 0) {
+        } else if (position == COMMENT_INPUT_POSITION) {
+            return VIEW_TYPE_COMMENT_INPUT;
+        } else if (threadCommentModels.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 0) {
             return VIEW_TYPE_THREAD_COMMENT;
-        } else if (threadCommentModels.get(position - 1).getReplies().size() == 1) {
+        } else if (threadCommentModels.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 1) {
             return VIEW_TYPE_ONE_REPLY;
-        } else if (threadCommentModels.get(position - 1).getReplies().size() == 2) {
+        } else if (threadCommentModels.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 2) {
             return VIEW_TYPE_TWO_REPLIES;
         } else {
             return VIEW_TYPE_ALL_REPLIES;

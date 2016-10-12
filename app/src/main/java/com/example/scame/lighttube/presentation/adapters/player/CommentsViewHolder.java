@@ -104,7 +104,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     void bindAllRepliesView(int position, List<ThreadCommentModel> comments,
                             PlayerFooterFragment.PlayerFooterListener footerListener) {
 
-        String commentThreadId = comments.get(position - 1).getThreadId();
+        String commentThreadId = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER).getThreadId();
         allRepliesTv.setOnClickListener(v -> footerListener.onRepliesClick(commentThreadId));
 
         bindThreadUtil(position, comments);
@@ -113,7 +113,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
-        ThreadCommentModel commentModel = comments.get(position - 1);
+        ThreadCommentModel commentModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER);
 
         Picasso.with(context).load(commentModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
@@ -127,7 +127,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
-        ReplyModel replyModel = comments.get(position - 1).getReplies().get(index);
+        ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
+                .getReplies().get(index);
 
         Picasso.with(context).load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
@@ -140,7 +141,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
-        ReplyModel replyModel = comments.get(position - 1).getReplies().get(index);
+        ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
+                .getReplies().get(index);
 
         Picasso.with(context).load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()

@@ -2,13 +2,16 @@ package com.example.scame.lighttube.presentation.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
@@ -40,6 +43,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     public interface PlayerFooterListener {
 
         void onRepliesClick(String threadCommentId);
+    }
+
+    public interface CommentInputListener {
+
+        void onSendCommentClick(String commentText);
     }
 
     public static PlayerFooterFragment newInstance(String videoId) {
@@ -89,7 +97,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         this.commentListModel = commentListModel;
 
         CommentsAdapter commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
-                getActivity(), footerListener, "Some title", videoId);
+                getActivity(), footerListener, commentText -> presenter.postComment(commentText, videoId),
+                "Some title", videoId);
 
         recyclerView.setAdapter(commentsAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
@@ -98,6 +107,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Override
     public void displayPostedComment(ThreadCommentModel threadComment) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 
     @Override

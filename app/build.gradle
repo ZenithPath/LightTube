@@ -66,6 +66,8 @@ dependencies {
 
     compile 'frankiesardo:icepick:3.2.0'
     provided 'frankiesardo:icepick-processor:3.2.0'
+
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
 }
 
 apply plugin: 'com.google.gms.google-services'
