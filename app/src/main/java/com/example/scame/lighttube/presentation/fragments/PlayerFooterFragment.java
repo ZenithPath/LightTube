@@ -1,5 +1,6 @@
 package com.example.scame.lighttube.presentation.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,9 +27,17 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     @Inject
     IPlayerFooterPresenter<IPlayerFooterPresenter.CommentsView> presenter;
 
-    @BindView(R.id.player_footer_rv) RecyclerView recyclerView;
+    @BindView(R.id.player_footer_rv)
+    RecyclerView recyclerView;
+
+    private PlayerFooterListener footerListener;
 
     private String videoId;
+
+    public interface PlayerFooterListener {
+
+        void onRepliesClick(String threadCommentId);
+    }
 
     public static PlayerFooterFragment newInstance(String videoId) {
         PlayerFooterFragment fragment = new PlayerFooterFragment();
@@ -40,6 +49,15 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         return fragment;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (activity instanceof PlayerFooterListener) {
+            footerListener = (PlayerFooterListener) activity;
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,6 +66,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         videoId = getArguments().getString(PlayerFooterFragment.class.getCanonicalName());
         ((PlayerActivity) getActivity()).getPlayerComponent().inject(this);
         ButterKnife.bind(this, fragmentView);
+
         presenter.setView(this);
         presenter.getCommentList(videoId);
 
@@ -57,7 +76,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     @Override
     public void displayComments(CommentListModel commentListModel) {
         CommentsAdapter commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
-                getActivity(), "Some title", videoId);
+                getActivity(), footerListener, "Some title", videoId);
 
         recyclerView.setAdapter(commentsAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));

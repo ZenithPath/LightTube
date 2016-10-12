@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.squareup.picasso.Picasso;
@@ -86,7 +87,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     void bindOneReplyView(int position, List<ThreadCommentModel> comments) {
         bindThreadUtil(position, comments);
-        bindFirstReplyUtil(position, comments);
+        bindFirstReplyUtil(position, comments, LAST_REPLY);
 
         secondReplyRoot.setVisibility(View.GONE);
         allRepliesTv.setVisibility(View.GONE);
@@ -94,16 +95,21 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     void bindTwoRepliesView(int position, List<ThreadCommentModel> comments) {
         bindThreadUtil(position, comments);
-        bindFirstReplyUtil(position, comments);
-        bindSecondReplyUtil(position, comments);
+        bindFirstReplyUtil(position, comments, PENULTIMATE_REPLY);
+        bindSecondReplyUtil(position, comments, LAST_REPLY);
 
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindAllRepliesView(int position, List<ThreadCommentModel> comments) {
+    void bindAllRepliesView(int position, List<ThreadCommentModel> comments,
+                            PlayerFooterFragment.PlayerFooterListener footerListener) {
+
+        String commentThreadId = comments.get(position - 1).getThreadId();
+        allRepliesTv.setOnClickListener(v -> footerListener.onRepliesClick(commentThreadId));
+
         bindThreadUtil(position, comments);
-        bindFirstReplyUtil(position, comments);
-        bindSecondReplyUtil(position, comments);
+        bindFirstReplyUtil(position, comments, PENULTIMATE_REPLY);
+        bindSecondReplyUtil(position, comments, LAST_REPLY);
     }
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
@@ -120,8 +126,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         // add replies IV
     }
 
-    private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments) {
-        ReplyModel replyModel = comments.get(position - 1).getReplies().get(LAST_REPLY);
+    private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
+        ReplyModel replyModel = comments.get(position - 1).getReplies().get(index);
 
         Picasso.with(context).load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
@@ -133,8 +139,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         firstReplyAuthor.setText(replyModel.getAuthorName());
     }
 
-    private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments) {
-        ReplyModel replyModel = comments.get(position - 1).getReplies().get(PENULTIMATE_REPLY);
+    private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
+        ReplyModel replyModel = comments.get(position - 1).getReplies().get(index);
 
         Picasso.with(context).load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()

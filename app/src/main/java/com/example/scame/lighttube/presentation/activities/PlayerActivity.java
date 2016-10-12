@@ -18,6 +18,7 @@ import com.example.scame.lighttube.presentation.di.components.DaggerPlayerCompon
 import com.example.scame.lighttube.presentation.di.components.PlayerComponent;
 import com.example.scame.lighttube.presentation.di.modules.PlayerModule;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
+import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
@@ -29,17 +30,18 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         YouTubePlayer.OnFullscreenListener,
-        AppCompatCallback {
+        AppCompatCallback,
+        PlayerFooterFragment.PlayerFooterListener {
 
     private static final int PORTRAIT_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
     private static final String PLAYER_FOOTER_TAG = "playerFooter";
 
+    private static final String REPLIES_FRAG_TAG = "repliesFragment";
+
     @BindView(R.id.player) YouTubePlayerView playerView;
 
     @BindView(R.id.player_toolbar) Toolbar toolbar;
-
-    @BindView(R.id.player_container) LinearLayout playerContainer;
 
     private YouTubePlayer youTubePlayer;
 
@@ -53,13 +55,12 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        videoId = getIntent().getStringExtra(getString(R.string.video_id));
-
         delegate = AppCompatDelegate.create(this, this);
         delegate.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         delegate.setContentView(R.layout.player_activity);
+
+        videoId = getIntent().getStringExtra(getString(R.string.video_id));
 
         ButterKnife.bind(this);
 
@@ -71,6 +72,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         instantiateFooterFragment();
     }
 
+
     private void instantiateFooterFragment() {
         if (getFragmentManager().findFragmentByTag(PLAYER_FOOTER_TAG) == null) {
             PlayerFooterFragment fragment = PlayerFooterFragment.newInstance(videoId);
@@ -78,6 +80,15 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
                     .replace(R.id.player_activity_fl, fragment, PLAYER_FOOTER_TAG)
                     .commit();
         }
+    }
+
+    @Override
+    public void onRepliesClick(String threadCommentId) {
+        RepliesFragment repliesFragment = RepliesFragment.newInstance(threadCommentId);
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.player_activity_fl, repliesFragment, REPLIES_FRAG_TAG)
+                .commit();
     }
 
     @Override
@@ -110,16 +121,14 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private void doLayout() {
         LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) playerView.getLayoutParams();
-        LinearLayout.LayoutParams containerParams = (LinearLayout.LayoutParams) playerContainer.getLayoutParams();
 
         if (fullscreen) {
             hideAllViews();
-            containerParams.height = MATCH_PARENT;
             playerParams.width = MATCH_PARENT;
             playerParams.height = MATCH_PARENT;
 
         } else {
-            containerParams.height = WRAP_CONTENT;
+            playerParams.height = WRAP_CONTENT;
             showAllViews();
         }
     }
@@ -143,7 +152,6 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
             delegate.getSupportActionBar().show();
         }
     }
-
 
     @Override
     public void onFullscreen(boolean isFullscreen) {

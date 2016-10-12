@@ -54,7 +54,10 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         public void onNext(ReplyListModel replyListModel) {
             super.onNext(replyListModel);
 
-            Log.i("onxRepliesNext", replyListModel.getReplyModels().get(0).getAuthorName());
+            if (view != null) {
+                Log.i("onxRepliesFetched", "" + replyListModel.getReplyModels().size());
+                view.displayReplies(replyListModel);
+            }
         }
 
         @Override
@@ -62,13 +65,6 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
             super.onError(e);
 
             Log.i("onxRepliesError", e.getLocalizedMessage());
-        }
-
-        @Override
-        public void onCompleted() {
-            super.onCompleted();
-
-            Log.i("onxCompleted", "completed");
         }
     }
 }

@@ -16,6 +16,10 @@ public class ReplyListModel {
         replyModels.add(replyModel);
     }
 
+    public ReplyModel getReplyModel(int position) {
+        return replyModels.get(position);
+    }
+
     public void setReplyModels(List<ReplyModel> replyModels) {
         this.replyModels = replyModels;
     }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
@@ -21,14 +22,19 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<ThreadCommentModel> threadCommentModels;
 
+    PlayerFooterFragment.PlayerFooterListener footerListener;
+
     private String videoTitle;
 
     private String videoId;
 
     private Context context;
 
-    public CommentsAdapter(List<ThreadCommentModel> threadCommentModels, Context context,
+    public CommentsAdapter(List<ThreadCommentModel> threadCommentModels,
+                           Context context, PlayerFooterFragment.PlayerFooterListener footerListener,
                            String videoTitle, String videoId) {
+
+        this.footerListener = footerListener;
         this.videoTitle = videoTitle;
         this.videoId = videoId;
         this.threadCommentModels = threadCommentModels;
@@ -83,7 +89,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             twoRepliesViewHolder.bindTwoRepliesView(position, threadCommentModels);
         } else if (holder instanceof AllRepliesViewHolder) {
             AllRepliesViewHolder allRepliesViewHolder = (AllRepliesViewHolder) holder;
-            allRepliesViewHolder.bindAllRepliesView(position, threadCommentModels);
+            allRepliesViewHolder.bindAllRepliesView(position, threadCommentModels, footerListener);
         }
     }
 
