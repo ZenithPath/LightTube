@@ -55,7 +55,6 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
             super.onNext(replyListModel);
 
             if (view != null) {
-                Log.i("onxRepliesFetched", "" + replyListModel.getReplyModels().size());
                 view.displayReplies(replyListModel);
             }
         }

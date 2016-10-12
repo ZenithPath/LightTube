@@ -32,6 +32,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private PlayerFooterListener footerListener;
 
+    private CommentListModel commentListModel;
+
     private String videoId;
 
     public interface PlayerFooterListener {
@@ -67,14 +69,24 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         ((PlayerActivity) getActivity()).getPlayerComponent().inject(this);
         ButterKnife.bind(this, fragmentView);
 
-        presenter.setView(this);
-        presenter.getCommentList(videoId);
+        supplyComments();
 
         return fragmentView;
     }
 
+    private void supplyComments() {
+        if (commentListModel == null) {
+            presenter.setView(this);
+            presenter.getCommentList(videoId);
+        } else {
+            displayComments(commentListModel);
+        }
+    }
+
     @Override
     public void displayComments(CommentListModel commentListModel) {
+        this.commentListModel = commentListModel;
+
         CommentsAdapter commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
                 getActivity(), footerListener, "Some title", videoId);
 
