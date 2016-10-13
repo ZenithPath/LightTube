@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.di.components;
 
 import com.example.scame.lighttube.presentation.adapters.player.CommentInputViewHolder;
 import com.example.scame.lighttube.presentation.adapters.player.HeaderViewHolder;
+import com.example.scame.lighttube.presentation.adapters.player.RepliesAdapter;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.di.modules.PlayerModule;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
@@ -21,4 +22,6 @@ public interface PlayerComponent {
     void inject(CommentInputViewHolder commentInputViewHolder);
 
     void inject(RepliesFragment fragment);
+
+    void inject(RepliesAdapter.ReplyInputViewHolder viewHolder);
 }
