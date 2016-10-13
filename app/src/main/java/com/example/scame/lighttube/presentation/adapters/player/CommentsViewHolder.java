@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.presentation.adapters.player;
 
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.GridLayout;
@@ -50,16 +49,32 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private TextView secondReplyDate;
     private TextView secondReplyAuthor;
 
-    private Context context;
-
-    CommentsViewHolder(View itemView, Context context) {
+    public CommentsViewHolder(View itemView) {
         super(itemView);
 
-        this.context = context;
+        IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
+        findViews();
+    }
 
-        IMAGE_SIZE = context.getResources().getDimensionPixelSize(R.dimen.profile_image_size);
+    CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
+                       View itemView, List<ThreadCommentModel> comments) {
+        super(itemView);
 
+        IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
+        ButterKnife.bind(this, itemView);
+        findViews();
+
+        setAllRepliesClickListener(footerListener, comments);
+    }
+
+    private void setAllRepliesClickListener(PlayerFooterFragment.PlayerFooterListener footerListener,
+                                            List<ThreadCommentModel> comments) {
+        allRepliesTv.setOnClickListener(v -> footerListener
+                .onRepliesClick(comments.get(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER).getThreadId()));
+    }
+
+    private void findViews() {
         threadProfileIv = ButterKnife.findById(threadRoot, R.id.profile_iv);
         threadCommentText = ButterKnife.findById(threadRoot, R.id.comment_text_tv);
         threadCommentDate = ButterKnife.findById(threadRoot, R.id.comment_date_tv);
@@ -101,12 +116,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindAllRepliesView(int position, List<ThreadCommentModel> comments,
-                            PlayerFooterFragment.PlayerFooterListener footerListener) {
-
-        String commentThreadId = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER).getThreadId();
-        allRepliesTv.setOnClickListener(v -> footerListener.onRepliesClick(commentThreadId));
-
+    void bindAllRepliesView(int position, List<ThreadCommentModel> comments) {
         bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, PENULTIMATE_REPLY);
         bindSecondReplyUtil(position, comments, LAST_REPLY);
@@ -115,7 +125,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
         ThreadCommentModel commentModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER);
 
-        Picasso.with(context).load(commentModel.getProfileImageUrl())
+        Picasso.with(threadProfileIv.getContext())
+                .load(commentModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
                 .placeholder(R.drawable.placeholder_grey)
                 .into(threadProfileIv);
@@ -130,7 +141,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
                 .getReplies().get(index);
 
-        Picasso.with(context).load(replyModel.getProfileImageUrl())
+        Picasso.with(firstReplyProfileIv.getContext())
+                .load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
                 .placeholder(R.drawable.placeholder_grey)
                 .into(firstReplyProfileIv);
@@ -144,7 +156,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
                 .getReplies().get(index);
 
-        Picasso.with(context).load(replyModel.getProfileImageUrl())
+        Picasso.with(secondReplyProfileIv.getContext())
+                .load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
                 .placeholder(R.drawable.placeholder_grey)
                 .into(secondReplyProfileIv);

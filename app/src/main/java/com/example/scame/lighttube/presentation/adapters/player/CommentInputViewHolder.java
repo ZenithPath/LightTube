@@ -27,12 +27,16 @@ public class CommentInputViewHolder extends RecyclerView.ViewHolder implements I
 
     private PlayerFooterFragment.CommentInputListener inputListener;
 
-    public CommentInputViewHolder(View itemView, Context context) {
+    public CommentInputViewHolder(PlayerFooterFragment.CommentInputListener inputListener,
+                                  View itemView, Context context, String videoId) {
         super(itemView);
 
+        this.inputListener = inputListener;
         ButterKnife.bind(this, itemView);
         inject(context);
+        setOnEditorActionListener(videoId);
     }
+
 
     private void inject(Context context) {
         if (context instanceof PlayerActivity) {
@@ -40,9 +44,7 @@ public class CommentInputViewHolder extends RecyclerView.ViewHolder implements I
         }
     }
 
-    public void bindInputView(PlayerFooterFragment.CommentInputListener inputListener, String videoId) {
-        this.inputListener = inputListener;
-
+    private void setOnEditorActionListener(String videoId) {
         commentInput.setOnEditorActionListener((v, actionId, event) -> {
             boolean handled = false;
 

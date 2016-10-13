@@ -98,9 +98,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     @Override
     public void displayComments(CommentListModel commentsList) {
         this.commentListModel = commentsList;
-
-        commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
-                getActivity(), footerListener, this::displayPostedComment, "Some title", videoId);
+        commentsAdapter = new CommentsAdapter(footerListener, commentListModel.getThreadComments(),
+                this::displayPostedComment, getActivity(), "Some title", videoId);
 
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));

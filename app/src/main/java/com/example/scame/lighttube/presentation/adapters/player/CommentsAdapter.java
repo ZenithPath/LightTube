@@ -12,9 +12,6 @@ import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
 
-// TODO: implement subscriptions handling, get rid of memory leaks {CommentInputViewHolder, HeaderViewHolder}
-// TODO: rewrite with delegates approach
-
 public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int VIEW_ABOVE_NUMBER = 2;
@@ -29,11 +26,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int VIEW_TYPE_ALL_REPLIES = 4;
     private static final int VIEW_TYPE_COMMENT_INPUT = 5;
 
-    private List<ThreadCommentModel> threadCommentModels;
+    private List<ThreadCommentModel> comments;
 
-    PlayerFooterFragment.PlayerFooterListener footerListener;
+    private PlayerFooterFragment.PlayerFooterListener allRepliesListener;
 
-    PlayerFooterFragment.CommentInputListener inputListener;
+    private PlayerFooterFragment.CommentInputListener inputListener;
 
     private String videoTitle;
 
@@ -41,16 +38,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private Context context;
 
-    public CommentsAdapter(List<ThreadCommentModel> threadCommentModels,
-                           Context context, PlayerFooterFragment.PlayerFooterListener footerListener,
-                           PlayerFooterFragment.CommentInputListener inputListener,
+    public CommentsAdapter(PlayerFooterFragment.PlayerFooterListener allRepliesListener, List<ThreadCommentModel> comments,
+                           PlayerFooterFragment.CommentInputListener inputListener, Context context,
                            String videoTitle, String videoId) {
 
         this.inputListener = inputListener;
-        this.footerListener = footerListener;
+        this.allRepliesListener = allRepliesListener;
         this.videoTitle = videoTitle;
         this.videoId = videoId;
-        this.threadCommentModels = threadCommentModels;
+        this.comments = comments;
         this.context = context;
     }
 
@@ -62,11 +58,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (viewType) {
             case VIEW_TYPE_HEADER:
                 View headerView = inflater.inflate(R.layout.player_header_item, parent, false);
-                viewHolder = new HeaderViewHolder(headerView, context);
+                viewHolder = new HeaderViewHolder(headerView, context, videoId, videoTitle);
                 break;
             case VIEW_TYPE_COMMENT_INPUT:
                 View inputView = inflater.inflate(R.layout.comment_input_item, parent, false);
-                viewHolder = new CommentInputViewHolder(inputView, context);
+                viewHolder = new CommentInputViewHolder(inputListener, inputView, context, videoId);
                 break;
             case VIEW_TYPE_THREAD_COMMENT:
                 View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
@@ -82,7 +78,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case VIEW_TYPE_ALL_REPLIES:
                 View allRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
-                viewHolder = new AllRepliesViewHolder(allRepliesView);
+                viewHolder = new AllRepliesViewHolder(allRepliesListener, allRepliesView, comments);
                 break;
         }
 
@@ -91,31 +87,24 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-        if (holder instanceof HeaderViewHolder) {
-            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-            headerViewHolder.bindHeaderViewHolder(videoId, videoTitle);
-        } else if (holder instanceof CommentInputViewHolder) {
-            CommentInputViewHolder inputViewHolder = (CommentInputViewHolder) holder;
-            inputViewHolder.bindInputView(inputListener, videoId);
-        } else if (holder instanceof ThreadCommentViewHolder) {
+        if (holder instanceof ThreadCommentViewHolder) {
             ThreadCommentViewHolder threadCommentViewHolder = (ThreadCommentViewHolder) holder;
-            threadCommentViewHolder.bindThreadCommentView(position, threadCommentModels);
+            threadCommentViewHolder.bindThreadCommentView(position, comments);
         } else if (holder instanceof OneReplyViewHolder) {
             OneReplyViewHolder oneReplyViewHolder = (OneReplyViewHolder) holder;
-            oneReplyViewHolder.bindOneReplyView(position, threadCommentModels);
+            oneReplyViewHolder.bindOneReplyView(position, comments);
         } else if (holder instanceof TwoRepliesViewHolder) {
             TwoRepliesViewHolder twoRepliesViewHolder = (TwoRepliesViewHolder) holder;
-            twoRepliesViewHolder.bindTwoRepliesView(position, threadCommentModels);
+            twoRepliesViewHolder.bindTwoRepliesView(position, comments);
         } else if (holder instanceof AllRepliesViewHolder) {
             AllRepliesViewHolder allRepliesViewHolder = (AllRepliesViewHolder) holder;
-            allRepliesViewHolder.bindAllRepliesView(position, threadCommentModels, footerListener);
+            allRepliesViewHolder.bindAllRepliesView(position, comments);
         }
     }
 
     @Override
     public int getItemCount() {
-        return threadCommentModels.size() + VIEW_ABOVE_NUMBER;
+        return comments.size() + VIEW_ABOVE_NUMBER;
     }
 
     @Override
@@ -124,11 +113,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return VIEW_TYPE_HEADER;
         } else if (position == COMMENT_INPUT_POSITION) {
             return VIEW_TYPE_COMMENT_INPUT;
-        } else if (threadCommentModels.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 0) {
+        } else if (comments.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 0) {
             return VIEW_TYPE_THREAD_COMMENT;
-        } else if (threadCommentModels.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 1) {
+        } else if (comments.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 1) {
             return VIEW_TYPE_ONE_REPLY;
-        } else if (threadCommentModels.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 2) {
+        } else if (comments.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 2) {
             return VIEW_TYPE_TWO_REPLIES;
         } else {
             return VIEW_TYPE_ALL_REPLIES;
@@ -138,31 +127,32 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * only used to identify the types of binding that must be applied */
 
-    private class ThreadCommentViewHolder extends CommentsViewHolder {
+    private static class ThreadCommentViewHolder extends CommentsViewHolder {
 
         ThreadCommentViewHolder(View itemView) {
-            super(itemView, context);
+            super(itemView);
         }
     }
 
-    private class OneReplyViewHolder extends CommentsViewHolder {
+    private static class OneReplyViewHolder extends CommentsViewHolder {
 
         OneReplyViewHolder(View itemView) {
-            super(itemView, context);
+            super(itemView);
         }
     }
 
-    private class TwoRepliesViewHolder extends CommentsViewHolder {
+    private static class TwoRepliesViewHolder extends CommentsViewHolder {
 
         TwoRepliesViewHolder(View itemView) {
-            super(itemView, context);
+            super(itemView);
         }
     }
 
-    private class AllRepliesViewHolder extends CommentsViewHolder {
+    private static class AllRepliesViewHolder extends CommentsViewHolder {
 
-        AllRepliesViewHolder(View itemView) {
-            super(itemView, context);
+        AllRepliesViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
+                             View itemView, List<ThreadCommentModel> comments) {
+            super(footerListener, itemView, comments);
         }
     }
 }

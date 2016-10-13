@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter;
 
@@ -33,30 +34,25 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
 
     @BindView(R.id.video_title_tv) TextView videoTitleTv;
 
-    private Context context;
-
     private String videoId;
 
-    public HeaderViewHolder(View itemView, Context context) {
+    public HeaderViewHolder(View itemView, Context context, String videoId, String videoTitle) {
         super(itemView);
 
-        this.context = context;
         ButterKnife.bind(this, itemView);
-        inject();
+
+        this.videoId = videoId;
+        videoTitleTv.setText(videoTitle);
+        
+        inject(context);
+        presenter.setView(this);
+        presenter.getVideoRating(videoId);
     }
 
-    private void inject() {
+    private void inject(Context context) {
         if (context instanceof PlayerActivity) {
             ((PlayerActivity) context).getPlayerComponent().inject(this);
         }
-    }
-
-    void bindHeaderViewHolder(String videoId, String videoTitle) {
-        this.videoId = videoId;
-        videoTitleTv.setText(videoTitle);
-
-        presenter.setView(this);
-        presenter.getVideoRating(videoId);
     }
 
     @OnClick(R.id.like_btn)
@@ -65,7 +61,7 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
             likeButton.setColorFilter(null);
             presenter.rateVideo(videoId, NONE);
         } else {
-            likeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            applyColorFilter(likeButton);
             dislikeButton.setColorFilter(null);
             presenter.rateVideo(videoId, LIKE);
         }
@@ -78,7 +74,7 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
             dislikeButton.setColorFilter(null);
             presenter.rateVideo(videoId, NONE);
         } else {
-            dislikeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            applyColorFilter(dislikeButton);
             likeButton.setColorFilter(null);
             presenter.rateVideo(videoId, DISLIKE);
         }
@@ -87,9 +83,14 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
     @Override
     public void displayRating(String rating) {
         if (rating.equals(LIKE)) {
-            likeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            applyColorFilter(likeButton);
         } else if (rating.equals(DISLIKE)) {
-            dislikeButton.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+            applyColorFilter(dislikeButton);
         }
+    }
+
+    private void applyColorFilter(ImageButton imageButton) {
+        imageButton.setColorFilter(LightTubeApp.getAppComponent().getContext()
+                .getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 }
