@@ -1,15 +1,17 @@
 package com.example.scame.lighttube.data.di;
 
+import com.example.scame.lighttube.data.mappers.AutocompleteDeserializer;
 import com.example.scame.lighttube.data.mappers.CategoryPairsMapper;
 import com.example.scame.lighttube.data.mappers.ChannelsMapper;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.DurationsCombiner;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
-import com.example.scame.lighttube.data.mappers.AutocompleteDeserializer;
 import com.example.scame.lighttube.data.mappers.PublishingDateParser;
 import com.example.scame.lighttube.data.mappers.RatingMapper;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
+import com.example.scame.lighttube.data.mappers.ReplyRequestBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyRequestMapper;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
 import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
@@ -97,5 +99,15 @@ public class MappersModule {
     @Singleton @Provides
     ThreadRequestBuilder provideThreadCommentBuilder() {
         return new ThreadRequestBuilder();
+    }
+
+    @Singleton @Provides
+    ReplyRequestBuilder provideReplyRequestBuilder() {
+        return new ReplyRequestBuilder();
+    }
+
+    @Singleton @Provides
+    ReplyRequestMapper provideReplyRequestMapper() {
+        return new ReplyRequestMapper();
     }
 }

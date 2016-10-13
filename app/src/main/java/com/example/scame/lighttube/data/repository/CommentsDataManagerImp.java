@@ -4,11 +4,14 @@ package com.example.scame.lighttube.data.repository;
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
+import com.example.scame.lighttube.data.mappers.ReplyRequestBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyRequestMapper;
 import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadRequestMapper;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import rx.Observable;
@@ -19,7 +22,7 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     private static final String REPLIES_PART = "snippet";
 
-    private static final String THREAD_PART_POST = "snippet";
+    private static final String POST_PART = "snippet";
 
     private static final int MAX_RES = 50;
 
@@ -31,18 +34,25 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     private ReplyListMapper replyListMapper;
 
-    private ThreadRequestMapper requestMapper;
+    private ThreadRequestMapper threadMapper;
 
     private ThreadRequestBuilder commentBuilder;
 
+    private ReplyRequestBuilder replyBuilder;
+
+    private ReplyRequestMapper replyMapper;
+
     public CommentsDataManagerImp(CommentsApi commentsApi, CommentListMapper commentListMapper,
-                                  ReplyListMapper replyListMapper, ThreadRequestMapper requestMapper,
-                                  ThreadRequestBuilder commentBuilder) {
+                                  ReplyListMapper replyListMapper, ThreadRequestMapper threadMapper,
+                                  ThreadRequestBuilder commentBuilder, ReplyRequestBuilder replyBuilder,
+                                  ReplyRequestMapper replyMapper) {
         this.commentListMapper = commentListMapper;
         this.replyListMapper = replyListMapper;
         this.commentsApi = commentsApi;
-        this.requestMapper = requestMapper;
+        this.threadMapper = threadMapper;
         this.commentBuilder = commentBuilder;
+        this.replyBuilder = replyBuilder;
+        this.replyMapper = replyMapper;
     }
 
     @Override
@@ -59,7 +69,13 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     @Override
     public Observable<ThreadCommentModel> postThreadComment(String text, String videoId) {
-        return commentsApi.postThreadComment(THREAD_PART_POST, PrivateValues.API_KEY, commentBuilder.build(text, videoId))
-                .map(requestMapper::convert);
+        return commentsApi.postThreadComment(POST_PART, PrivateValues.API_KEY, commentBuilder.build(text, videoId))
+                .map(threadMapper::convert);
+    }
+
+    @Override
+    public Observable<ReplyModel> postReply(String replyText, String parentId) {
+        return commentsApi.postReply(POST_PART, PrivateValues.API_KEY, replyBuilder.build(parentId, replyText))
+                .map(replyMapper::convert);
     }
 }

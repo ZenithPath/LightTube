@@ -4,6 +4,7 @@ import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttube.domain.usecases.PostReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
@@ -13,11 +14,13 @@ import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.CommentInputPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
+import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
 import com.example.scame.lighttube.presentation.presenters.PlayerFooterPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter;
 import com.example.scame.lighttube.presentation.presenters.PlayerHeaderPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.RepliesPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.ReplyInputPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import javax.inject.Named;
@@ -30,6 +33,9 @@ import static com.example.scame.lighttube.presentation.presenters.IPlayerHeaderP
 
 import static com.example.scame.lighttube.presentation.presenters.IRepliesPresenter.*;
 import static com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter.*;
+import static com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter.*;
+
+// TODO: decompose
 
 @Module
 public class PlayerModule {
@@ -72,11 +78,24 @@ public class PlayerModule {
         return new PostThreadCommentUseCase(subscribeOn, observeOn, commentsDataManager);
     }
 
+    @Provides
+    @PerActivity
+    PostReplyUseCase providePostReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                             ICommentsDataManager commentsDataManager) {
+        return new PostReplyUseCase(subscribeOn, observeOn, commentsDataManager);
+    }
 
     @Provides
     @PerActivity
-    ICommentInputPresenter<CommentInputView> provideCommentInputPresenter(@Named("input")SubscriptionsHandler subscriptionsHandler,
-                                                                          PostThreadCommentUseCase threadCommentUseCase) {
+    IReplyInputPresenter<ReplyView> provideReplyInputPresenter(@Named("replyInput")SubscriptionsHandler subscriptionsHandler,
+                                                               PostReplyUseCase postReplyUseCase) {
+        return new ReplyInputPresenterImp<>(postReplyUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    ICommentInputPresenter<CommentInputView> provideCommentInputPresenter(
+            @Named("threadInput")SubscriptionsHandler subscriptionsHandler, PostThreadCommentUseCase threadCommentUseCase) {
         return new CommentInputPresenterImp<>(threadCommentUseCase, subscriptionsHandler);
     }
 
@@ -105,7 +124,7 @@ public class PlayerModule {
     }
 
     @Provides
-    @Named("input")
+    @Named("threadInput")
     @PerActivity
     SubscriptionsHandler provideInputSubscriptionsHandler(PostThreadCommentUseCase threadCommentUseCase) {
         return new SubscriptionsHandler(threadCommentUseCase);
@@ -132,5 +151,12 @@ public class PlayerModule {
     @PerActivity
     SubscriptionsHandler provideRepliesSubscriptionsHandler(RetrieveRepliesUseCase retrieveRepliesUseCase) {
         return new SubscriptionsHandler(retrieveRepliesUseCase);
+    }
+
+    @Provides
+    @Named("replyInput")
+    @PerActivity
+    SubscriptionsHandler provideReplyInputSubscriptionsHandler(PostReplyUseCase replyUseCase) {
+        return new SubscriptionsHandler(replyUseCase);
     }
 }

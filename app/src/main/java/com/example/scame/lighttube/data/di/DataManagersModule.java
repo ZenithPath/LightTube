@@ -12,6 +12,8 @@ import com.example.scame.lighttube.data.mappers.PublishingDateParser;
 import com.example.scame.lighttube.data.mappers.RatingMapper;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
+import com.example.scame.lighttube.data.mappers.ReplyRequestBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyRequestMapper;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadRequestMapper;
@@ -114,8 +116,10 @@ public class DataManagersModule {
     @Singleton
     @Provides
     ICommentsDataManager provideCommentsDataManager(CommentsApi commentsApi, CommentListMapper commentListMapper,
-                                                    ReplyListMapper replyListMapper, ThreadRequestMapper requestMapper,
-                                                    ThreadRequestBuilder commentBuilder) {
-        return new CommentsDataManagerImp(commentsApi, commentListMapper, replyListMapper, requestMapper, commentBuilder);
+                                                    ReplyListMapper replyListMapper, ThreadRequestMapper threadMapper,
+                                                    ThreadRequestBuilder commentBuilder, ReplyRequestBuilder replyBuilder,
+                                                    ReplyRequestMapper replyMapper) {
+        return new CommentsDataManagerImp(commentsApi, commentListMapper, replyListMapper,
+                threadMapper, commentBuilder, replyBuilder, replyMapper);
     }
 }

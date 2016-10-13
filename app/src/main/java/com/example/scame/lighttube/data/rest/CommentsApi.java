@@ -1,8 +1,10 @@
 package com.example.scame.lighttube.data.rest;
 
 
+import com.example.scame.lighttube.data.entities.comments.requests.ReplyRequestBody;
 import com.example.scame.lighttube.data.entities.comments.requests.ThreadCommentBody;
 import com.example.scame.lighttube.data.entities.comments.responses.CommentItem;
+import com.example.scame.lighttube.data.entities.comments.responses.CommentSnippetHolder;
 import com.example.scame.lighttube.data.entities.comments.responses.CommentThreadsEntity;
 import com.example.scame.lighttube.data.entities.replies.ReplyEntity;
 
@@ -36,4 +38,9 @@ public interface CommentsApi {
                                        @Query("pageToken") String pageToken,
                                        @Query("parentId") String parentId,
                                        @Query("key") String key);
+
+    @POST("youtube/v3/comments")
+    Observable<CommentSnippetHolder> postReply(@Query("part") String part,
+                                               @Query("key") String key,
+                                               @Body ReplyRequestBody body);
 }
