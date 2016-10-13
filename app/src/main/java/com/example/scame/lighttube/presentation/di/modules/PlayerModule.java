@@ -10,6 +10,8 @@ import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
+import com.example.scame.lighttube.presentation.presenters.CommentInputPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.PlayerFooterPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
@@ -27,6 +29,7 @@ import static com.example.scame.lighttube.presentation.presenters.IPlayerFooterP
 import static com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter.*;
 
 import static com.example.scame.lighttube.presentation.presenters.IRepliesPresenter.*;
+import static com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter.*;
 
 @Module
 public class PlayerModule {
@@ -72,6 +75,13 @@ public class PlayerModule {
 
     @Provides
     @PerActivity
+    ICommentInputPresenter<CommentInputView> provideCommentInputPresenter(@Named("input")SubscriptionsHandler subscriptionsHandler,
+                                                                          PostThreadCommentUseCase threadCommentUseCase) {
+        return new CommentInputPresenterImp<>(threadCommentUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
     IRepliesPresenter<RepliesView> provideRepliesPresenter(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                                            @Named("replies")SubscriptionsHandler subscriptionsHandler) {
         return new RepliesPresenterImp<>(retrieveRepliesUseCase, subscriptionsHandler);
@@ -89,10 +99,16 @@ public class PlayerModule {
     @Provides
     @PerActivity
     IPlayerFooterPresenter<CommentsView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
-                                                                  PostThreadCommentUseCase postCommentUseCase,
                                                                   @Named("comments")SubscriptionsHandler subscriptionsHandler) {
 
-        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, postCommentUseCase, subscriptionsHandler);
+        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @Named("input")
+    @PerActivity
+    SubscriptionsHandler provideInputSubscriptionsHandler(PostThreadCommentUseCase threadCommentUseCase) {
+        return new SubscriptionsHandler(threadCommentUseCase);
     }
 
     @Provides
@@ -107,9 +123,8 @@ public class PlayerModule {
     @Provides
     @Named("comments")
     @PerActivity
-    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase,
-                                                             PostThreadCommentUseCase postCommentUseCase) {
-        return new SubscriptionsHandler(retrieveCommentsUseCase, postCommentUseCase);
+    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase) {
+        return new SubscriptionsHandler(retrieveCommentsUseCase);
     }
 
     @Provides

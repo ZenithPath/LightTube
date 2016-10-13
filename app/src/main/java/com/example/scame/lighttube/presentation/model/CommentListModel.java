@@ -16,6 +16,10 @@ public class CommentListModel {
         threadComments.add(threadCommentModel);
     }
 
+    public void addThreadCommentModel(int index, ThreadCommentModel threadCommentModel) {
+        threadComments.add(index, threadCommentModel);
+    }
+
     public void setThreadComments(List<ThreadCommentModel> threadComments) {
         this.threadComments = threadComments;
     }

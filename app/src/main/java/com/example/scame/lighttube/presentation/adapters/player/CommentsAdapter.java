@@ -12,6 +12,9 @@ import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
 
+// TODO: implement subscriptions handling, get rid of memory leaks {CommentInputViewHolder, HeaderViewHolder}
+// TODO: rewrite with delegates approach
+
 public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int VIEW_ABOVE_NUMBER = 2;
@@ -63,7 +66,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case VIEW_TYPE_COMMENT_INPUT:
                 View inputView = inflater.inflate(R.layout.comment_input_item, parent, false);
-                viewHolder = new CommentInputViewHolder(inputView);
+                viewHolder = new CommentInputViewHolder(inputView, context);
                 break;
             case VIEW_TYPE_THREAD_COMMENT:
                 View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
@@ -94,7 +97,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             headerViewHolder.bindHeaderViewHolder(videoId, videoTitle);
         } else if (holder instanceof CommentInputViewHolder) {
             CommentInputViewHolder inputViewHolder = (CommentInputViewHolder) holder;
-            inputViewHolder.bindInputView(inputListener);
+            inputViewHolder.bindInputView(inputListener, videoId);
         } else if (holder instanceof ThreadCommentViewHolder) {
             ThreadCommentViewHolder threadCommentViewHolder = (ThreadCommentViewHolder) holder;
             threadCommentViewHolder.bindThreadCommentView(position, threadCommentModels);

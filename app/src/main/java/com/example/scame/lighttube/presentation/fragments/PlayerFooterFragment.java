@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +27,17 @@ import butterknife.ButterKnife;
 
 public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.CommentsView {
 
+    private static final int INSERT_COMMENT_POS = 0;
+
     @Inject
     IPlayerFooterPresenter<IPlayerFooterPresenter.CommentsView> presenter;
 
     @BindView(R.id.player_footer_rv)
-    RecyclerView recyclerView;
+    RecyclerView footerRv;
 
     private PlayerFooterListener footerListener;
+
+    private CommentsAdapter commentsAdapter;
 
     private CommentListModel commentListModel;
 
@@ -47,7 +50,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     public interface CommentInputListener {
 
-        void onSendCommentClick(String commentText);
+        void onCommentPosted(ThreadCommentModel threadCommentModel);
     }
 
     public static PlayerFooterFragment newInstance(String videoId) {
@@ -93,20 +96,29 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     @Override
-    public void displayComments(CommentListModel commentListModel) {
-        this.commentListModel = commentListModel;
+    public void displayComments(CommentListModel commentsList) {
+        this.commentListModel = commentsList;
 
-        CommentsAdapter commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
-                getActivity(), footerListener, commentText -> presenter.postComment(commentText, videoId),
-                "Some title", videoId);
+        commentsAdapter = new CommentsAdapter(commentListModel.getThreadComments(),
+                getActivity(), footerListener, this::displayPostedComment, "Some title", videoId);
 
-        recyclerView.setAdapter(commentsAdapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        footerRv.setAdapter(commentsAdapter);
+        footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
+        footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    @Override
     public void displayPostedComment(ThreadCommentModel threadComment) {
+        hideKeyboard();
+        insertPostedComment(threadComment);
+    }
+
+
+    private void insertPostedComment(ThreadCommentModel threadComment) {
+        commentListModel.addThreadCommentModel(INSERT_COMMENT_POS, threadComment);
+        commentsAdapter.notifyItemInserted(INSERT_COMMENT_POS);
+    }
+
+    private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
