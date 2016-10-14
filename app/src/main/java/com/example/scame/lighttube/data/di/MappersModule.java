@@ -10,12 +10,13 @@ import com.example.scame.lighttube.data.mappers.PublishingDateParser;
 import com.example.scame.lighttube.data.mappers.RatingMapper;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
-import com.example.scame.lighttube.data.mappers.ReplyRequestBuilder;
-import com.example.scame.lighttube.data.mappers.ReplyRequestMapper;
+import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyResponseMapper;
+import com.example.scame.lighttube.data.mappers.ReplyUpdateBuilder;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
-import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
-import com.example.scame.lighttube.data.mappers.ThreadRequestMapper;
+import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
+import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
 
 import javax.inject.Singleton;
@@ -92,22 +93,27 @@ public class MappersModule {
     }
 
     @Singleton @Provides
-    ThreadRequestMapper provideThreadRequestMapper() {
-        return new ThreadRequestMapper();
+    ThreadResponseMapper provideThreadRequestMapper() {
+        return new ThreadResponseMapper();
     }
 
     @Singleton @Provides
-    ThreadRequestBuilder provideThreadCommentBuilder() {
-        return new ThreadRequestBuilder();
+    ThreadPostBuilder provideThreadCommentBuilder() {
+        return new ThreadPostBuilder();
     }
 
     @Singleton @Provides
-    ReplyRequestBuilder provideReplyRequestBuilder() {
-        return new ReplyRequestBuilder();
+    ReplyPostBuilder provideReplyRequestBuilder() {
+        return new ReplyPostBuilder();
     }
 
     @Singleton @Provides
-    ReplyRequestMapper provideReplyRequestMapper() {
-        return new ReplyRequestMapper();
+    ReplyResponseMapper provideReplyRequestMapper() {
+        return new ReplyResponseMapper();
+    }
+
+    @Singleton @Provides
+    ReplyUpdateBuilder provideReplyUpdateBuilder() {
+        return new ReplyUpdateBuilder();
     }
 }

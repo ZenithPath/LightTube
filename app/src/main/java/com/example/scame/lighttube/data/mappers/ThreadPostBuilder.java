@@ -6,7 +6,7 @@ import com.example.scame.lighttube.data.entities.comments.requests.ThreadRequest
 import com.example.scame.lighttube.data.entities.comments.requests.TopLevelComment;
 import com.example.scame.lighttube.data.entities.comments.requests.TopLevelCommentSnippet;
 
-public class ThreadRequestBuilder {
+public class ThreadPostBuilder {
 
     public ThreadCommentBody build(String text, String videoId) {
         ThreadCommentBody threadCommentBody = new ThreadCommentBody();

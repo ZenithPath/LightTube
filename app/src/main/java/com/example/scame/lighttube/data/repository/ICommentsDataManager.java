@@ -19,4 +19,6 @@ public interface ICommentsDataManager {
     Observable<ReplyModel> postReply(String replyText, String parentId);
 
     Observable<Void> deleteComment(String commentId);
+
+    Observable<ReplyModel> updateReply(String replyText);
 }

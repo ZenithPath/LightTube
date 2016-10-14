@@ -12,11 +12,12 @@ import com.example.scame.lighttube.data.mappers.PublishingDateParser;
 import com.example.scame.lighttube.data.mappers.RatingMapper;
 import com.example.scame.lighttube.data.mappers.RecentVideosMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
-import com.example.scame.lighttube.data.mappers.ReplyRequestBuilder;
-import com.example.scame.lighttube.data.mappers.ReplyRequestMapper;
+import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyResponseMapper;
+import com.example.scame.lighttube.data.mappers.ReplyUpdateBuilder;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
-import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
-import com.example.scame.lighttube.data.mappers.ThreadRequestMapper;
+import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
+import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
 import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
 import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
@@ -119,11 +120,11 @@ public class DataManagersModule {
     @Singleton
     @Provides
     ICommentsDataManager provideCommentsDataManager(CommentsApi commentsApi, CommentListMapper commentListMapper,
-                                                    ReplyListMapper replyListMapper, ThreadRequestMapper threadMapper,
-                                                    ThreadRequestBuilder commentBuilder, ReplyRequestBuilder replyBuilder,
-                                                    ReplyRequestMapper replyMapper) {
+                                                    ReplyListMapper replyListMapper, ThreadResponseMapper threadMapper,
+                                                    ThreadPostBuilder commentBuilder, ReplyPostBuilder replyBuilder,
+                                                    ReplyResponseMapper replyMapper, ReplyUpdateBuilder replyUpdateBuilder) {
         return new CommentsDataManagerImp(commentsApi, commentListMapper, replyListMapper,
-                threadMapper, commentBuilder, replyBuilder, replyMapper);
+                threadMapper, commentBuilder, replyBuilder, replyMapper, replyUpdateBuilder);
     }
 
     @Singleton

@@ -4,7 +4,7 @@ package com.example.scame.lighttube.data.mappers;
 import com.example.scame.lighttube.data.entities.comments.requests.ReplyRequestBody;
 import com.example.scame.lighttube.data.entities.comments.requests.ReplyRequestSnippet;
 
-public class ReplyRequestBuilder {
+public class ReplyPostBuilder {
 
     public ReplyRequestBody build(String parentId, String replyText) {
         ReplyRequestBody replyRequestBody = new ReplyRequestBody();

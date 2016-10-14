@@ -5,7 +5,7 @@ import com.example.scame.lighttube.data.entities.comments.responses.CommentSnipp
 import com.example.scame.lighttube.data.entities.comments.responses.CommentSnippetHolder;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 
-public class ReplyRequestMapper {
+public class ReplyResponseMapper {
 
     public ReplyModel convert(CommentSnippetHolder snippetHolder) {
         ReplyModel replyModel = new ReplyModel();

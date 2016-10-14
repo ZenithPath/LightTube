@@ -3,6 +3,7 @@ package com.example.scame.lighttube.data.rest;
 
 import com.example.scame.lighttube.data.entities.comments.requests.ReplyRequestBody;
 import com.example.scame.lighttube.data.entities.comments.requests.ThreadCommentBody;
+import com.example.scame.lighttube.data.entities.comments.requests.UpdateReplyBody;
 import com.example.scame.lighttube.data.entities.comments.responses.CommentItem;
 import com.example.scame.lighttube.data.entities.comments.responses.CommentSnippetHolder;
 import com.example.scame.lighttube.data.entities.comments.responses.CommentThreadsEntity;
@@ -12,6 +13,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -44,6 +46,11 @@ public interface CommentsApi {
     Observable<CommentSnippetHolder> postReply(@Query("part") String part,
                                                @Query("key") String key,
                                                @Body ReplyRequestBody body);
+
+    @PUT("youtube/v3/comments")
+    Observable<CommentSnippetHolder> updateReply(@Query("part") String part,
+                                                 @Query("key") String key,
+                                                 @Body UpdateReplyBody body);
 
     @DELETE("youtube/v3/comments")
     Observable<Void> deleteComment(@Query("id") String id, @Query("key") String key);

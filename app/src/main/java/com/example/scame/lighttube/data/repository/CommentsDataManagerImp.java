@@ -4,10 +4,11 @@ package com.example.scame.lighttube.data.repository;
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
-import com.example.scame.lighttube.data.mappers.ReplyRequestBuilder;
-import com.example.scame.lighttube.data.mappers.ReplyRequestMapper;
-import com.example.scame.lighttube.data.mappers.ThreadRequestBuilder;
-import com.example.scame.lighttube.data.mappers.ThreadRequestMapper;
+import com.example.scame.lighttube.data.mappers.ReplyResponseMapper;
+import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyUpdateBuilder;
+import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
+import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
@@ -18,11 +19,9 @@ import rx.Observable;
 
 public class CommentsDataManagerImp implements ICommentsDataManager {
 
-    private static final String THREAD_PART_GET = "snippet%2Creplies";
+    private static final String SNIPPET_AND_REPLIES_PART = "snippet%2Creplies";
 
-    private static final String REPLIES_PART = "snippet";
-
-    private static final String POST_PART = "snippet";
+    private static final String SNIPPET_PART = "snippet";
 
     private static final int MAX_RES = 50;
 
@@ -34,53 +33,62 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     private ReplyListMapper replyListMapper;
 
-    private ThreadRequestMapper threadMapper;
+    private ThreadResponseMapper threadResponseMapper;
 
-    private ThreadRequestBuilder commentBuilder;
+    private ThreadPostBuilder threadPostBuilder;
 
-    private ReplyRequestBuilder replyBuilder;
+    private ReplyPostBuilder replyPostBuilder;
 
-    private ReplyRequestMapper replyMapper;
+    private ReplyResponseMapper replyResponseMapper;
+
+    private ReplyUpdateBuilder replyUpdateBuilder;
 
     public CommentsDataManagerImp(CommentsApi commentsApi, CommentListMapper commentListMapper,
-                                  ReplyListMapper replyListMapper, ThreadRequestMapper threadMapper,
-                                  ThreadRequestBuilder commentBuilder, ReplyRequestBuilder replyBuilder,
-                                  ReplyRequestMapper replyMapper) {
+                                  ReplyListMapper replyListMapper, ThreadResponseMapper threadResponseMapper,
+                                  ThreadPostBuilder threadPostBuilder, ReplyPostBuilder replyPostBuilder,
+                                  ReplyResponseMapper replyResponseMapper, ReplyUpdateBuilder replyUpdateBuilder) {
         this.commentListMapper = commentListMapper;
         this.replyListMapper = replyListMapper;
         this.commentsApi = commentsApi;
-        this.threadMapper = threadMapper;
-        this.commentBuilder = commentBuilder;
-        this.replyBuilder = replyBuilder;
-        this.replyMapper = replyMapper;
+        this.threadResponseMapper = threadResponseMapper;
+        this.threadPostBuilder = threadPostBuilder;
+        this.replyPostBuilder = replyPostBuilder;
+        this.replyResponseMapper = replyResponseMapper;
+        this.replyUpdateBuilder = replyUpdateBuilder;
     }
 
     @Override
     public Observable<CommentListModel> getCommentList(String videoId) {
-        return commentsApi.getCommentThreads(THREAD_PART_GET, MAX_RES, null, TEXT_FORMAT, videoId, PrivateValues.API_KEY)
+        return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, MAX_RES, null, TEXT_FORMAT, videoId, PrivateValues.API_KEY)
                 .map(commentListMapper::convert);
     }
 
     @Override
     public Observable<ReplyListModel> getReplyList(String parentId) {
-        return commentsApi.getReplies(REPLIES_PART, MAX_RES, TEXT_FORMAT, null, parentId, PrivateValues.API_KEY)
+        return commentsApi.getReplies(SNIPPET_PART, MAX_RES, TEXT_FORMAT, null, parentId, PrivateValues.API_KEY)
                 .map(replyListMapper::convert);
     }
 
     @Override
     public Observable<ThreadCommentModel> postThreadComment(String text, String videoId) {
-        return commentsApi.postThreadComment(POST_PART, PrivateValues.API_KEY, commentBuilder.build(text, videoId))
-                .map(threadMapper::convert);
+        return commentsApi.postThreadComment(SNIPPET_PART, PrivateValues.API_KEY, threadPostBuilder.build(text, videoId))
+                .map(threadResponseMapper::convert);
     }
 
     @Override
     public Observable<ReplyModel> postReply(String replyText, String parentId) {
-        return commentsApi.postReply(POST_PART, PrivateValues.API_KEY, replyBuilder.build(parentId, replyText))
-                .map(replyMapper::convert);
+        return commentsApi.postReply(SNIPPET_PART, PrivateValues.API_KEY, replyPostBuilder.build(parentId, replyText))
+                .map(replyResponseMapper::convert);
     }
 
     @Override
     public Observable<Void> deleteComment(String commentId) {
         return commentsApi.deleteComment(commentId, PrivateValues.API_KEY);
+    }
+
+    @Override
+    public Observable<ReplyModel> updateReply(String replyText) {
+        return commentsApi.updateReply(SNIPPET_PART, PrivateValues.API_KEY, replyUpdateBuilder.build(replyText))
+                .map(replyResponseMapper::convert);
     }
 }

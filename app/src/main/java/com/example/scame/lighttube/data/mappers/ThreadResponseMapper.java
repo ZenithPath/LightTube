@@ -5,7 +5,7 @@ import com.example.scame.lighttube.data.entities.comments.responses.CommentItem;
 import com.example.scame.lighttube.data.entities.comments.responses.CommentSnippet;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
-public class ThreadRequestMapper {
+public class ThreadResponseMapper {
 
     public ThreadCommentModel convert(CommentItem commentItem) {
         ThreadCommentModel threadCommentModel = new ThreadCommentModel();
