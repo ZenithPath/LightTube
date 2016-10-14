@@ -27,10 +27,13 @@ public class ReplyInputViewHolder extends RecyclerView.ViewHolder implements IRe
 
     private RepliesFragment.RepliesListener repliesListener;
 
-    public ReplyInputViewHolder(RepliesFragment.RepliesListener repliesListener,
-                                View itemView, Context context, String parentId) {
+    private String identifier;
+
+    public ReplyInputViewHolder(RepliesFragment.RepliesListener repliesListener, View itemView,
+                                Context context, String parentId, String identifier) {
         super(itemView);
 
+        this.identifier = identifier;
         this.repliesListener = repliesListener;
         ButterKnife.bind(this, itemView);
         inject(context);

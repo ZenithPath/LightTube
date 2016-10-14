@@ -36,12 +36,15 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IVideoR
 
     private String videoId;
 
-    public HeaderViewHolder(View itemView, Context context, String videoId, String videoTitle) {
+    private String identifier;
+
+    public HeaderViewHolder(View itemView, Context context, String videoId, String videoTitle, String identifier) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
 
         this.videoId = videoId;
+        this.identifier = identifier;
         videoTitleTv.setText(videoTitle);
         
         inject(context);

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.RepliesAdapter;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
@@ -39,16 +40,19 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     private String threadCommentId;
 
+    private String userIdentifier;
+
     public interface RepliesListener {
 
         void onPostedReply(ReplyModel replyModel);
     }
 
-    public static RepliesFragment newInstance(String threadCommentId) {
+    public static RepliesFragment newInstance(String threadCommentId, String identifier) {
         RepliesFragment repliesFragment = new RepliesFragment();
 
         Bundle args = new Bundle();
         args.putString(RepliesFragment.class.getCanonicalName(), threadCommentId);
+        args.putString(LightTubeApp.getAppComponent().getContext().getString(R.string.identifier_key), identifier);
         repliesFragment.setArguments(args);
 
         return repliesFragment;
@@ -62,6 +66,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         ButterKnife.bind(this, repliesView);
         ((PlayerActivity) getActivity()).getRepliesComponent().inject(this);
         this.threadCommentId = getArguments().getString(RepliesFragment.class.getCanonicalName());
+        this.userIdentifier = getArguments().getString(getString(R.string.identifier_key));
 
         presenter.setView(this);
         presenter.getRepliesList(threadCommentId);
@@ -73,7 +78,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     public void displayReplies(ReplyListModel replyListModel) {
         replies = replyListModel;
 
-        repliesAdapter = new RepliesAdapter(replies, getActivity(), this::onPostedReply);
+        repliesAdapter = new RepliesAdapter(replies, getActivity(), this::onPostedReply, userIdentifier);
         repliesRv.setHasFixedSize(true);
         repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         repliesRv.setAdapter(repliesAdapter);

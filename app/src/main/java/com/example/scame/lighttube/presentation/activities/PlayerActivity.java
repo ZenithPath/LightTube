@@ -84,8 +84,8 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     }
 
     @Override
-    public void onRepliesClick(String threadCommentId) {
-        RepliesFragment repliesFragment = RepliesFragment.newInstance(threadCommentId);
+    public void onRepliesClick(String threadCommentId, String identifier) {
+        RepliesFragment repliesFragment = RepliesFragment.newInstance(threadCommentId, identifier);
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
                 .replace(R.id.player_activity_fl, repliesFragment, REPLIES_FRAG_TAG)

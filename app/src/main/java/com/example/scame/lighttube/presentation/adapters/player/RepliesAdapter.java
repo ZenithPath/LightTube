@@ -25,11 +25,15 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private ReplyListModel replies;
 
+    private String userIdentifier;
+
     private Context context;
 
-    public RepliesAdapter(ReplyListModel replies, Context context, RepliesFragment.RepliesListener repliesListener) {
+    public RepliesAdapter(ReplyListModel replies, Context context, RepliesFragment.RepliesListener repliesListener,
+                          String userIdentifier) {
         this.replies = replies;
         this.context = context;
+        this.userIdentifier = userIdentifier;
         this.repliesListener = repliesListener;
     }
 
@@ -39,11 +43,12 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (viewType == VIEW_TYPE_REPLY_INPUT) {
             View replyInputView = inflater.inflate(R.layout.comment_input_item, parent, false);
-            viewHolder = new ReplyInputViewHolder(repliesListener, replyInputView, context,
-                    replies.getReplyModel(0).getParentId());
+            String parentId = replies.getReplyModel(0).getParentId();
+            viewHolder = new ReplyInputViewHolder(repliesListener, replyInputView,
+                    context, parentId, userIdentifier);
         } else if (viewType == VIEW_TYPE_REPLY_COMMENT) {
             View replyView = inflater.inflate(R.layout.comment_item, parent, false);
-            viewHolder = new RepliesViewHolder(replyView);
+            viewHolder = new RepliesViewHolder(replyView, userIdentifier);
         }
 
         return viewHolder;

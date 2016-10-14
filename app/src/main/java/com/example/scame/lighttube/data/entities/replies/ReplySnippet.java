@@ -1,7 +1,11 @@
 package com.example.scame.lighttube.data.entities.replies;
 
 
+import com.example.scame.lighttube.data.entities.comments.responses.AuthorChannelId;
+
 public class ReplySnippet {
+
+    private AuthorChannelId authorChannelId;
 
     private String authorDisplayName;
 
@@ -18,6 +22,10 @@ public class ReplySnippet {
     private String updatedAt;
 
     private int likeCount;
+
+    public void setAuthorChannelId(AuthorChannelId authorChannelId) {
+        this.authorChannelId = authorChannelId;
+    }
 
     public void setAuthorDisplayName(String authorDisplayName) {
         this.authorDisplayName = authorDisplayName;
@@ -81,5 +89,9 @@ public class ReplySnippet {
 
     public int getLikeCount() {
         return likeCount;
+    }
+
+    public AuthorChannelId getAuthorChannelId() {
+        return authorChannelId;
     }
 }

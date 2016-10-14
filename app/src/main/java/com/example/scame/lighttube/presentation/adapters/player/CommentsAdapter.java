@@ -36,14 +36,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private String videoId;
 
+    private String userIdentifier;
+
     private Context context;
 
     public CommentsAdapter(PlayerFooterFragment.PlayerFooterListener allRepliesListener, List<ThreadCommentModel> comments,
                            PlayerFooterFragment.CommentInputListener inputListener, Context context,
-                           String videoTitle, String videoId) {
+                           String videoTitle, String videoId, String userIdentifier) {
 
         this.inputListener = inputListener;
         this.allRepliesListener = allRepliesListener;
+        this.userIdentifier = userIdentifier;
         this.videoTitle = videoTitle;
         this.videoId = videoId;
         this.comments = comments;
@@ -58,27 +61,27 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (viewType) {
             case VIEW_TYPE_HEADER:
                 View headerView = inflater.inflate(R.layout.player_header_item, parent, false);
-                viewHolder = new HeaderViewHolder(headerView, context, videoId, videoTitle);
+                viewHolder = new HeaderViewHolder(headerView, context, videoId, videoTitle, userIdentifier);
                 break;
             case VIEW_TYPE_COMMENT_INPUT:
                 View inputView = inflater.inflate(R.layout.comment_input_item, parent, false);
-                viewHolder = new CommentInputViewHolder(inputListener, inputView, context, videoId);
+                viewHolder = new CommentInputViewHolder(inputListener, inputView, context, videoId, userIdentifier);
                 break;
             case VIEW_TYPE_THREAD_COMMENT:
                 View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
-                viewHolder = new ThreadCommentViewHolder(threadCommentView);
+                viewHolder = new ThreadCommentViewHolder(threadCommentView, userIdentifier);
                 break;
             case VIEW_TYPE_ONE_REPLY:
                 View oneReplyView = inflater.inflate(R.layout.comment_group_item, parent, false);
-                viewHolder = new OneReplyViewHolder(oneReplyView);
+                viewHolder = new OneReplyViewHolder(oneReplyView, userIdentifier);
                 break;
             case VIEW_TYPE_TWO_REPLIES:
                 View twoRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
-                viewHolder = new TwoRepliesViewHolder(twoRepliesView);
+                viewHolder = new TwoRepliesViewHolder(twoRepliesView, userIdentifier);
                 break;
             case VIEW_TYPE_ALL_REPLIES:
                 View allRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
-                viewHolder = new AllRepliesViewHolder(allRepliesListener, allRepliesView, comments);
+                viewHolder = new AllRepliesViewHolder(allRepliesListener, allRepliesView, comments, userIdentifier);
                 break;
         }
 
@@ -129,30 +132,30 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static class ThreadCommentViewHolder extends CommentsViewHolder {
 
-        ThreadCommentViewHolder(View itemView) {
-            super(itemView);
+        ThreadCommentViewHolder(View itemView, String identifier) {
+            super(itemView, identifier);
         }
     }
 
     private static class OneReplyViewHolder extends CommentsViewHolder {
 
-        OneReplyViewHolder(View itemView) {
-            super(itemView);
+        OneReplyViewHolder(View itemView, String identifier) {
+            super(itemView, identifier);
         }
     }
 
     private static class TwoRepliesViewHolder extends CommentsViewHolder {
 
-        TwoRepliesViewHolder(View itemView) {
-            super(itemView);
+        TwoRepliesViewHolder(View itemView, String identifeir) {
+            super(itemView, identifeir);
         }
     }
 
     private static class AllRepliesViewHolder extends CommentsViewHolder {
 
         AllRepliesViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
-                             View itemView, List<ThreadCommentModel> comments) {
-            super(footerListener, itemView, comments);
+                             View itemView, List<ThreadCommentModel> comments, String identifier) {
+            super(footerListener, itemView, comments, identifier);
         }
     }
 }

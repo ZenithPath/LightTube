@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
+import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 
 import static android.util.Log.i;
@@ -11,12 +12,18 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private RetrieveCommentsUseCase retrieveCommentsUseCase;
 
+    private RetrieveUserIdentifierUseCase identifierUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
 
+    private CommentListModel commentListModel;
+
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                    RetrieveUserIdentifierUseCase identifierUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
+        this.identifierUseCase = identifierUseCase;
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
@@ -59,10 +66,23 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         @Override
         public void onNext(CommentListModel commentListModel) {
             super.onNext(commentListModel);
+            PlayerFooterPresenterImp.this.commentListModel = commentListModel;
+        }
 
-            if (view != null) {
-                view.displayComments(commentListModel);
-            }
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+            identifierUseCase.execute(new IdentifierSubscriber());
+        }
+    }
+
+    private final class IdentifierSubscriber extends DefaultSubscriber<String> {
+
+        @Override
+        public void onNext(String identifier) {
+            super.onNext(identifier);
+
+            view.displayComments(commentListModel, identifier);
         }
     }
 }

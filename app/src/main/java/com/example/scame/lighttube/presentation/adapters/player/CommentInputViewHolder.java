@@ -27,8 +27,10 @@ public class CommentInputViewHolder extends RecyclerView.ViewHolder implements I
 
     private PlayerFooterFragment.CommentInputListener inputListener;
 
+    private String identifier;
+
     public CommentInputViewHolder(PlayerFooterFragment.CommentInputListener inputListener,
-                                  View itemView, Context context, String videoId) {
+                                  View itemView, Context context, String videoId, String identifier) {
         super(itemView);
 
         this.inputListener = inputListener;

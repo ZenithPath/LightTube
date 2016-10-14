@@ -7,7 +7,7 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
 
     interface FooterView {
 
-        void displayComments(CommentListModel commentListModel);
+        void displayComments(CommentListModel commentListModel, String userIdentifier);
     }
 
     void getCommentList(String videoId);

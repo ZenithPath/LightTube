@@ -49,18 +49,22 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private TextView secondReplyDate;
     private TextView secondReplyAuthor;
 
-    public CommentsViewHolder(View itemView) {
+    private String identifier;
+
+    public CommentsViewHolder(View itemView, String identifier) {
         super(itemView);
 
+        this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
         findViews();
     }
 
     CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
-                       View itemView, List<ThreadCommentModel> comments) {
+                       View itemView, List<ThreadCommentModel> comments, String identifier) {
         super(itemView);
 
+        this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
         findViews();
@@ -70,8 +74,10 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void setAllRepliesClickListener(PlayerFooterFragment.PlayerFooterListener footerListener,
                                             List<ThreadCommentModel> comments) {
-        allRepliesTv.setOnClickListener(v -> footerListener
-                .onRepliesClick(comments.get(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER).getThreadId()));
+        allRepliesTv.setOnClickListener(
+                v -> footerListener.onRepliesClick(comments
+                        .get(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER).getThreadId(), identifier)
+        );
     }
 
     private void findViews() {
@@ -124,7 +130,6 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
         ThreadCommentModel commentModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER);
-
         Picasso.with(threadProfileIv.getContext())
                 .load(commentModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()

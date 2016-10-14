@@ -3,11 +3,13 @@ package com.example.scame.lighttube.presentation.di.modules;
 
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
+import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
+import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.IVideoRatingPresenter;
@@ -31,9 +33,17 @@ public class PlayerFooterModule {
     @Provides
     @PerActivity
     IPlayerFooterPresenter<FooterView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                                                RetrieveUserIdentifierUseCase identifierUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
 
-        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, subscriptionsHandler);
+        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase ,subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    RetrieveUserIdentifierUseCase provideUserIdentifierUseCase(ObserveOn observeOn, SubscribeOn subscribeOn,
+                                                               IUserChannelDataManager dataManager) {
+        return new RetrieveUserIdentifierUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides

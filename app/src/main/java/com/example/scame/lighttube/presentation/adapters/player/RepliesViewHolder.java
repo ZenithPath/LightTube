@@ -24,8 +24,12 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.comment_date_tv) TextView commentDate;
 
-    public RepliesViewHolder(View itemView) {
+    private String identifier;
+
+    public RepliesViewHolder(View itemView, String identifier) {
         super(itemView);
+
+        this.identifier = identifier;
         ButterKnife.bind(this, itemView);
     }
 

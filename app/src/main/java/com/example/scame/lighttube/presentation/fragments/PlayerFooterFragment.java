@@ -43,9 +43,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private String videoId;
 
+    private String userIdentifier;
+
     public interface PlayerFooterListener {
 
-        void onRepliesClick(String threadCommentId);
+        void onRepliesClick(String threadCommentId, String identifier);
     }
 
     public interface CommentInputListener {
@@ -91,15 +93,17 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
             presenter.setView(this);
             presenter.getCommentList(videoId);
         } else {
-            displayComments(commentListModel);
+            displayComments(commentListModel, userIdentifier);
         }
     }
 
     @Override
-    public void displayComments(CommentListModel commentsList) {
+    public void displayComments(CommentListModel commentsList, String userIdentifier) {
         this.commentListModel = commentsList;
+        this.userIdentifier = userIdentifier;
+
         commentsAdapter = new CommentsAdapter(footerListener, commentListModel.getThreadComments(),
-                this::displayPostedComment, getActivity(), "Some title", videoId);
+                this::displayPostedComment, getActivity(), "Some title", videoId, userIdentifier);
 
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
