@@ -23,7 +23,7 @@ public class AccessTokenInterceptor implements Interceptor {
         Request originalRequest = chain.request();
         Request authorisedRequest;
 
-        accountDataManager.getTokenEntity()
+        accountDataManager.getTokenFromCache()
                 .subscribe(tokenEntity -> accessToken = tokenEntity.getAccessToken());
 
         if (!accessToken.equals("") && !isCommentThreadsRequest(originalRequest)) {

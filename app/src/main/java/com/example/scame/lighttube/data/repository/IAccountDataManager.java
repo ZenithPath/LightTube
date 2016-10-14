@@ -10,12 +10,12 @@ public interface IAccountDataManager {
 
     void refreshToken(TokenEntity tokenEntity);
 
-    boolean ifTokenExists();
+    boolean isTokenExists();
 
     Observable<Void> signOut();
 
-    Observable<TokenEntity> getTokenEntity();
+    Observable<TokenEntity> getTokenFromCache();
 
-    // main method, entity used only by interceptor
+    // main method, above procedure used only locally and inside interceptors
     Observable<TokenEntity> getToken(String serverAuthCode);
 }

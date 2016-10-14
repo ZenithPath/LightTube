@@ -29,10 +29,10 @@ public class TokenAuthenticator implements Authenticator {
     }
 
     private void updateToken() {
-        accountDataManager.getTokenEntity()
+        accountDataManager.getTokenFromCache()
                 .filter(tokenEntity -> !tokenEntity.getRefreshToken().equals(""))
                 .doOnNext(accountDataManager::refreshToken)
-                .flatMap(refreshedEntity -> accountDataManager.getTokenEntity())
+                .flatMap(refreshedEntity -> accountDataManager.getTokenFromCache())
                 .subscribe(finalEntity -> newToken = finalEntity.getAccessToken());
     }
 }

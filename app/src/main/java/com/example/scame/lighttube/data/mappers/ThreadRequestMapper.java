@@ -16,6 +16,7 @@ public class ThreadRequestMapper {
         threadCommentModel.setProfileImageUrl(commentSnippet.getAuthorProfileImageUrl());
         threadCommentModel.setAuthorName(commentSnippet.getAuthorDisplayName());
         threadCommentModel.setDate(commentSnippet.getUpdatedAt());
+        threadCommentModel.setAuthorChannelId(commentSnippet.getAuthorChannelId().getValue());
 
         return threadCommentModel;
     }

@@ -19,6 +19,6 @@ public class CheckLoginUseCase extends UseCase<Boolean> {
 
     @Override
     protected Observable<Boolean> getUseCaseObservable() {
-        return Observable.just(dataManager.ifTokenExists());
+        return Observable.just(dataManager.isTokenExists());
     }
 }

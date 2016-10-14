@@ -17,7 +17,6 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
-
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }

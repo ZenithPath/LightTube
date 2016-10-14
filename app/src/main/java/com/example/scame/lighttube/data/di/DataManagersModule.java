@@ -31,11 +31,14 @@ import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
+import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
 import com.example.scame.lighttube.data.repository.RatingDataManagerImp;
 import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
+import com.example.scame.lighttube.data.repository.UserChannelDataManagerImp;
 import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
+import com.example.scame.lighttube.data.rest.ChannelsApi;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.data.rest.RatingApi;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
@@ -121,5 +124,12 @@ public class DataManagersModule {
                                                     ReplyRequestMapper replyMapper) {
         return new CommentsDataManagerImp(commentsApi, commentListMapper, replyListMapper,
                 threadMapper, commentBuilder, replyBuilder, replyMapper);
+    }
+
+    @Singleton
+    @Provides
+    IUserChannelDataManager provideUserChannelDataManager(ChannelsApi channelsApi, SharedPreferences sharedPrefs,
+                                                          Context context) {
+        return new UserChannelDataManagerImp(channelsApi, sharedPrefs, context);
     }
 }

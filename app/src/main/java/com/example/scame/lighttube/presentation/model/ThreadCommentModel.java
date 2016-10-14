@@ -20,8 +20,14 @@ public class ThreadCommentModel {
 
     private String date;
 
+    private String authorChannelId;
+
     public ThreadCommentModel() {
         replies = new ArrayList<>();
+    }
+
+    public void setAuthorChannelId(String authorChannelId) {
+        this.authorChannelId = authorChannelId;
     }
 
     public void addReply(ReplyModel replyModel) {
@@ -54,6 +60,10 @@ public class ThreadCommentModel {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getAuthorChannelId() {
+        return authorChannelId;
     }
 
     public List<ReplyModel> getReplies() {

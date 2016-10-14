@@ -3,6 +3,8 @@ package com.example.scame.lighttube.data.entities.comments.responses;
 
 public class CommentSnippet {
 
+    private AuthorChannelId authorChannelId;
+
     private String authorDisplayName;
 
     private String authorProfileImageUrl;
@@ -26,6 +28,10 @@ public class CommentSnippet {
     private String parentId;
 
     private String textOriginal; // used in POST requests
+
+    public void setAuthorChannelId(AuthorChannelId authorChannelId) {
+        this.authorChannelId = authorChannelId;
+    }
 
     public void setTextOriginal(String textOriginal) {
         this.textOriginal = textOriginal;
@@ -73,6 +79,10 @@ public class CommentSnippet {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public AuthorChannelId getAuthorChannelId() {
+        return authorChannelId;
     }
 
     public String getParentId() {

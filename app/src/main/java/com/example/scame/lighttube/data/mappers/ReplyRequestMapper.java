@@ -17,6 +17,7 @@ public class ReplyRequestMapper {
         replyModel.setProfileImageUrl(commentSnippet.getAuthorProfileImageUrl());
         replyModel.setAuthorName(commentSnippet.getAuthorDisplayName());
         replyModel.setDate(commentSnippet.getUpdatedAt());
+        replyModel.setAuthorChannelId(commentSnippet.getAuthorChannelId().getValue());
 
         return replyModel;
     }

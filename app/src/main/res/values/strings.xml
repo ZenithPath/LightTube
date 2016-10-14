@@ -91,4 +91,6 @@
     <string name="all_replies_text">SHOW ALL REPLIES</string>
     <string name="comment">Leave a comment</string>
 
+    <string name="channel_url_key">channelUrlKey</string>
+
 </resources>

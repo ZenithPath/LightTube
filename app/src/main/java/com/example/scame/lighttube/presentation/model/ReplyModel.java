@@ -15,6 +15,12 @@ public class ReplyModel {
 
     private String commentId;
 
+    private String authorChannelId;
+
+    public void setAuthorChannelId(String authorChannelId) {
+        this.authorChannelId = authorChannelId;
+    }
+
     public void setCommentId(String commentId) {
         this.commentId = commentId;
     }
@@ -61,5 +67,9 @@ public class ReplyModel {
 
     public String getParentId() {
         return parentId;
+    }
+
+    public String getAuthorChannelId() {
+        return authorChannelId;
     }
 }

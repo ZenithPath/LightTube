@@ -24,23 +24,19 @@ public class AccountDataManagerImp implements IAccountDataManager {
 
     private String accessTokenKey;
     private String refreshTokenKey;
+    private String userChannelKey;
 
     public AccountDataManagerImp(SharedPreferences sharedPrefs, Context context) {
         this.sharedPrefs = sharedPrefs;
 
         accessTokenKey = context.getString(R.string.access_token);
         refreshTokenKey = context.getString(R.string.refresh_token);
+        userChannelKey = context.getString(R.string.channel_url_key);
     }
 
     @Override
     public Observable<TokenEntity> getToken(String serverAuthCode) {
-
-        if (ifTokenExists()) {
-            return getTokenEntity();
-        }
-
-        return fetchWithServerAuthCode(serverAuthCode)
-                .doOnNext(tokenEntity -> saveTokens(tokenEntity, true));
+        return isTokenExists() ? getTokenFromCache() : getTokenFromNetwork(serverAuthCode);
     }
 
     @Override
@@ -76,6 +72,7 @@ public class AccountDataManagerImp implements IAccountDataManager {
             SharedPreferences.Editor editor = sharedPrefs.edit();
             editor.putString(accessTokenKey, "");
             editor.putString(refreshTokenKey, "");
+            editor.putString(userChannelKey, "");
             editor.apply();
 
             subscriber.onCompleted();
@@ -94,7 +91,7 @@ public class AccountDataManagerImp implements IAccountDataManager {
     }
 
     @Override
-    public Observable<TokenEntity> getTokenEntity() {
+    public Observable<TokenEntity> getTokenFromCache() {
         TokenEntity tokenEntity = new TokenEntity();
 
         tokenEntity.setRefreshToken(sharedPrefs.getString(refreshTokenKey, ""));
@@ -104,8 +101,9 @@ public class AccountDataManagerImp implements IAccountDataManager {
     }
 
 
-    private Observable<TokenEntity> fetchWithServerAuthCode(String authServerCode) {
-        return getTokenApi().getAccessToken(buildRequestBody(authServerCode));
+    private Observable<TokenEntity> getTokenFromNetwork(String authServerCode) {
+        return getTokenApi().getAccessToken(buildRequestBody(authServerCode))
+                .doOnNext(tokenEntity -> saveTokens(tokenEntity, true));
     }
 
     private Map<String, String> buildRequestBody(String authServerCode) {
@@ -121,7 +119,7 @@ public class AccountDataManagerImp implements IAccountDataManager {
     }
 
     @Override
-    public boolean ifTokenExists() {
+    public boolean isTokenExists() {
         return !sharedPrefs.getString(accessTokenKey, "").equals("");
     }
 
