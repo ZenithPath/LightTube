@@ -78,4 +78,9 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
         return commentsApi.postReply(POST_PART, PrivateValues.API_KEY, replyBuilder.build(parentId, replyText))
                 .map(replyMapper::convert);
     }
+
+    @Override
+    public Observable<Void> deleteComment(String commentId) {
+        return commentsApi.deleteComment(commentId, PrivateValues.API_KEY);
+    }
 }

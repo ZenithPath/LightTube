@@ -9,6 +9,7 @@ import com.example.scame.lighttube.data.entities.comments.responses.CommentThrea
 import com.example.scame.lighttube.data.entities.replies.ReplyEntity;
 
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -43,4 +44,7 @@ public interface CommentsApi {
     Observable<CommentSnippetHolder> postReply(@Query("part") String part,
                                                @Query("key") String key,
                                                @Body ReplyRequestBody body);
+
+    @DELETE("youtube/v3/comments")
+    Observable<Void> deleteComment(@Query("id") String id, @Query("key") String key);
 }
