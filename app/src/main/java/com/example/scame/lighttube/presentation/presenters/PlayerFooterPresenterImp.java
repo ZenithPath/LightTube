@@ -7,7 +7,7 @@ import com.example.scame.lighttube.presentation.model.CommentListModel;
 
 import static android.util.Log.i;
 
-public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.CommentsView> implements IPlayerFooterPresenter<T> {
+public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterView> implements IPlayerFooterPresenter<T> {
 
     private RetrieveCommentsUseCase retrieveCommentsUseCase;
 

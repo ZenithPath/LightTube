@@ -8,7 +8,7 @@ import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
 import com.example.scame.lighttube.presentation.model.RatingModel;
 
-public class PlayerHeaderPresenterImp<T extends IPlayerHeaderPresenter.PlayerView> implements IPlayerHeaderPresenter<T> {
+public class VideoRatingPresenterImp<T extends IVideoRatingPresenter.PlayerView> implements IVideoRatingPresenter<T> {
 
     private T view;
 
@@ -20,9 +20,9 @@ public class PlayerHeaderPresenterImp<T extends IPlayerHeaderPresenter.PlayerVie
 
 
 
-    public PlayerHeaderPresenterImp(RetrieveRatingUseCase retrieveRatingUseCase,
-                                    RateVideoUseCase rateVideoUseCase,
-                                    SubscriptionsHandler subscriptionsHandler) {
+    public VideoRatingPresenterImp(RetrieveRatingUseCase retrieveRatingUseCase,
+                                   RateVideoUseCase rateVideoUseCase,
+                                   SubscriptionsHandler subscriptionsHandler) {
 
         this.retrieveRatingUseCase = retrieveRatingUseCase;
         this.rateVideoUseCase = rateVideoUseCase;

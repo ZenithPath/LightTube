@@ -5,7 +5,7 @@ import com.example.scame.lighttube.presentation.model.CommentListModel;
 
 public interface IPlayerFooterPresenter<T> extends Presenter<T> {
 
-    interface CommentsView {
+    interface FooterView {
 
         void displayComments(CommentListModel commentListModel);
     }

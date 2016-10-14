@@ -1,6 +1,6 @@
 package com.example.scame.lighttube.presentation.presenters;
 
-public interface IPlayerHeaderPresenter<T> extends Presenter<T> {
+public interface IVideoRatingPresenter<T> extends Presenter<T> {
 
     interface PlayerView {
 

@@ -40,7 +40,7 @@ public class CommentInputViewHolder extends RecyclerView.ViewHolder implements I
 
     private void inject(Context context) {
         if (context instanceof PlayerActivity) {
-            ((PlayerActivity) context).getPlayerComponent().inject(this);
+            ((PlayerActivity) context).getCommentsComponent().inject(this);
         }
     }
 

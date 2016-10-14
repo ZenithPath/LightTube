@@ -76,12 +76,6 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
     private ComponentsManager componentsManager;
 
-    private VideoListComponent videoListComponent;
-    private SignInComponent signInComponent;
-    private GridComponent gridComponent;
-    private RecentVideosComponent recentVideosComponent;
-    private ChannelVideosComponent channelVideosComponent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         componentsManager = new ComponentsManager(this);
@@ -226,43 +220,23 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     }
 
     public VideoListComponent getVideoListComponent() {
-        if (videoListComponent == null) {
-            videoListComponent = componentsManager.provideVideoListComponent();
-        }
-
-        return videoListComponent;
+        return componentsManager.provideVideoListComponent();
     }
 
     public SignInComponent getSignInComponent() {
-        if (signInComponent == null) {
-            signInComponent = componentsManager.provideSignInComponent();
-        }
-
-        return signInComponent;
+        return componentsManager.provideSignInComponent();
     }
 
     public GridComponent getGridComponent() {
-        if (gridComponent == null) {
-            gridComponent = componentsManager.provideGridComponent();
-        }
-
-        return gridComponent;
+        return componentsManager.provideGridComponent();
     }
 
     public RecentVideosComponent getRecentVideosComponent() {
-        if (recentVideosComponent == null) {
-            recentVideosComponent = componentsManager.provideRecentVideosComponent();
-        }
-
-        return recentVideosComponent;
+        return componentsManager.provideRecentVideosComponent();
     }
 
     public ChannelVideosComponent getChannelVideosComponent() {
-        if (channelVideosComponent == null) {
-            channelVideosComponent = componentsManager.provideChannelsComponent();
-        }
-
-        return channelVideosComponent;
+        return componentsManager.provideChannelsComponent();
     }
 
     @Override

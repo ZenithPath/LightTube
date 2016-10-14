@@ -25,12 +25,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.CommentsView {
+public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView {
 
     private static final int INSERT_COMMENT_POS = 0;
 
     @Inject
-    IPlayerFooterPresenter<IPlayerFooterPresenter.CommentsView> presenter;
+    IPlayerFooterPresenter<IPlayerFooterPresenter.FooterView> presenter;
 
     @BindView(R.id.player_footer_rv)
     RecyclerView footerRv;
@@ -78,7 +78,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         View fragmentView = inflater.inflate(R.layout.player_footer_fragment, container, false);
 
         videoId = getArguments().getString(PlayerFooterFragment.class.getCanonicalName());
-        ((PlayerActivity) getActivity()).getPlayerComponent().inject(this);
+        ((PlayerActivity) getActivity()).getPlayerFooterComponent().inject(this);
         ButterKnife.bind(this, fragmentView);
 
         supplyComments();

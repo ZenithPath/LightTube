@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
-import com.example.scame.lighttube.presentation.presenters.IPlayerHeaderPresenter;
+import com.example.scame.lighttube.presentation.presenters.IVideoRatingPresenter;
 
 import javax.inject.Inject;
 
@@ -19,14 +19,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayerHeaderPresenter.PlayerView {
+public class HeaderViewHolder extends RecyclerView.ViewHolder implements IVideoRatingPresenter.PlayerView {
 
     private static final String LIKE = "like";
     private static final String DISLIKE = "dislike";
     private static final String NONE = "none";
 
     @Inject
-    IPlayerHeaderPresenter<IPlayerHeaderPresenter.PlayerView> presenter;
+    IVideoRatingPresenter<IVideoRatingPresenter.PlayerView> presenter;
 
     @BindView(R.id.like_btn) ImageButton likeButton;
 
@@ -51,7 +51,7 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IPlayer
 
     private void inject(Context context) {
         if (context instanceof PlayerActivity) {
-            ((PlayerActivity) context).getPlayerComponent().inject(this);
+            ((PlayerActivity) context).getPlayerFooterComponent().inject(this);
         }
     }
 

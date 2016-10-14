@@ -60,7 +60,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         View repliesView = inflater.inflate(R.layout.replies_fragment, container, false);
 
         ButterKnife.bind(this, repliesView);
-        ((PlayerActivity) getActivity()).getPlayerComponent().inject(this);
+        ((PlayerActivity) getActivity()).getRepliesComponent().inject(this);
         this.threadCommentId = getArguments().getString(RepliesFragment.class.getCanonicalName());
 
         presenter.setView(this);

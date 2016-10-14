@@ -39,7 +39,7 @@ public class ReplyInputViewHolder extends RecyclerView.ViewHolder implements IRe
 
     private void inject(Context context) {
         if (context instanceof PlayerActivity) {
-            ((PlayerActivity) context).getPlayerComponent().inject(this);
+            ((PlayerActivity) context).getRepliesComponent().inject(this);
         }
     }
 

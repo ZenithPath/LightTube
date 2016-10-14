@@ -13,10 +13,10 @@ import android.widget.LinearLayout;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.LightTubeApp;
-import com.example.scame.lighttube.presentation.di.components.DaggerPlayerComponent;
-import com.example.scame.lighttube.presentation.di.components.PlayerComponent;
-import com.example.scame.lighttube.presentation.di.modules.PlayerModule;
+import com.example.scame.lighttube.presentation.di.components.CommentsComponent;
+import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
+import com.example.scame.lighttube.presentation.di.components.PlayerFooterComponent;
+import com.example.scame.lighttube.presentation.di.components.RepliesComponent;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -51,7 +51,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private AppCompatDelegate delegate;
 
-    private PlayerComponent playerComponent;
+    private ComponentsManager componentsManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +60,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         super.onCreate(savedInstanceState);
         delegate.setContentView(R.layout.player_activity);
 
+        componentsManager = new ComponentsManager(this);
         videoId = getIntent().getStringExtra(getString(R.string.video_id));
 
         ButterKnife.bind(this);
@@ -165,15 +166,16 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         doLayout();
     }
 
-    public PlayerComponent getPlayerComponent() {
-        if (playerComponent == null) {
-            playerComponent = DaggerPlayerComponent.builder()
-                    .applicationComponent(LightTubeApp.getAppComponent())
-                    .playerModule(new PlayerModule())
-                    .build();
-        }
+    public CommentsComponent getCommentsComponent() {
+        return componentsManager.provideCommentsComponent();
+    }
 
-        return playerComponent;
+    public PlayerFooterComponent getPlayerFooterComponent() {
+        return componentsManager.providePlayerFooterComponent();
+    }
+
+    public RepliesComponent getRepliesComponent() {
+        return componentsManager.provideRepliesComponent();
     }
 
     @Override
