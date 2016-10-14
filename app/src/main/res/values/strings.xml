@@ -94,5 +94,8 @@
     <string name="channel_url_key">channelUrlKey</string>
 
     <string name="identifier_key">identifierKey</string>
+    <string name="delete">delete</string>
+    <string name="edit">edit</string>
+    <string name="report">report</string>
 
 </resources>

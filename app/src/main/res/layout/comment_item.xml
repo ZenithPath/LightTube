@@ -1,43 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:columnCount="4"
-    android:rowCount="2"
-    android:orientation="horizontal">
+    app:columnCount="5"
+    app:orientation="horizontal"
+    app:rowCount="2">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_iv"
         android:layout_width="@dimen/profile_image_size"
         android:layout_height="@dimen/profile_image_size"
-        android:layout_rowSpan="2"
-        app:civ_border_width="1dp"
+        android:layout_margin="@dimen/comment_elem_margin"
         app:civ_border_color="#FF000000"
-        android:layout_margin="@dimen/comment_elem_margin" />
+        app:civ_border_width="1dp"
+        app:layout_rowSpan="2" />
 
     <TextView
         android:id="@+id/comment_text_tv"
-        android:layout_columnSpan="3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/comment_elem_margin"
         android:textColor="@color/textPrimary"
         android:textSize="@dimen/comment_text"
-        android:layout_margin="@dimen/comment_elem_margin"
-        android:paddingRight="@dimen/text_clipping_padding"/>
+        app:layout_columnSpan="4"
+        app:layout_columnWeight="1" />
 
     <TextView
         android:id="@+id/author_name_tv"
+        android:layout_width="0dp"
+        android:layout_margin="@dimen/comment_elem_margin"
+        android:clickable="true"
         android:textColor="@color/textSecondary"
         android:textSize="@dimen/comment_meta_text"
-        android:clickable="true"
-        android:layout_margin="@dimen/comment_elem_margin"/>
+        app:layout_columnWeight="1" />
 
     <TextView
         android:id="@+id/comment_date_tv"
+        android:layout_width="0dp"
+        android:layout_margin="@dimen/comment_elem_margin"
         android:textColor="@color/textSecondary"
-        android:layout_margin="@dimen/comment_elem_margin"/>
+        app:layout_columnWeight="2.5" />
+
+    <ImageButton
+        android:id="@+id/more_option_ib"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_margin="@dimen/comment_elem_margin"
+        android:background="?android:selectableItemBackground"
+        android:src="@drawable/ic_more_vert_black_24dp" />
 
     <ImageView
         android:id="@+id/replies_iv"
-        android:layout_margin="@dimen/comment_elem_margin"/>
-</GridLayout>
+        android:layout_margin="@dimen/comment_elem_margin" />
+</android.support.v7.widget.GridLayout>
 

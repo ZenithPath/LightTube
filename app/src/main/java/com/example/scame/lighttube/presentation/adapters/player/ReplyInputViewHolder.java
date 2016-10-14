@@ -62,7 +62,9 @@ public class ReplyInputViewHolder extends RecyclerView.ViewHolder implements IRe
 
     @Override
     public void displayReply(ReplyModel replyModel) {
-        if (repliesListener != null) {
+        if (repliesListener != null) {                  // this dirty hack was made because JSON returned by Youtube Data API
+            replyModel.setAuthorChannelId(identifier);  // doesn't contain author channel id field
+                                                        // so to avoid making an additional request we set it by hand
             replyInput.setText("");
             repliesListener.onPostedReply(replyModel);
         }

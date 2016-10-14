@@ -1,9 +1,10 @@
 package com.example.scame.lighttube.presentation.adapters.player;
 
 
+import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private TextView threadCommentText;
     private TextView threadCommentDate;
     private TextView threadCommentAuthor;
+    private ImageButton threadMenuOptions;
     private ImageView repliesIv;
 
     // firstReplyRoot's views
@@ -42,18 +44,23 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private TextView firstReplyText;
     private TextView firstReplyDate;
     private TextView firstReplyAuthor;
+    private ImageButton firstReplyMenuOptions;
 
     // secondReplyRoot's views
     private ImageView secondReplyProfileIv;
     private TextView secondReplyText;
     private TextView secondReplyDate;
     private TextView secondReplyAuthor;
+    private ImageButton secondReplyMenuOptions;
+
+    private PopupHandler popupHandler;
 
     private String identifier;
 
     public CommentsViewHolder(View itemView, String identifier) {
         super(itemView);
 
+        popupHandler = new PopupHandler(identifier);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
@@ -64,6 +71,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
                        View itemView, List<ThreadCommentModel> comments, String identifier) {
         super(itemView);
 
+        popupHandler = new PopupHandler(identifier);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
@@ -86,16 +94,19 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         threadCommentDate = ButterKnife.findById(threadRoot, R.id.comment_date_tv);
         threadCommentAuthor = ButterKnife.findById(threadRoot, R.id.author_name_tv);
         repliesIv = ButterKnife.findById(threadRoot, R.id.replies_iv);
+        threadMenuOptions = ButterKnife.findById(threadRoot, R.id.more_option_ib);
 
         firstReplyProfileIv = ButterKnife.findById(firstReplyRoot, R.id.profile_iv);
         firstReplyText = ButterKnife.findById(firstReplyRoot, R.id.comment_text_tv);
         firstReplyDate = ButterKnife.findById(firstReplyRoot, R.id.comment_date_tv);
         firstReplyAuthor = ButterKnife.findById(firstReplyRoot, R.id.author_name_tv);
+        firstReplyMenuOptions = ButterKnife.findById(firstReplyRoot, R.id.more_option_ib);
 
         secondReplyProfileIv = ButterKnife.findById(secondReplyRoot, R.id.profile_iv);
         secondReplyText = ButterKnife.findById(secondReplyRoot, R.id.comment_text_tv);
         secondReplyDate = ButterKnife.findById(secondReplyRoot, R.id.comment_date_tv);
         secondReplyAuthor = ButterKnife.findById(secondReplyRoot, R.id.author_name_tv);
+        secondReplyMenuOptions = ButterKnife.findById(secondReplyRoot, R.id.more_option_ib);
     }
 
     void bindThreadCommentView(int position, List<ThreadCommentModel> comments) {
@@ -130,6 +141,9 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
         ThreadCommentModel commentModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER);
+
+        threadMenuOptions.setOnClickListener(v -> popupHandler.showPopup(v, commentModel.getAuthorChannelId()));
+
         Picasso.with(threadProfileIv.getContext())
                 .load(commentModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
@@ -146,6 +160,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
                 .getReplies().get(index);
 
+        firstReplyMenuOptions.setOnClickListener(v -> popupHandler.showPopup(v, replyModel.getAuthorChannelId()));
+
         Picasso.with(firstReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
@@ -160,6 +176,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
         ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
                 .getReplies().get(index);
+
+        secondReplyMenuOptions.setOnClickListener(v -> popupHandler.showPopup(v, replyModel.getAuthorChannelId()));
 
         Picasso.with(secondReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())

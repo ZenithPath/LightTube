@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.adapters.player;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
@@ -24,17 +25,22 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.comment_date_tv) TextView commentDate;
 
-    private String identifier;
+    @BindView(R.id.more_option_ib) ImageButton menuOptions;
+
+
+    private PopupHandler popupHandler;
 
     public RepliesViewHolder(View itemView, String identifier) {
         super(itemView);
 
-        this.identifier = identifier;
+        popupHandler = new PopupHandler(identifier);
         ButterKnife.bind(this, itemView);
     }
 
     public void bindRepliesView(int position, ReplyListModel replies) {
         ReplyModel replyModel = replies.getReplyModel(position);
+
+        menuOptions.setOnClickListener(v -> popupHandler.showPopup(menuOptions, replyModel.getAuthorChannelId()));
 
         Picasso.with(profileImage.getContext()).load(replyModel.getProfileImageUrl())
                 .noFade().resize(30, 30).centerCrop()
