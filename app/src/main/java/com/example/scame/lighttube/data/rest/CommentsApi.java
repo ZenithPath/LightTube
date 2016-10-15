@@ -59,4 +59,7 @@ public interface CommentsApi {
 
     @DELETE("youtube/v3/comments")
     Observable<Void> deleteComment(@Query("id") String id, @Query("key") String key);
+
+    @POST("youtube/v3/comments/markAsSpam")
+    Observable<Void> markAsSpam(@Query("id") String id, @Query("key") String key);
 }

@@ -23,4 +23,6 @@ public interface ICommentsDataManager {
     Observable<Void> deleteComment(String commentId);
 
     Observable<ReplyModel> updateReply(String replyText, String replyId);
+
+    Observable<Void> markAsSpam(String commentId);
 }

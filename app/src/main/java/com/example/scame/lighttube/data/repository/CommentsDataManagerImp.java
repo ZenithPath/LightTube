@@ -104,4 +104,9 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
                 threadUpdateBuilder.build(updatedText, commentId))
                 .map(threadResponseMapper::convert);
     }
+
+    @Override
+    public Observable<Void> markAsSpam(String commentId) {
+        return commentsApi.markAsSpam(commentId, PrivateValues.API_KEY);
+    }
 }
