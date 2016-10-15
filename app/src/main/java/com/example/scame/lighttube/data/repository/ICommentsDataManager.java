@@ -14,11 +14,13 @@ public interface ICommentsDataManager {
 
     Observable<ThreadCommentModel> postThreadComment(String commentText, String videoId);
 
+    Observable<ThreadCommentModel> updateThreadComment(String updatedText, String commentId);
+
     Observable<ReplyListModel> getReplyList(String parentId);
 
     Observable<ReplyModel> postReply(String replyText, String parentId);
 
     Observable<Void> deleteComment(String commentId);
 
-    Observable<ReplyModel> updateReply(String replyText);
+    Observable<ReplyModel> updateReply(String replyText, String replyId);
 }

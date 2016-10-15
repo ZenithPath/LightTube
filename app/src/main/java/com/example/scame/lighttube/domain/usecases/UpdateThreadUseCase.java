@@ -4,33 +4,33 @@ package com.example.scame.lighttube.domain.usecases;
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.ReplyModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import rx.Observable;
 
-public class UpdateReplyUseCase extends UseCase<ReplyModel> {
+public class UpdateThreadUseCase extends UseCase<ThreadCommentModel> {
 
     private ICommentsDataManager dataManager;
 
     private String updatedText;
 
-    private String replyId;
+    private String commentId;
 
-    public UpdateReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICommentsDataManager dataManager) {
+    public UpdateThreadUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICommentsDataManager dataManager) {
         super(subscribeOn, observeOn);
         this.dataManager = dataManager;
     }
 
     @Override
-    protected Observable<ReplyModel> getUseCaseObservable() {
-        return dataManager.updateReply(updatedText, replyId);
+    protected Observable<ThreadCommentModel> getUseCaseObservable() {
+        return dataManager.updateThreadComment(updatedText, commentId);
     }
 
     public void setUpdatedText(String updatedText) {
         this.updatedText = updatedText;
     }
 
-    public void setReplyId(String replyId) {
-        this.replyId = replyId;
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 }

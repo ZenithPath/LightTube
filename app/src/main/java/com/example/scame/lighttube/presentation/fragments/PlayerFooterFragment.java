@@ -110,6 +110,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+
     public void displayPostedComment(ThreadCommentModel threadComment) {
         hideKeyboard();
         insertPostedComment(threadComment);

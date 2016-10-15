@@ -6,10 +6,11 @@ import com.example.scame.lighttube.data.entities.comments.requests.UpdateReplySn
 
 public class ReplyUpdateBuilder {
 
-    public UpdateReplyBody build(String updatedText) {
+    public UpdateReplyBody build(String updatedText, String replyId) {
         UpdateReplyBody updateReplyBody = new UpdateReplyBody();
         UpdateReplySnippet updateReplySnippet = new UpdateReplySnippet();
 
+        updateReplyBody.setId(replyId);
         updateReplySnippet.setTextOriginal(updatedText);
         updateReplyBody.setSnippet(updateReplySnippet);
 

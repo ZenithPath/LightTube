@@ -17,6 +17,7 @@ public class ReplyResponseMapper {
         replyModel.setProfileImageUrl(commentSnippet.getAuthorProfileImageUrl());
         replyModel.setAuthorName(commentSnippet.getAuthorDisplayName());
         replyModel.setDate(commentSnippet.getUpdatedAt());
+        // reply response doesn't contain author channel id field
 
         return replyModel;
     }

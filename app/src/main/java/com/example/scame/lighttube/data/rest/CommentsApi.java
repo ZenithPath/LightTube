@@ -34,6 +34,11 @@ public interface CommentsApi {
                                               @Body ThreadCommentBody body);
 
 
+    @PUT("youtube/v3/commentThreads")
+    Observable<CommentItem> updateThreadComment(@Query("part") String part,
+                                                @Query("key") String key,
+                                                @Body ThreadCommentBody body);
+
     @GET("youtube/v3/comments")
     Observable<ReplyEntity> getReplies(@Query("part") String part,
                                        @Query("maxResults") Integer maxResults,

@@ -27,7 +27,7 @@ public class CommentSnippet {
 
     private String parentId;
 
-    private String textOriginal; // used in POST requests
+    private String textOriginal; // used in POST/UPDATE requests
 
     public void setAuthorChannelId(AuthorChannelId authorChannelId) {
         this.authorChannelId = authorChannelId;

@@ -9,6 +9,7 @@ import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
 import com.example.scame.lighttube.data.mappers.ReplyUpdateBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
+import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
@@ -43,10 +44,13 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     private ReplyUpdateBuilder replyUpdateBuilder;
 
+    private ThreadUpdateBuilder threadUpdateBuilder;
+
     public CommentsDataManagerImp(CommentsApi commentsApi, CommentListMapper commentListMapper,
                                   ReplyListMapper replyListMapper, ThreadResponseMapper threadResponseMapper,
                                   ThreadPostBuilder threadPostBuilder, ReplyPostBuilder replyPostBuilder,
-                                  ReplyResponseMapper replyResponseMapper, ReplyUpdateBuilder replyUpdateBuilder) {
+                                  ReplyResponseMapper replyResponseMapper, ReplyUpdateBuilder replyUpdateBuilder,
+                                  ThreadUpdateBuilder threadUpdateBuilder) {
         this.commentListMapper = commentListMapper;
         this.replyListMapper = replyListMapper;
         this.commentsApi = commentsApi;
@@ -55,6 +59,7 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
         this.replyPostBuilder = replyPostBuilder;
         this.replyResponseMapper = replyResponseMapper;
         this.replyUpdateBuilder = replyUpdateBuilder;
+        this.threadUpdateBuilder = threadUpdateBuilder;
     }
 
     @Override
@@ -87,8 +92,16 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     }
 
     @Override
-    public Observable<ReplyModel> updateReply(String replyText) {
-        return commentsApi.updateReply(SNIPPET_PART, PrivateValues.API_KEY, replyUpdateBuilder.build(replyText))
+    public Observable<ReplyModel> updateReply(String replyText, String replyId) {
+        return commentsApi.updateReply(SNIPPET_PART, PrivateValues.API_KEY,
+                replyUpdateBuilder.build(replyText, replyId))
                 .map(replyResponseMapper::convert);
+    }
+
+    @Override
+    public Observable<ThreadCommentModel> updateThreadComment(String updatedText, String commentId) {
+        return commentsApi.updateThreadComment(SNIPPET_PART, PrivateValues.API_KEY,
+                threadUpdateBuilder.build(updatedText, commentId))
+                .map(threadResponseMapper::convert);
     }
 }
