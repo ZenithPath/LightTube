@@ -39,12 +39,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private Context context;
 
+    private PlayerFooterFragment.PostedCommentListener postedCommentListener;
+
     private CommentActionListener commentActionListener;
 
     public CommentsAdapter(CommentActionListener commentActionListener, PlayerFooterFragment.PlayerFooterListener allRepliesListener,
-                           List<ThreadCommentModel> comments, Context context, String videoTitle, String videoId, String userIdentifier) {
+                           List<ThreadCommentModel> comments, Context context, String videoTitle, String videoId, String userIdentifier,
+                           PlayerFooterFragment.PostedCommentListener postedCommentListener) {
 
-
+        this.postedCommentListener = postedCommentListener;
         this.allRepliesListener = allRepliesListener;
         this.userIdentifier = userIdentifier;
         this.videoTitle = videoTitle;
@@ -66,7 +69,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case VIEW_TYPE_COMMENT_INPUT:
                 View inputView = inflater.inflate(R.layout.comment_input_item, parent, false);
-                viewHolder = new CommentInputViewHolder(commentActionListener, inputView, context, videoId, userIdentifier);
+                viewHolder = new CommentInputViewHolder(postedCommentListener, inputView, context, videoId, userIdentifier);
                 break;
             case VIEW_TYPE_THREAD_COMMENT:
                 View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
@@ -94,16 +97,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ThreadCommentViewHolder) {
             ThreadCommentViewHolder threadCommentViewHolder = (ThreadCommentViewHolder) holder;
-            threadCommentViewHolder.bindThreadCommentView(position, comments);
+            threadCommentViewHolder.bindThreadCommentView(position - VIEW_ABOVE_NUMBER, comments);
         } else if (holder instanceof OneReplyViewHolder) {
             OneReplyViewHolder oneReplyViewHolder = (OneReplyViewHolder) holder;
-            oneReplyViewHolder.bindOneReplyView(position, comments);
+            oneReplyViewHolder.bindOneReplyView(position - VIEW_ABOVE_NUMBER, comments);
         } else if (holder instanceof TwoRepliesViewHolder) {
             TwoRepliesViewHolder twoRepliesViewHolder = (TwoRepliesViewHolder) holder;
-            twoRepliesViewHolder.bindTwoRepliesView(position, comments);
+            twoRepliesViewHolder.bindTwoRepliesView(position - VIEW_ABOVE_NUMBER, comments);
         } else if (holder instanceof AllRepliesViewHolder) {
             AllRepliesViewHolder allRepliesViewHolder = (AllRepliesViewHolder) holder;
-            allRepliesViewHolder.bindAllRepliesView(position, comments);
+            allRepliesViewHolder.bindAllRepliesView(position - VIEW_ABOVE_NUMBER, comments);
         }
     }
 

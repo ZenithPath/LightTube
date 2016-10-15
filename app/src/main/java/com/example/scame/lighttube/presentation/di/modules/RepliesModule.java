@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.di.modules;
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.PostReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
@@ -29,8 +30,9 @@ public class RepliesModule {
     @Provides
     @PerActivity
     IRepliesPresenter<RepliesView> provideRepliesPresenter(RetrieveRepliesUseCase retrieveRepliesUseCase,
+                                                           DeleteCommentUseCase deleteCommentUseCase,
                                                            @Named("replies")SubscriptionsHandler subscriptionsHandler) {
-        return new RepliesPresenterImp<>(retrieveRepliesUseCase, subscriptionsHandler);
+        return new RepliesPresenterImp<>(retrieveRepliesUseCase, deleteCommentUseCase, subscriptionsHandler);
     }
 
     @Provides
@@ -38,6 +40,13 @@ public class RepliesModule {
     IReplyInputPresenter<ReplyView> provideReplyInputPresenter(@Named("replyInput")SubscriptionsHandler subscriptionsHandler,
                                                                                     PostReplyUseCase postReplyUseCase) {
         return new ReplyInputPresenterImp<>(postReplyUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    DeleteCommentUseCase provideDeleteCommentUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                     ICommentsDataManager dataManager) {
+        return new DeleteCommentUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides
@@ -57,8 +66,9 @@ public class RepliesModule {
     @Provides
     @Named("replies")
     @PerActivity
-    SubscriptionsHandler provideRepliesSubscriptionsHandler(RetrieveRepliesUseCase retrieveRepliesUseCase) {
-        return new SubscriptionsHandler(retrieveRepliesUseCase);
+    SubscriptionsHandler provideRepliesSubscriptionsHandler(RetrieveRepliesUseCase retrieveRepliesUseCase,
+                                                            DeleteCommentUseCase deleteCommentUseCase) {
+        return new SubscriptionsHandler(retrieveRepliesUseCase, deleteCommentUseCase);
     }
 
     @Provides

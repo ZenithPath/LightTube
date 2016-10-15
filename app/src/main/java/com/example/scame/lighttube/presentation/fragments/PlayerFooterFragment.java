@@ -52,6 +52,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         void onRepliesClick(String threadCommentId, String identifier);
     }
 
+    public interface PostedCommentListener {
+
+        void onPostedComment(ThreadCommentModel threadCommentModel);
+    }
+
     public static PlayerFooterFragment newInstance(String videoId) {
         PlayerFooterFragment fragment = new PlayerFooterFragment();
 
@@ -100,7 +105,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         this.userIdentifier = userIdentifier;
 
         commentsAdapter = new CommentsAdapter(this, footerListener, commentListModel.getThreadComments(),
-                getActivity(), "Some title", videoId, userIdentifier);
+                getActivity(), "Some title", videoId, userIdentifier, this::onPostedComment);
 
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
@@ -130,7 +135,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     @Override
     public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) { }
 
-    @Override
+
     public void onPostedComment(ThreadCommentModel threadComment) {
         hideKeyboard();
         insertPostedComment(threadComment);

@@ -8,7 +8,11 @@ public interface IRepliesPresenter<T> extends Presenter<T> {
     interface RepliesView {
 
         void displayReplies(ReplyListModel replyListModel);
+
+        void onDeletedReply(int position);
     }
 
     void getRepliesList(String parentId);
+
+    void deleteReply(String replyId, int position);
 }

@@ -8,13 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 
 
 public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_ABOVE_NUMBER = 1;
+    public static final int VIEW_ABOVE_NUMBER = 1;
 
     private static final int REPLY_INPUT_POS = 0;
 
@@ -23,18 +24,22 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private RepliesFragment.RepliesListener repliesListener;
 
+    private CommentActionListener commentActionListener;
+
     private ReplyListModel replies;
 
     private String userIdentifier;
 
     private Context context;
 
-    public RepliesAdapter(ReplyListModel replies, Context context, RepliesFragment.RepliesListener repliesListener,
+    public RepliesAdapter(CommentActionListener commentActionListener, ReplyListModel replies,
+                          Context context, RepliesFragment.RepliesListener repliesListener,
                           String userIdentifier) {
         this.replies = replies;
         this.context = context;
         this.userIdentifier = userIdentifier;
         this.repliesListener = repliesListener;
+        this.commentActionListener = commentActionListener;
     }
 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -48,7 +53,7 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     context, parentId, userIdentifier);
         } else if (viewType == VIEW_TYPE_REPLY_COMMENT) {
             View replyView = inflater.inflate(R.layout.comment_item, parent, false);
-            viewHolder = new RepliesViewHolder(replyView, userIdentifier);
+            viewHolder = new RepliesViewHolder(commentActionListener, replyView, userIdentifier);
         }
 
         return viewHolder;

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RepliesFragment extends Fragment implements IRepliesPresenter.RepliesView {
+public class RepliesFragment extends Fragment implements IRepliesPresenter.RepliesView, CommentActionListener {
 
     private static final int INSERT_REPLY_POS = 0;
 
@@ -78,10 +79,33 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     public void displayReplies(ReplyListModel replyListModel) {
         replies = replyListModel;
 
-        repliesAdapter = new RepliesAdapter(replies, getActivity(), this::onPostedReply, userIdentifier);
+        repliesAdapter = new RepliesAdapter(this, replies, getActivity(), this::onPostedReply, userIdentifier);
         repliesRv.setHasFixedSize(true);
         repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         repliesRv.setAdapter(repliesAdapter);
+    }
+
+    @Override
+    public void onDeletedReply(int position) {
+        replies.remove(position);
+        repliesAdapter.notifyItemRemoved(position + RepliesAdapter.VIEW_ABOVE_NUMBER);
+    }
+
+    // callbacks from view holders
+
+    @Override
+    public void onDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
+        presenter.deleteReply(commentId, commentIndex.second);
+    }
+
+    @Override
+    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex) {
+
+    }
+
+    @Override
+    public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
+
     }
 
     public void onPostedReply(ReplyModel replyModel) {

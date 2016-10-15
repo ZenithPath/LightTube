@@ -85,9 +85,9 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void setAllRepliesClickListener(PlayerFooterFragment.PlayerFooterListener footerListener,
                                             List<ThreadCommentModel> comments) {
-        allRepliesTv.setOnClickListener(
-                v -> footerListener.onRepliesClick(comments
-                        .get(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER).getThreadId(), identifier)
+        allRepliesTv.setOnClickListener(v ->
+                footerListener.onRepliesClick(comments.get(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER)
+                        .getThreadId(), identifier)
         );
     }
 
@@ -143,9 +143,9 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
-        ThreadCommentModel commentModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER);
+        ThreadCommentModel commentModel = comments.get(position);
 
-        handleThreadCommentPopup(commentModel, position - CommentsAdapter.VIEW_ABOVE_NUMBER);
+        handleThreadCommentPopup(commentModel);
 
         Picasso.with(threadProfileIv.getContext())
                 .load(commentModel.getProfileImageUrl())
@@ -160,10 +160,10 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
-        ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
+        ReplyModel replyModel = comments.get(position)
                 .getReplies().get(index);
 
-        handleReplyPopup(firstReplyMenuOptions, replyModel, position - CommentsAdapter.VIEW_ABOVE_NUMBER, FIRST_REPLY_POS);
+        handleReplyPopup(firstReplyMenuOptions, replyModel, FIRST_REPLY_POS);
 
         Picasso.with(firstReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -178,10 +178,10 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
 
     private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
-        ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
+        ReplyModel replyModel = comments.get(position)
                 .getReplies().get(index);
 
-        handleReplyPopup(secondReplyMenuOptions, replyModel, position - CommentsAdapter.VIEW_ABOVE_NUMBER, SECOND_REPLY_POS);
+        handleReplyPopup(secondReplyMenuOptions, replyModel, SECOND_REPLY_POS);
 
         Picasso.with(secondReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -194,16 +194,17 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         secondReplyAuthor.setText(replyModel.getAuthorName());
     }
 
-    private void handleThreadCommentPopup(ThreadCommentModel commentModel, int position) {
+    private void handleThreadCommentPopup(ThreadCommentModel commentModel) {
         threadMenuOptions.setOnClickListener(v -> {
-            Pair<Integer, Integer> commentIndex = new Pair<>(position, -1);
+            Pair<Integer, Integer> commentIndex = new Pair<>(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER, -1);
             popupHandler.showPopup(v, commentModel.getAuthorChannelId(), commentModel.getThreadId(), commentIndex);
         });
     }
 
-    private void handleReplyPopup(ImageButton menuOptions, ReplyModel replyModel, int parentPosition, int replyPosition) {
+    private void handleReplyPopup(ImageButton menuOptions, ReplyModel replyModel, int replyPosition) {
         menuOptions.setOnClickListener(v -> {
-            Pair<Integer, Integer> commentIndex = new Pair<>(parentPosition, replyPosition);
+            int position = getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER;
+            Pair<Integer, Integer> commentIndex = new Pair<>(position, replyPosition);
             popupHandler.showPopup(v, replyModel.getAuthorChannelId(), replyModel.getCommentId(), commentIndex);
         });
     }

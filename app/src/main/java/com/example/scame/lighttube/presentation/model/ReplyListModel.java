@@ -31,4 +31,8 @@ public class ReplyListModel {
     public List<ReplyModel> getReplyModels() {
         return replyModels;
     }
+
+    public void remove(int index) {
+        replyModels.remove(index);
+    }
 }
