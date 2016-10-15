@@ -6,6 +6,7 @@ import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
+import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
@@ -34,9 +35,18 @@ public class PlayerFooterModule {
     @PerActivity
     IPlayerFooterPresenter<FooterView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                                                 RetrieveUserIdentifierUseCase identifierUseCase,
+                                                                DeleteCommentUseCase deleteCommentUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
 
-        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase ,subscriptionsHandler);
+        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase,
+                deleteCommentUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    DeleteCommentUseCase provideDeleteCommentUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                     ICommentsDataManager dataManager) {
+        return new DeleteCommentUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides
@@ -57,7 +67,9 @@ public class PlayerFooterModule {
     @Provides
     @Named("footer")
     @PerActivity
-    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase) {
+    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                                             RetrieveUserIdentifierUseCase identifierUseCase,
+                                                             DeleteCommentUseCase deleteCommentUseCase) {
         return new SubscriptionsHandler(retrieveCommentsUseCase);
     }
 

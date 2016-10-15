@@ -3,12 +3,14 @@ package com.example.scame.lighttube.presentation.adapters.player;
 
 import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
@@ -21,8 +23,8 @@ import butterknife.ButterKnife;
 
 class CommentsViewHolder extends RecyclerView.ViewHolder {
 
-    private static final int LAST_REPLY = 0;
-    private static final int PENULTIMATE_REPLY = 1;
+    private static final int SECOND_REPLY_POS = 0;
+    private static final int FIRST_REPLY_POS = 1;
 
     private static int IMAGE_SIZE;
 
@@ -57,21 +59,22 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private String identifier;
 
-    public CommentsViewHolder(View itemView, String identifier) {
+
+    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener) {
         super(itemView);
 
-        popupHandler = new PopupHandler(identifier);
+        popupHandler = new PopupHandler(identifier, commentActionListener);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
         findViews();
     }
 
-    CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
+    CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener, CommentActionListener commentActionListener,
                        View itemView, List<ThreadCommentModel> comments, String identifier) {
         super(itemView);
 
-        popupHandler = new PopupHandler(identifier);
+        popupHandler = new PopupHandler(identifier, commentActionListener);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
@@ -119,7 +122,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     void bindOneReplyView(int position, List<ThreadCommentModel> comments) {
         bindThreadUtil(position, comments);
-        bindFirstReplyUtil(position, comments, LAST_REPLY);
+        bindFirstReplyUtil(position, comments, SECOND_REPLY_POS);
 
         secondReplyRoot.setVisibility(View.GONE);
         allRepliesTv.setVisibility(View.GONE);
@@ -127,22 +130,22 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     void bindTwoRepliesView(int position, List<ThreadCommentModel> comments) {
         bindThreadUtil(position, comments);
-        bindFirstReplyUtil(position, comments, PENULTIMATE_REPLY);
-        bindSecondReplyUtil(position, comments, LAST_REPLY);
+        bindFirstReplyUtil(position, comments, FIRST_REPLY_POS);
+        bindSecondReplyUtil(position, comments, SECOND_REPLY_POS);
 
         allRepliesTv.setVisibility(View.GONE);
     }
 
     void bindAllRepliesView(int position, List<ThreadCommentModel> comments) {
         bindThreadUtil(position, comments);
-        bindFirstReplyUtil(position, comments, PENULTIMATE_REPLY);
-        bindSecondReplyUtil(position, comments, LAST_REPLY);
+        bindFirstReplyUtil(position, comments, FIRST_REPLY_POS);
+        bindSecondReplyUtil(position, comments, SECOND_REPLY_POS);
     }
 
     private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
         ThreadCommentModel commentModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER);
 
-        threadMenuOptions.setOnClickListener(v -> popupHandler.showPopup(v, commentModel.getAuthorChannelId()));
+        handleThreadCommentPopup(commentModel, position - CommentsAdapter.VIEW_ABOVE_NUMBER);
 
         Picasso.with(threadProfileIv.getContext())
                 .load(commentModel.getProfileImageUrl())
@@ -160,7 +163,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
                 .getReplies().get(index);
 
-        firstReplyMenuOptions.setOnClickListener(v -> popupHandler.showPopup(v, replyModel.getAuthorChannelId()));
+        handleReplyPopup(firstReplyMenuOptions, replyModel, position - CommentsAdapter.VIEW_ABOVE_NUMBER, FIRST_REPLY_POS);
 
         Picasso.with(firstReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -173,11 +176,12 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         firstReplyAuthor.setText(replyModel.getAuthorName());
     }
 
+
     private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
         ReplyModel replyModel = comments.get(position - CommentsAdapter.VIEW_ABOVE_NUMBER)
                 .getReplies().get(index);
 
-        secondReplyMenuOptions.setOnClickListener(v -> popupHandler.showPopup(v, replyModel.getAuthorChannelId()));
+        handleReplyPopup(secondReplyMenuOptions, replyModel, position - CommentsAdapter.VIEW_ABOVE_NUMBER, SECOND_REPLY_POS);
 
         Picasso.with(secondReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -188,5 +192,19 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         secondReplyText.setText(replyModel.getTextDisplay());
         secondReplyDate.setText(replyModel.getDate());
         secondReplyAuthor.setText(replyModel.getAuthorName());
+    }
+
+    private void handleThreadCommentPopup(ThreadCommentModel commentModel, int position) {
+        threadMenuOptions.setOnClickListener(v -> {
+            Pair<Integer, Integer> commentIndex = new Pair<>(position, -1);
+            popupHandler.showPopup(v, commentModel.getAuthorChannelId(), commentModel.getThreadId(), commentIndex);
+        });
+    }
+
+    private void handleReplyPopup(ImageButton menuOptions, ReplyModel replyModel, int parentPosition, int replyPosition) {
+        menuOptions.setOnClickListener(v -> {
+            Pair<Integer, Integer> commentIndex = new Pair<>(parentPosition, replyPosition);
+            popupHandler.showPopup(v, replyModel.getAuthorChannelId(), replyModel.getCommentId(), commentIndex);
+        });
     }
 }

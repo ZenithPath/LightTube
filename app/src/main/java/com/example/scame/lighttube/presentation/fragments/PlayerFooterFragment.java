@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView {
+public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView,
+        CommentActionListener {
 
     private static final int INSERT_COMMENT_POS = 0;
 
@@ -48,11 +50,6 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     public interface PlayerFooterListener {
 
         void onRepliesClick(String threadCommentId, String identifier);
-    }
-
-    public interface CommentInputListener {
-
-        void onCommentPosted(ThreadCommentModel threadCommentModel);
     }
 
     public static PlayerFooterFragment newInstance(String videoId) {
@@ -102,20 +99,42 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         this.commentListModel = commentsList;
         this.userIdentifier = userIdentifier;
 
-        commentsAdapter = new CommentsAdapter(footerListener, commentListModel.getThreadComments(),
-                this::displayPostedComment, getActivity(), "Some title", videoId, userIdentifier);
+        commentsAdapter = new CommentsAdapter(this, footerListener, commentListModel.getThreadComments(),
+                getActivity(), "Some title", videoId, userIdentifier);
 
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
         footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+    @Override
+    public void onCommentDeleted(Pair<Integer, Integer> commentIndex) {
+        commentListModel.deleteByPairIndex(commentIndex);
 
-    public void displayPostedComment(ThreadCommentModel threadComment) {
+        if (commentIndex.second == -1) {
+            commentsAdapter.notifyItemRemoved(commentIndex.first);
+        } else {
+            commentsAdapter.notifyItemChanged(commentIndex.first);
+        }
+    }
+
+    // callbacks from view holders, get activated when a popup option is clicked
+    @Override
+    public void onDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
+        presenter.deleteThreadComment(commentId, commentIndex);
+    }
+
+    @Override
+    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex) { }
+
+    @Override
+    public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) { }
+
+    @Override
+    public void onPostedComment(ThreadCommentModel threadComment) {
         hideKeyboard();
         insertPostedComment(threadComment);
     }
-
 
     private void insertPostedComment(ThreadCommentModel threadComment) {
         commentListModel.addThreadCommentModel(INSERT_COMMENT_POS, threadComment);

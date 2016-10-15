@@ -1,6 +1,8 @@
 package com.example.scame.lighttube.presentation.model;
 
 
+import android.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,5 +28,14 @@ public class CommentListModel {
 
     public List<ThreadCommentModel> getThreadComments() {
         return threadComments;
+    }
+
+    public void deleteByPairIndex(Pair<Integer, Integer> pairIndex) {
+        if (pairIndex.second == -1) {
+            threadComments.remove(+pairIndex.first);
+        } else {
+            ThreadCommentModel threadCommentModel = threadComments.get(+pairIndex.first);
+            threadCommentModel.getReplies().remove(+pairIndex.second);
+        }
     }
 }

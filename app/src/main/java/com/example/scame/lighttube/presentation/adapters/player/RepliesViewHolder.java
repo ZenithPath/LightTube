@@ -33,14 +33,14 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
     public RepliesViewHolder(View itemView, String identifier) {
         super(itemView);
 
-        popupHandler = new PopupHandler(identifier);
+        popupHandler = new PopupHandler(identifier, null);
         ButterKnife.bind(this, itemView);
     }
 
     public void bindRepliesView(int position, ReplyListModel replies) {
         ReplyModel replyModel = replies.getReplyModel(position);
 
-        menuOptions.setOnClickListener(v -> popupHandler.showPopup(menuOptions, replyModel.getAuthorChannelId()));
+        menuOptions.setOnClickListener(v -> popupHandler.showPopup(menuOptions, replyModel.getAuthorChannelId(), null, null));
 
         Picasso.with(profileImage.getContext()).load(replyModel.getProfileImageUrl())
                 .noFade().resize(30, 30).centerCrop()

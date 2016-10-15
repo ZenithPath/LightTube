@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
-import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
+import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter;
 
@@ -25,15 +25,14 @@ public class CommentInputViewHolder extends RecyclerView.ViewHolder implements I
 
     @BindView(R.id.comment_input) EditText commentInput;
 
-    private PlayerFooterFragment.CommentInputListener inputListener;
+    private CommentActionListener commentActionListener;
 
-    private String identifier;
 
-    public CommentInputViewHolder(PlayerFooterFragment.CommentInputListener inputListener,
+    public CommentInputViewHolder(CommentActionListener commentActionListener,
                                   View itemView, Context context, String videoId, String identifier) {
         super(itemView);
 
-        this.inputListener = inputListener;
+        this.commentActionListener = commentActionListener;
         ButterKnife.bind(this, itemView);
         inject(context);
         setOnEditorActionListener(videoId);
@@ -62,9 +61,9 @@ public class CommentInputViewHolder extends RecyclerView.ViewHolder implements I
 
     @Override
     public void displayPostedComment(ThreadCommentModel threadComment) {
-        if (inputListener != null) {
+        if (commentActionListener != null) {
             commentInput.setText("");
-            inputListener.onCommentPosted(threadComment);
+            commentActionListener.onPostedComment(threadComment);
         }
     }
 }
