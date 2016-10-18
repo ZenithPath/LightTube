@@ -12,9 +12,13 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
         void displayComments(CommentListModel commentListModel, String userIdentifier);
 
         void onCommentDeleted(Pair<Integer, Integer> commentIndex);
+
+        void onMarkedAsSpam(Pair<Integer, Integer> commentIndex);
     }
 
     void getCommentList(String videoId);
 
     void deleteThreadComment(String commentId, Pair<Integer, Integer> commentIndex);
+
+    void markAsSpam(String commentId, Pair<Integer, Integer> commentIndex);
 }

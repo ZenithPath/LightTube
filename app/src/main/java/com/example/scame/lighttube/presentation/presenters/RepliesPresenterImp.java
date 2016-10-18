@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 
@@ -14,15 +15,21 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     private DeleteCommentUseCase deleteCommentUseCase;
 
+    private MarkAsSpamUseCase markAsSpamUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private int deletionIndex;
+
+    private int spamIndex;
 
     private T view;
 
     public RepliesPresenterImp(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                DeleteCommentUseCase deleteCommentUseCase,
+                               MarkAsSpamUseCase markAsSpamUseCase,
                                SubscriptionsHandler subscriptionsHandler) {
+        this.markAsSpamUseCase = markAsSpamUseCase;
         this.retrieveRepliesUseCase = retrieveRepliesUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
@@ -39,6 +46,13 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         deletionIndex = position;
         deleteCommentUseCase.setCommentId(replyId);
         deleteCommentUseCase.execute(new DeletionSubscriber());
+    }
+
+    @Override
+    public void markAsSpam(String replyId, int position) {
+        spamIndex = position;
+        markAsSpamUseCase.setCommentId(replyId);
+        markAsSpamUseCase.execute(new SpamSubscriber());
     }
 
     @Override
@@ -96,6 +110,24 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         public void onError(Throwable e) {
             super.onError(e);
             Log.i("onxDeletionErr", e.getLocalizedMessage());
+        }
+    }
+
+    private final class SpamSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+
+            if (view != null) {
+                view.onMarkedAsSpam(spamIndex);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxSpamErr", e.getLocalizedMessage());
         }
     }
 }

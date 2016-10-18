@@ -163,7 +163,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         ReplyModel replyModel = comments.get(position)
                 .getReplies().get(index);
 
-        handleReplyPopup(firstReplyMenuOptions, replyModel, FIRST_REPLY_POS);
+        handleReplyPopup(firstReplyMenuOptions, replyModel, index);
 
         Picasso.with(firstReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -181,7 +181,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         ReplyModel replyModel = comments.get(position)
                 .getReplies().get(index);
 
-        handleReplyPopup(secondReplyMenuOptions, replyModel, SECOND_REPLY_POS);
+        handleReplyPopup(secondReplyMenuOptions, replyModel, index);
 
         Picasso.with(secondReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())

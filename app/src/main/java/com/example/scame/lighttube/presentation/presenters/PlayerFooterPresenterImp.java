@@ -6,6 +6,7 @@ import android.util.Pair;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
@@ -20,6 +21,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private DeleteCommentUseCase deleteCommentUseCase;
 
+    private MarkAsSpamUseCase markAsSpamUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
@@ -28,11 +31,15 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private Pair<Integer, Integer> commentIndex;
 
+    private Pair<Integer, Integer> spamIndex;
+
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                     RetrieveUserIdentifierUseCase identifierUseCase,
                                     DeleteCommentUseCase deleteCommentUseCase,
+                                    MarkAsSpamUseCase markAsSpamUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
         this.identifierUseCase = identifierUseCase;
+        this.markAsSpamUseCase = markAsSpamUseCase;
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
@@ -49,6 +56,13 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         this.commentIndex = commentIndex;
         deleteCommentUseCase.setCommentId(commentId);
         deleteCommentUseCase.execute(new DeletionSubscriber());
+    }
+
+    @Override
+    public void markAsSpam(String commentId, Pair<Integer, Integer> commentIndex) {
+        spamIndex = commentIndex;
+        markAsSpamUseCase.setCommentId(commentId);
+        markAsSpamUseCase.execute(new SpamSubscriber());
     }
 
     @Override
@@ -126,6 +140,24 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
             super.onError(e);
 
             Log.i("onxDeletionErr", e.getLocalizedMessage());
+        }
+    }
+
+    private final class SpamSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+
+            if (view != null) {
+                view.onMarkedAsSpam(spamIndex);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxSpamErr", e.getLocalizedMessage());
         }
     }
 }

@@ -10,9 +10,13 @@ public interface IRepliesPresenter<T> extends Presenter<T> {
         void displayReplies(ReplyListModel replyListModel);
 
         void onDeletedReply(int position);
+
+        void onMarkedAsSpam(int position);
     }
 
     void getRepliesList(String parentId);
 
     void deleteReply(String replyId, int position);
+
+    void markAsSpam(String replyId, int position);
 }

@@ -113,6 +113,12 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     @Override
+    public void onMarkedAsSpam(Pair<Integer, Integer> commentIndex) {
+        commentListModel.deleteByPairIndex(commentIndex);
+        notifyOnDelete(commentIndex);
+    }
+
+    @Override
     public void onCommentDeleted(Pair<Integer, Integer> commentIndex) {
         commentListModel.deleteByPairIndex(commentIndex);
         notifyOnDelete(commentIndex);
@@ -140,8 +146,9 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex) { }
 
     @Override
-    public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) { }
-
+    public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
+        presenter.markAsSpam(commentId, commentIndex);
+    }
 
     public void onPostedComment(ThreadCommentModel threadComment) {
         hideKeyboard();

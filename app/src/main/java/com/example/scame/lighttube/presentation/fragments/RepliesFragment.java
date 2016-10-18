@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +91,12 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         repliesAdapter.notifyItemRemoved(position + RepliesAdapter.VIEW_ABOVE_NUMBER);
     }
 
+    @Override
+    public void onMarkedAsSpam(int position) {
+        replies.remove(position);
+        repliesAdapter.notifyItemRemoved(position + RepliesAdapter.VIEW_ABOVE_NUMBER);
+    }
+
     // callbacks from view holders
 
     @Override
@@ -106,7 +111,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
-
+        presenter.markAsSpam(commentId, commentIndex.second);
     }
 
     public void onPostedReply(ReplyModel replyModel) {

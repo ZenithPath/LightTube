@@ -7,6 +7,7 @@ import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
@@ -36,10 +37,17 @@ public class PlayerFooterModule {
     IPlayerFooterPresenter<FooterView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                                                 RetrieveUserIdentifierUseCase identifierUseCase,
                                                                 DeleteCommentUseCase deleteCommentUseCase,
+                                                                MarkAsSpamUseCase markAsSpamUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
-
         return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase,
-                deleteCommentUseCase, subscriptionsHandler);
+                deleteCommentUseCase, markAsSpamUseCase,subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    MarkAsSpamUseCase provideMarkAsSpamUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                               ICommentsDataManager dataManager) {
+        return new MarkAsSpamUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides
@@ -69,8 +77,10 @@ public class PlayerFooterModule {
     @PerActivity
     SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                                              RetrieveUserIdentifierUseCase identifierUseCase,
-                                                             DeleteCommentUseCase deleteCommentUseCase) {
-        return new SubscriptionsHandler(retrieveCommentsUseCase);
+                                                             DeleteCommentUseCase deleteCommentUseCase,
+                                                             MarkAsSpamUseCase markAsSpamUseCase) {
+        return new SubscriptionsHandler(retrieveCommentsUseCase, identifierUseCase,
+                deleteCommentUseCase, markAsSpamUseCase);
     }
 
     @Provides
