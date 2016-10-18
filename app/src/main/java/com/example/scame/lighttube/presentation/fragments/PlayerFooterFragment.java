@@ -115,11 +115,18 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     @Override
     public void onCommentDeleted(Pair<Integer, Integer> commentIndex) {
         commentListModel.deleteByPairIndex(commentIndex);
+        notifyOnDelete(commentIndex);
+    }
 
-        if (commentIndex.second == -1) {
-            commentsAdapter.notifyItemRemoved(commentIndex.first);
+    // take into account views above
+    private void notifyOnDelete(Pair<Integer, Integer> commentIndex) {
+        int firstAdapterIndex = commentIndex.first + CommentsAdapter.VIEW_ABOVE_NUMBER;
+        Pair<Integer, Integer> adapterPairIndex = new Pair<>(firstAdapterIndex, commentIndex.second);
+
+        if (adapterPairIndex.second == -1) {
+            commentsAdapter.notifyItemRemoved(adapterPairIndex.first);
         } else {
-            commentsAdapter.notifyItemChanged(commentIndex.first);
+            commentsAdapter.notifyItemChanged(adapterPairIndex.first);
         }
     }
 
