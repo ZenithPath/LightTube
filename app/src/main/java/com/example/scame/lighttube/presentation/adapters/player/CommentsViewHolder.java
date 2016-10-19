@@ -60,10 +60,11 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private String identifier;
 
 
-    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener) {
+    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener,
+                              EditCommentListener editCommentListener) {
         super(itemView);
 
-        popupHandler = new PopupHandler(identifier, commentActionListener);
+        popupHandler = new PopupHandler(identifier, commentActionListener, editCommentListener);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
@@ -71,10 +72,10 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener, CommentActionListener commentActionListener,
-                       View itemView, List<ThreadCommentModel> comments, String identifier) {
+                       View itemView, List<ThreadCommentModel> comments, String identifier, EditCommentListener editCommentListener) {
         super(itemView);
 
-        popupHandler = new PopupHandler(identifier, commentActionListener);
+        popupHandler = new PopupHandler(identifier, commentActionListener, editCommentListener);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);

@@ -9,7 +9,9 @@ import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import static android.util.Log.i;
 
@@ -23,6 +25,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private MarkAsSpamUseCase markAsSpamUseCase;
 
+    private UpdateThreadUseCase updateThreadUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
@@ -31,17 +35,17 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private Pair<Integer, Integer> commentIndex;
 
-    private Pair<Integer, Integer> spamIndex;
-
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                     RetrieveUserIdentifierUseCase identifierUseCase,
                                     DeleteCommentUseCase deleteCommentUseCase,
                                     MarkAsSpamUseCase markAsSpamUseCase,
+                                    UpdateThreadUseCase updateThreadUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
         this.identifierUseCase = identifierUseCase;
         this.markAsSpamUseCase = markAsSpamUseCase;
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
+        this.updateThreadUseCase = updateThreadUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
@@ -60,9 +64,17 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     @Override
     public void markAsSpam(String commentId, Pair<Integer, Integer> commentIndex) {
-        spamIndex = commentIndex;
+        this.commentIndex = commentIndex;
         markAsSpamUseCase.setCommentId(commentId);
         markAsSpamUseCase.execute(new SpamSubscriber());
+    }
+
+    @Override
+    public void updateComment(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
+        this.commentIndex = commentIndex;
+        updateThreadUseCase.setCommentId(commentId);
+        updateThreadUseCase.setUpdatedText(updatedText);
+        updateThreadUseCase.execute(new UpdateSubscriber());
     }
 
     @Override
@@ -150,7 +162,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
             super.onCompleted();
 
             if (view != null) {
-                view.onMarkedAsSpam(spamIndex);
+                view.onMarkedAsSpam(commentIndex);
             }
         }
 
@@ -158,6 +170,24 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         public void onError(Throwable e) {
             super.onError(e);
             Log.i("onxSpamErr", e.getLocalizedMessage());
+        }
+    }
+
+    private final class UpdateSubscriber extends DefaultSubscriber<ThreadCommentModel> {
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxUpdateErr", e.getLocalizedMessage());
+        }
+
+        @Override
+        public void onNext(ThreadCommentModel threadCommentModel) {
+            super.onNext(threadCommentModel);
+
+            if (view != null) {
+                view.onCommentUpdated(commentIndex, threadCommentModel);
+            }
         }
     }
 }

@@ -105,7 +105,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
 
     }
 

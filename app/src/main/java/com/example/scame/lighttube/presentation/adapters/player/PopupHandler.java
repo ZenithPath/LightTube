@@ -2,6 +2,7 @@ package com.example.scame.lighttube.presentation.adapters.player;
 
 
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 
@@ -14,8 +15,11 @@ public class PopupHandler {
 
     private CommentActionListener commentActionListener;
 
-    public PopupHandler(String identifier, CommentActionListener commentActionListener) {
+    private EditCommentListener editCommentListener;
+
+    public PopupHandler(String identifier, CommentActionListener commentActionListener, EditCommentListener editListener) {
         this.identifier = identifier;
+        this.editCommentListener = editListener;
         this.commentActionListener = commentActionListener;
     }
 
@@ -36,7 +40,7 @@ public class PopupHandler {
             if (item.getItemId() == R.id.delete_option) {
                 commentActionListener.onDeleteClick(commentId, commentIndex);
             } else if (item.getItemId() == R.id.edit_option) {
-                commentActionListener.onUpdateClick(commentId, commentIndex);
+                editCommentListener.onEditClick(commentIndex, commentId);
             }
             return false;
         });

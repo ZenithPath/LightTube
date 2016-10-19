@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,6 +100,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         }
     }
 
+    // presenter's callbacks
+
     @Override
     public void displayComments(CommentListModel commentsList, String userIdentifier) {
         this.commentListModel = commentsList;
@@ -110,6 +113,13 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
         footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    @Override
+    public void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel) {
+        commentListModel.getThreadComments().remove(+commentIndex.first);
+        commentListModel.getThreadComments().add(commentIndex.first, threadCommentModel);
+        commentsAdapter.notifyItemChanged(commentIndex.first + CommentsAdapter.VIEW_ABOVE_NUMBER);
     }
 
     @Override
@@ -143,7 +153,9 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     @Override
-    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex) { }
+    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
+        presenter.updateComment(commentId, commentIndex, updatedText);
+    }
 
     @Override
     public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
