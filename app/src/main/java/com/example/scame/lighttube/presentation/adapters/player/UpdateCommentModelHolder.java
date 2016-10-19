@@ -5,7 +5,7 @@ import android.util.Pair;
 
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
-public class UpdateCommentHolder extends ThreadCommentModel {
+public class UpdateCommentModelHolder extends ThreadCommentModel {
 
     private Pair<Integer, Integer> pairedPosition;
 

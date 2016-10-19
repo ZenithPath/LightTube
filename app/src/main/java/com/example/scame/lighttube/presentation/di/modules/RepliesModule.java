@@ -8,6 +8,7 @@ import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.PostReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
@@ -33,9 +34,10 @@ public class RepliesModule {
     IRepliesPresenter<RepliesView> provideRepliesPresenter(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                                            DeleteCommentUseCase deleteCommentUseCase,
                                                            MarkAsSpamUseCase markAsSpamUseCase,
+                                                           UpdateReplyUseCase updateReplyUseCase,
                                                            @Named("replies")SubscriptionsHandler subscriptionsHandler) {
         return new RepliesPresenterImp<>(retrieveRepliesUseCase, deleteCommentUseCase,
-                markAsSpamUseCase, subscriptionsHandler);
+                markAsSpamUseCase, updateReplyUseCase, subscriptionsHandler);
     }
 
     @Provides
@@ -43,6 +45,13 @@ public class RepliesModule {
     IReplyInputPresenter<ReplyView> provideReplyInputPresenter(@Named("replyInput")SubscriptionsHandler subscriptionsHandler,
                                                                                     PostReplyUseCase postReplyUseCase) {
         return new ReplyInputPresenterImp<>(postReplyUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    UpdateReplyUseCase provideUpdateReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                 ICommentsDataManager dataManager) {
+        return new UpdateReplyUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides
@@ -78,8 +87,10 @@ public class RepliesModule {
     @PerActivity
     SubscriptionsHandler provideRepliesSubscriptionsHandler(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                                             DeleteCommentUseCase deleteCommentUseCase,
-                                                            MarkAsSpamUseCase markAsSpamUseCase) {
-        return new SubscriptionsHandler(retrieveRepliesUseCase, deleteCommentUseCase, markAsSpamUseCase);
+                                                            MarkAsSpamUseCase markAsSpamUseCase,
+                                                            UpdateReplyUseCase updateReplyUseCase) {
+        return new SubscriptionsHandler(retrieveRepliesUseCase, deleteCommentUseCase, markAsSpamUseCase,
+                updateReplyUseCase);
     }
 
     @Provides

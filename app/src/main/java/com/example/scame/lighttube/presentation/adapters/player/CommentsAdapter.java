@@ -126,7 +126,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else if (holder instanceof EditCommentViewHolder) {
             EditCommentViewHolder editCommentViewHolder = (EditCommentViewHolder) holder;
 
-            UpdateCommentHolder updateCommentHolder = (UpdateCommentHolder) comments.get(position - VIEW_ABOVE_NUMBER);
+            UpdateCommentModelHolder updateCommentHolder = (UpdateCommentModelHolder) comments.get(position - VIEW_ABOVE_NUMBER);
             Pair<Integer, Integer> commentIndex = updateCommentHolder.getPairedPosition();
             String commentId = updateCommentHolder.getThreadId();
             String commentText = comments.get(commentIndex.first).getTextDisplay();
@@ -137,7 +137,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // will be called from view holders (through callback)
     public void updateComment(Pair<Integer, Integer> commentIndex, String commentId) {
-        UpdateCommentHolder updateCommentHolder = new UpdateCommentHolder();
+        UpdateCommentModelHolder updateCommentHolder = new UpdateCommentModelHolder();
         updateCommentHolder.setPairedPosition(commentIndex);
         updateCommentHolder.setThreadId(commentId);
 
@@ -157,7 +157,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return VIEW_TYPE_HEADER;
         } else if (position == COMMENT_INPUT_POSITION) {
             return VIEW_TYPE_COMMENT_INPUT;
-        } else if (comments.get(position - VIEW_ABOVE_NUMBER) instanceof UpdateCommentHolder) {
+        } else if (comments.get(position - VIEW_ABOVE_NUMBER) instanceof UpdateCommentModelHolder) {
             return VIEW_TYPE_EDIT_COMMENT;
         } else if (comments.get(position - VIEW_ABOVE_NUMBER).getReplies().size() == 0) {
             return VIEW_TYPE_THREAD_COMMENT;

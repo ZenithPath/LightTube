@@ -31,10 +31,11 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
 
     private PopupHandler popupHandler;
 
-    public RepliesViewHolder(CommentActionListener commentActionListener, View itemView, String identifier) {
+    public RepliesViewHolder(CommentActionListener commentActionListener, View itemView, String identifier,
+                             EditCommentListener editCommentListener) {
         super(itemView);
 
-        popupHandler = new PopupHandler(identifier, commentActionListener, null);
+        popupHandler = new PopupHandler(identifier, commentActionListener, editCommentListener);
         ButterKnife.bind(this, itemView);
     }
 

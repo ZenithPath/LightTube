@@ -7,7 +7,9 @@ import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
 
 public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implements IRepliesPresenter<T> {
 
@@ -17,19 +19,23 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     private MarkAsSpamUseCase markAsSpamUseCase;
 
+    private UpdateReplyUseCase updateReplyUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
-    private int deletionIndex;
+    private String userIdentifier;
 
-    private int spamIndex;
+    private int index;
 
     private T view;
 
     public RepliesPresenterImp(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                DeleteCommentUseCase deleteCommentUseCase,
                                MarkAsSpamUseCase markAsSpamUseCase,
+                               UpdateReplyUseCase updateReplyUseCase,
                                SubscriptionsHandler subscriptionsHandler) {
         this.markAsSpamUseCase = markAsSpamUseCase;
+        this.updateReplyUseCase = updateReplyUseCase;
         this.retrieveRepliesUseCase = retrieveRepliesUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
@@ -43,16 +49,25 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     @Override
     public void deleteReply(String replyId, int position) {
-        deletionIndex = position;
+        index = position;
         deleteCommentUseCase.setCommentId(replyId);
         deleteCommentUseCase.execute(new DeletionSubscriber());
     }
 
     @Override
     public void markAsSpam(String replyId, int position) {
-        spamIndex = position;
+        index = position;
         markAsSpamUseCase.setCommentId(replyId);
         markAsSpamUseCase.execute(new SpamSubscriber());
+    }
+
+    @Override
+    public void updateReply(String replyId, String updatedText, int position, String userIdentifier) {
+        index = position;
+        this.userIdentifier = userIdentifier;
+        updateReplyUseCase.setReplyId(replyId);
+        updateReplyUseCase.setUpdatedText(updatedText);
+        updateReplyUseCase.execute(new UpdateSubscriber());
     }
 
     @Override
@@ -102,7 +117,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
             super.onCompleted();
 
             if (view != null) {
-                view.onDeletedReply(deletionIndex);
+                view.onDeletedReply(index);
             }
         }
 
@@ -120,7 +135,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
             super.onCompleted();
 
             if (view != null) {
-                view.onMarkedAsSpam(spamIndex);
+                view.onMarkedAsSpam(index);
             }
         }
 
@@ -128,6 +143,25 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         public void onError(Throwable e) {
             super.onError(e);
             Log.i("onxSpamErr", e.getLocalizedMessage());
+        }
+    }
+
+    private final class UpdateSubscriber extends DefaultSubscriber<ReplyModel> {
+
+        @Override
+        public void onNext(ReplyModel replyModel) {
+            super.onNext(replyModel);
+
+            if (view != null) {
+                replyModel.setAuthorChannelId(userIdentifier); // again, thanks to Youtube Data API, reply update response
+                view.onUpdatedReply(index, replyModel);        // doesn't contain authorChannelId, so except setting it by hand
+            }                                                  // we can get this info only by making an additional request
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxUpdateErr", e.getLocalizedMessage());
         }
     }
 }

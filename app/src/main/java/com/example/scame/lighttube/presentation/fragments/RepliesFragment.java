@@ -75,6 +75,8 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         return repliesView;
     }
 
+    // presenter's callbacks
+
     @Override
     public void displayReplies(ReplyListModel replyListModel) {
         replies = replyListModel;
@@ -97,6 +99,13 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         repliesAdapter.notifyItemRemoved(position + RepliesAdapter.VIEW_ABOVE_NUMBER);
     }
 
+    @Override
+    public void onUpdatedReply(int position, ReplyModel replyModel) {
+        replies.remove(position);
+        replies.addReplyModel(position, replyModel);
+        repliesAdapter.notifyItemChanged(position + RepliesAdapter.VIEW_ABOVE_NUMBER);
+    }
+
     // callbacks from view holders
 
     @Override
@@ -106,7 +115,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
-
+        presenter.updateReply(commentId, updatedText, commentIndex.second, userIdentifier);
     }
 
     @Override
