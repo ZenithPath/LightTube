@@ -106,7 +106,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         this.commentListModel = commentsList;
         this.userIdentifier = userIdentifier;
 
-        commentsAdapter = new CommentsAdapter(this, footerListener, commentListModel.getThreadComments(),
+        commentsAdapter = new CommentsAdapter(footerRv, this, footerListener, commentListModel.getThreadComments(),
                 getActivity(), "Some title", videoId, userIdentifier, this::onPostedComment);
 
         footerRv.setAdapter(commentsAdapter);

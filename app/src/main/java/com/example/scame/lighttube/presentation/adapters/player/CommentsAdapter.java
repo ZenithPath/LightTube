@@ -6,17 +6,24 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 // TODO: rewrite with delegates approach
 
-public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements IReplyInputPresenter.ReplyView {
 
     public static final int VIEW_ABOVE_NUMBER = 2;
 
@@ -47,7 +54,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private CommentActionListener commentActionListener;
 
-    public CommentsAdapter(CommentActionListener commentActionListener,
+    private RecyclerView recyclerView;
+
+    @Inject
+    IReplyInputPresenter<IReplyInputPresenter.ReplyView> presenter;
+
+    private int tempFirstIndex = -1;
+
+    public CommentsAdapter(RecyclerView recyclerView, CommentActionListener commentActionListener,
                            PlayerFooterFragment.PlayerFooterListener allRepliesListener,
                            List<ThreadCommentModel> comments, Context context,
                            String videoTitle, String videoId, String userIdentifier,
@@ -56,13 +70,22 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.postedCommentListener = postedCommentListener;
         this.allRepliesListener = allRepliesListener;
         this.userIdentifier = userIdentifier;
+        this.recyclerView = recyclerView;
         this.videoTitle = videoTitle;
         this.videoId = videoId;
         this.comments = comments;
         this.context = context;
         this.commentActionListener = commentActionListener;
+
+        inject();
+        presenter.setView(this);
     }
 
+    private void inject() {
+        if (context instanceof PlayerActivity) {
+            ((PlayerActivity) context).getRepliesComponent().inject(this);
+        }
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -83,22 +106,22 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_THREAD_COMMENT:
                 View threadCommentView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new ThreadCommentViewHolder(threadCommentView, userIdentifier,
-                        commentActionListener, this::updateComment);
+                        commentActionListener, this::updateComment, this::replyToReply);
                 break;
             case VIEW_TYPE_ONE_REPLY:
                 View oneReplyView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new OneReplyViewHolder(oneReplyView, userIdentifier,
-                        commentActionListener, this::updateComment);
+                        commentActionListener, this::updateComment, this::replyToReply);
                 break;
             case VIEW_TYPE_TWO_REPLIES:
                 View twoRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new TwoRepliesViewHolder(twoRepliesView, userIdentifier,
-                        commentActionListener, this::updateComment);
+                        commentActionListener, this::updateComment, this::replyToReply);
                 break;
             case VIEW_TYPE_ALL_REPLIES:
                 View allRepliesView = inflater.inflate(R.layout.comment_group_item, parent, false);
                 viewHolder = new AllRepliesViewHolder(allRepliesListener, commentActionListener,
-                        allRepliesView, comments, userIdentifier, this::updateComment);
+                        allRepliesView, comments, userIdentifier, this::updateComment, this::replyToReply);
                 break;
             case VIEW_TYPE_EDIT_COMMENT:
                 View editCommentView = inflater.inflate(R.layout.comment_input_item, parent, false);
@@ -113,16 +136,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ThreadCommentViewHolder) {
             ThreadCommentViewHolder threadCommentViewHolder = (ThreadCommentViewHolder) holder;
-            threadCommentViewHolder.bindThreadCommentView(position - VIEW_ABOVE_NUMBER, comments);
+            threadCommentViewHolder.bindThreadCommentView(position - VIEW_ABOVE_NUMBER, comments, this::replyToReply);
         } else if (holder instanceof OneReplyViewHolder) {
             OneReplyViewHolder oneReplyViewHolder = (OneReplyViewHolder) holder;
-            oneReplyViewHolder.bindOneReplyView(position - VIEW_ABOVE_NUMBER, comments);
+            oneReplyViewHolder.bindOneReplyView(position - VIEW_ABOVE_NUMBER, comments, this::replyToReply);
         } else if (holder instanceof TwoRepliesViewHolder) {
             TwoRepliesViewHolder twoRepliesViewHolder = (TwoRepliesViewHolder) holder;
-            twoRepliesViewHolder.bindTwoRepliesView(position - VIEW_ABOVE_NUMBER, comments);
+            twoRepliesViewHolder.bindTwoRepliesView(position - VIEW_ABOVE_NUMBER, comments, this::replyToReply);
         } else if (holder instanceof AllRepliesViewHolder) {
             AllRepliesViewHolder allRepliesViewHolder = (AllRepliesViewHolder) holder;
-            allRepliesViewHolder.bindAllRepliesView(position - VIEW_ABOVE_NUMBER, comments);
+            allRepliesViewHolder.bindAllRepliesView(position - VIEW_ABOVE_NUMBER, comments, this::replyToReply);
         } else if (holder instanceof EditCommentViewHolder) {
             EditCommentViewHolder editCommentViewHolder = (EditCommentViewHolder) holder;
 
@@ -135,8 +158,41 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    @Override
+    public void displayReply(ReplyModel replyModel) {
+        if (tempFirstIndex != -1) {
+            ThreadCommentModel threadCommentModel = comments.get(tempFirstIndex);
+            replyModel.setAuthorChannelId(userIdentifier);
+            threadCommentModel.getReplies().add(0, replyModel);
+            notifyItemChanged(tempFirstIndex + VIEW_ABOVE_NUMBER);
+        }
+    }
+
+    private void replyToReply(Pair<Integer, Integer> commentIndex, String commentId) {
+        CommentsViewHolder commentsViewHolder = (CommentsViewHolder) recyclerView
+                .findViewHolderForAdapterPosition(commentIndex.first + VIEW_ABOVE_NUMBER);
+
+        if (commentsViewHolder != null) {
+            this.tempFirstIndex = commentIndex.first;
+            commentsViewHolder.activateReplyInputField(v -> {
+                if (v instanceof EditText) {
+                    presenter.postReply(comments.get(commentIndex.first).getThreadId(),
+                            ((EditText) v).getText().toString());
+                }
+            }, extractTarget(commentIndex));
+        }
+    }
+
+    private String extractTarget(Pair<Integer, Integer> commentIndex) {
+        if (commentIndex.second == -1) {
+            return comments.get(commentIndex.first).getAuthorName();
+        } else {
+            return comments.get(commentIndex.first).getReplies().get(commentIndex.second).getAuthorName();
+        }
+    }
+
     // will be called from view holders (through callback)
-    public void updateComment(Pair<Integer, Integer> commentIndex, String commentId) {
+    private void updateComment(Pair<Integer, Integer> commentIndex, String commentId) {
         UpdateCommentModelHolder updateCommentHolder = new UpdateCommentModelHolder();
         updateCommentHolder.setPairedPosition(commentIndex);
         updateCommentHolder.setThreadId(commentId);
@@ -176,24 +232,24 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static class ThreadCommentViewHolder extends CommentsViewHolder {
 
         ThreadCommentViewHolder(View itemView, String identifier, CommentActionListener commentActionListener,
-                                EditCommentListener editCommentListener) {
-            super(itemView, identifier, commentActionListener, editCommentListener);
+                                EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+            super(itemView, identifier, commentActionListener, editCommentListener, toIndividualListener);
         }
     }
 
     private static class OneReplyViewHolder extends CommentsViewHolder {
 
         OneReplyViewHolder(View itemView, String identifier, CommentActionListener commentActionListener,
-                           EditCommentListener editCommentListener) {
-            super(itemView, identifier, commentActionListener, editCommentListener);
+                           EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+            super(itemView, identifier, commentActionListener, editCommentListener, toIndividualListener);
         }
     }
 
     private static class TwoRepliesViewHolder extends CommentsViewHolder {
 
         TwoRepliesViewHolder(View itemView, String identifier, CommentActionListener commentActionListener,
-                             EditCommentListener editCommentListener) {
-            super(itemView, identifier, commentActionListener, editCommentListener);
+                             EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+            super(itemView, identifier, commentActionListener, editCommentListener, toIndividualListener);
         }
     }
 
@@ -202,8 +258,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         AllRepliesViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
                              CommentActionListener commentActionListener,
                              View itemView, List<ThreadCommentModel> comments, String identifier,
-                             EditCommentListener editCommentListener) {
-            super(footerListener, commentActionListener, itemView, comments, identifier, editCommentListener);
+                             EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+            super(footerListener, commentActionListener, itemView, comments, identifier,
+                    editCommentListener, toIndividualListener);
         }
     }
 }

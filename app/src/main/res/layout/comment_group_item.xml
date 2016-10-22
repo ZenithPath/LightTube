@@ -24,4 +24,9 @@
         android:text="@string/all_replies_text"
         android:layout_margin="@dimen/comment_elem_margin"
         android:gravity="center_horizontal"/>
+
+    <include
+        android:id="@+id/reply_input_view"
+        android:visibility="gone"
+        layout="@layout/comment_input_item" />
 </LinearLayout>

@@ -38,6 +38,7 @@ public class PopupHandler {
         PopupMenu authoredPopup = new PopupMenu(anchor.getContext(), anchor);
         authoredPopup.inflate(R.menu.comment_popup);
         authoredPopup.getMenu().removeItem(R.id.report_option);
+        authoredPopup.getMenu().removeItem(R.id.reply_option);
 
         authoredPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_option) {
