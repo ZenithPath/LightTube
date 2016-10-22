@@ -2,7 +2,6 @@ package com.example.scame.lighttube.presentation.adapters.player;
 
 
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 
@@ -17,9 +16,13 @@ public class PopupHandler {
 
     private EditCommentListener editCommentListener;
 
-    public PopupHandler(String identifier, CommentActionListener commentActionListener, EditCommentListener editListener) {
+    private ReplyToIndividualListener toIndividualListener;
+
+    public PopupHandler(CommentActionListener commentActionListener, ReplyToIndividualListener toIndividualListener,
+                        EditCommentListener editListener, String identifier) {
         this.identifier = identifier;
         this.editCommentListener = editListener;
+        this.toIndividualListener = toIndividualListener;
         this.commentActionListener = commentActionListener;
     }
 
@@ -58,7 +61,7 @@ public class PopupHandler {
             if (item.getItemId() == R.id.report_option) {
                 commentActionListener.onMarkAsSpamClick(commentId, commentIndex);
             } else if (item.getItemId() == R.id.reply_option) {
-                Log.i("onxReply", "clicked");
+                toIndividualListener.onReplyToReplyClick(commentIndex, commentId);
             }
 
             return false;

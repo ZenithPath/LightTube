@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.scame.lighttube.R;
@@ -67,6 +68,16 @@ public class ReplyInputViewHolder extends RecyclerView.ViewHolder implements IRe
                                                         // so to avoid making an additional request we set it by hand
             replyInput.setText("");
             repliesListener.onPostedReply(replyModel);
+        }
+    }
+
+    public void makeActive(String target) {
+        if (replyInput.requestFocus()) {
+            replyInput.setText("");
+            replyInput.append("+" + target + " ");
+            InputMethodManager imm = (InputMethodManager) replyInput.getContext().
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         }
     }
 }

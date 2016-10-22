@@ -81,9 +81,11 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     public void displayReplies(ReplyListModel replyListModel) {
         replies = replyListModel;
 
-        repliesAdapter = new RepliesAdapter(this, replies, getActivity(), this::onPostedReply, userIdentifier);
+        repliesAdapter = new RepliesAdapter(repliesRv, this, replies, getActivity(),
+                userIdentifier, this::onPostedReply);
         repliesRv.setHasFixedSize(true);
-        repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false));
         repliesRv.setAdapter(repliesAdapter);
     }
 

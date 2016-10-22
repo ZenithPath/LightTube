@@ -31,15 +31,21 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private ReplyListModel replies;
 
+    private RecyclerView recyclerView;
+
     private String userIdentifier;
 
     private Context context;
 
-    public RepliesAdapter(CommentActionListener commentActionListener, ReplyListModel replies,
-                          Context context, RepliesFragment.RepliesListener repliesListener,
-                          String userIdentifier) {
+    private boolean asReply;   // these fields are used to identify
+    private int replyPosition; // if a reply mode should be started after bounding
+
+    public RepliesAdapter(RecyclerView recyclerView ,CommentActionListener commentActionListener,
+                          ReplyListModel replies, Context context, String userIdentifier,
+                          RepliesFragment.RepliesListener repliesListener) {
         this.replies = replies;
         this.context = context;
+        this.recyclerView = recyclerView;
         this.userIdentifier = userIdentifier;
         this.repliesListener = repliesListener;
         this.commentActionListener = commentActionListener;
@@ -56,7 +62,8 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     context, parentId, userIdentifier);
         } else if (viewType == VIEW_TYPE_REPLY_COMMENT) {
             View replyView = inflater.inflate(R.layout.comment_item, parent, false);
-            viewHolder = new RepliesViewHolder(commentActionListener, replyView, userIdentifier, this::updateReply);
+            viewHolder = new RepliesViewHolder(commentActionListener, replyView, userIdentifier,
+                    this::updateReply, this::replyToReply);
         } else if (viewType == VIEW_TYPE_EDIT_REPLY) {
             View editReplyView = inflater.inflate(R.layout.comment_input_item, parent, false);
             viewHolder = new EditCommentViewHolder(editReplyView, commentActionListener);
@@ -77,6 +84,25 @@ public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ReplyModel replyModel = replies.getReplyModel(position - VIEW_ABOVE_NUMBER);
 
             editCommentViewHolder.bindCommentEditorHolder(replyIndex, replyModel.getTextDisplay(), replyModel.getCommentId());
+        } else if (holder instanceof ReplyInputViewHolder && asReply) {
+            asReply = false;
+            replyPosition = -1;
+            ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder) holder;
+            replyInputViewHolder.makeActive(replies.getReplyModel(replyPosition).getAuthorName());
+        }
+    }
+
+    private void replyToReply(Pair<Integer, Integer> commentIndex, String commentId) {
+        if (getItemViewType(REPLY_INPUT_POS) == VIEW_TYPE_REPLY_INPUT) {
+            if (recyclerView.findViewHolderForAdapterPosition(REPLY_INPUT_POS) == null) {
+                asReply = true;
+                replyPosition = commentIndex.second;
+                recyclerView.scrollToPosition(REPLY_INPUT_POS); // will be bound soon
+            } else {
+                ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder)
+                        recyclerView.findViewHolderForAdapterPosition(REPLY_INPUT_POS);
+                replyInputViewHolder.makeActive(replies.getReplyModel(commentIndex.second).getAuthorName());
+            }
         }
     }
 
