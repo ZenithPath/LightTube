@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,6 +114,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+
     @Override
     public void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel) {
         commentListModel.getThreadComments().remove(+commentIndex.first);
@@ -147,6 +147,12 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     // callbacks from view holders, get activated when a popup option is clicked
+
+    @Override
+    public void onReplyClick(String commentId, Pair<Integer, Integer> commentIndex, String targetName) {
+
+    }
+
     @Override
     public void onDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
         presenter.deleteThreadComment(commentId, commentIndex);

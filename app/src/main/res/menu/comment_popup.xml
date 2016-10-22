@@ -9,4 +9,7 @@
     <item android:id="@+id/report_option"
         android:title="@string/report" />
 
+    <item android:id="@+id/reply_option"
+        android:title="@string/reply_opt" />
+
 </menu>

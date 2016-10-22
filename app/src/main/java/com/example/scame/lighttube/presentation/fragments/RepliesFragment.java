@@ -109,6 +109,11 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     // callbacks from view holders
 
     @Override
+    public void onReplyClick(String commentId, Pair<Integer, Integer> commentIndex, String targetName) {
+
+    }
+
+    @Override
     public void onDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
         presenter.deleteReply(commentId, commentIndex.second);
     }

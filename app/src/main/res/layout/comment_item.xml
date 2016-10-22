@@ -23,8 +23,17 @@
         android:layout_margin="@dimen/comment_elem_margin"
         android:textColor="@color/textPrimary"
         android:textSize="@dimen/comment_text"
-        app:layout_columnSpan="4"
+        app:layout_columnSpan="3"
         app:layout_columnWeight="1" />
+
+    <ImageButton
+        android:id="@+id/more_option_ib"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:padding="@dimen/image_button_padding"
+        android:layout_margin="@dimen/comment_elem_margin"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_more_vert_black_24dp" />
 
     <TextView
         android:id="@+id/author_name_tv"
@@ -33,6 +42,7 @@
         android:clickable="true"
         android:textColor="@color/textSecondary"
         android:textSize="@dimen/comment_meta_text"
+        app:layout_columnSpan="2"
         app:layout_columnWeight="1" />
 
     <TextView
@@ -42,16 +52,27 @@
         android:textColor="@color/textSecondary"
         app:layout_columnWeight="2.5" />
 
-    <ImageButton
-        android:id="@+id/more_option_ib"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_margin="@dimen/comment_elem_margin"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_more_vert_black_24dp" />
+    <LinearLayout
+        android:id="@+id/replies_group"
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/replies_iv"
-        android:layout_margin="@dimen/comment_elem_margin" />
+        <ImageButton
+            android:id="@+id/replies_iv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:padding="@dimen/image_button_padding"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="@dimen/comment_elem_margin"
+            android:layout_marginBottom="@dimen/comment_elem_margin"
+            android:layout_marginLeft="@dimen/comment_elem_margin"/>
+
+        <TextView
+            android:id="@+id/replies_count"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="@dimen/comment_elem_margin"/>
+
+    </LinearLayout>
+
 </android.support.v7.widget.GridLayout>
 

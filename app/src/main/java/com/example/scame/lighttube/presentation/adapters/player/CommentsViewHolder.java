@@ -39,7 +39,8 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
     private TextView threadCommentDate;
     private TextView threadCommentAuthor;
     private ImageButton threadMenuOptions;
-    private ImageView repliesIv;
+    private ImageButton repliesIb;
+    private TextView repliesCount;
 
     // firstReplyRoot's views
     private ImageView firstReplyProfileIv;
@@ -97,8 +98,9 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         threadCommentText = ButterKnife.findById(threadRoot, R.id.comment_text_tv);
         threadCommentDate = ButterKnife.findById(threadRoot, R.id.comment_date_tv);
         threadCommentAuthor = ButterKnife.findById(threadRoot, R.id.author_name_tv);
-        repliesIv = ButterKnife.findById(threadRoot, R.id.replies_iv);
+        repliesIb = ButterKnife.findById(threadRoot, R.id.replies_iv);
         threadMenuOptions = ButterKnife.findById(threadRoot, R.id.more_option_ib);
+        repliesCount = ButterKnife.findById(threadRoot, R.id.replies_count);
 
         firstReplyProfileIv = ButterKnife.findById(firstReplyRoot, R.id.profile_iv);
         firstReplyText = ButterKnife.findById(firstReplyRoot, R.id.comment_text_tv);
@@ -153,6 +155,14 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
                 .noFade().resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
                 .placeholder(R.drawable.placeholder_grey)
                 .into(threadProfileIv);
+
+        repliesIb.setImageDrawable(repliesIb.getContext().getResources()
+                .getDrawable(R.drawable.ic_question_answer_black_24dp));
+
+        if (commentModel.getReplyCount() != 0) {
+            repliesCount.setText(String.valueOf(commentModel.getReplyCount()));
+        }
+
 
         threadCommentText.setText(commentModel.getTextDisplay());
         threadCommentDate.setText(commentModel.getDate());

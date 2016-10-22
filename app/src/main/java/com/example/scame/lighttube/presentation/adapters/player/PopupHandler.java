@@ -57,6 +57,8 @@ public class PopupHandler {
         commonPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.report_option) {
                 commentActionListener.onMarkAsSpamClick(commentId, commentIndex);
+            } else if (item.getItemId() == R.id.reply_option) {
+                Log.i("onxReply", "clicked");
             }
 
             return false;

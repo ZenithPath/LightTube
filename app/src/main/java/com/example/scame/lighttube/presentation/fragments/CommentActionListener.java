@@ -10,4 +10,6 @@ public interface CommentActionListener {
     void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
 
     void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex);
+
+    void onReplyClick(String commentId, Pair<Integer, Integer> commentIndex, String targetName);
 }

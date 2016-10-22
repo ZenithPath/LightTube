@@ -97,5 +97,6 @@
     <string name="delete">delete</string>
     <string name="edit">edit</string>
     <string name="report">report</string>
+    <string name="reply_opt">reply</string>
 
 </resources>
