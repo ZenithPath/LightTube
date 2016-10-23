@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.presentation.adapters.player;
+package com.example.scame.lighttube.presentation.adapters.player.replies;
 
 
 import android.content.Context;
@@ -35,7 +35,7 @@ public class EditCommentViewHolder extends RecyclerView.ViewHolder {
             boolean handled = false;
 
             if (actionId == EditorInfo.IME_ACTION_SEND) {
-                commentActionListener.onActionUpdateClick(commentId, commentIndex, commentInput.getText().toString());
+                commentActionListener.onSendEditedClick(commentIndex, commentInput.getText().toString(), commentId);
                 handled = true;
             }
 

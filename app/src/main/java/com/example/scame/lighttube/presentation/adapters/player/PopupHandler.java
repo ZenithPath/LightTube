@@ -14,15 +14,8 @@ public class PopupHandler {
 
     private CommentActionListener commentActionListener;
 
-    private EditCommentListener editCommentListener;
-
-    private ReplyToIndividualListener toIndividualListener;
-
-    public PopupHandler(CommentActionListener commentActionListener, ReplyToIndividualListener toIndividualListener,
-                        EditCommentListener editListener, String identifier) {
+    public PopupHandler(CommentActionListener commentActionListener, String identifier) {
         this.identifier = identifier;
-        this.editCommentListener = editListener;
-        this.toIndividualListener = toIndividualListener;
         this.commentActionListener = commentActionListener;
     }
 
@@ -42,9 +35,9 @@ public class PopupHandler {
 
         authoredPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_option) {
-                commentActionListener.onDeleteClick(commentId, commentIndex);
+                commentActionListener.onActionDeleteClick(commentId, commentIndex);
             } else if (item.getItemId() == R.id.edit_option) {
-                editCommentListener.onEditClick(commentIndex, commentId);
+                commentActionListener.onActionEditClick(commentId, commentIndex);
             }
             return false;
         });
@@ -60,9 +53,9 @@ public class PopupHandler {
 
         commonPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.report_option) {
-                commentActionListener.onMarkAsSpamClick(commentId, commentIndex);
+                commentActionListener.onActionMarkAsSpamClick(commentId, commentIndex);
             } else if (item.getItemId() == R.id.reply_option) {
-                toIndividualListener.onReplyToReplyClick(commentIndex, commentId);
+                commentActionListener.onActionReplyClick(commentId, commentIndex);
             }
 
             return false;

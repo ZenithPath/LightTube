@@ -70,7 +70,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
                               EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
         super(itemView);
 
-        popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
+        //popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
@@ -83,7 +83,7 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
                        EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
         super(itemView);
 
-        popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
+        //popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);

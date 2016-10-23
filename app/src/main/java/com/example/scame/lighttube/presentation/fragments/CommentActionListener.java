@@ -5,11 +5,15 @@ import android.util.Pair;
 
 public interface CommentActionListener {
 
-    void onDeleteClick(String commentId, Pair<Integer, Integer> commentIndex);
+    void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex);
 
-    void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
+    void onActionUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
 
-    void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex);
+    void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex);
 
-    void onReplyClick(String commentId, Pair<Integer, Integer> commentIndex, String targetName);
+    void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex);
+
+    void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex);
+
+    void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId);
 }

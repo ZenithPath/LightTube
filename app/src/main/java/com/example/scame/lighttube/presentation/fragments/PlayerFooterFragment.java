@@ -99,7 +99,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         }
     }
 
-    // presenter's callbacks
+    // repliesPresenter's callbacks
 
     @Override
     public void displayComments(CommentListModel commentsList, String userIdentifier) {
@@ -149,22 +149,38 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     // callbacks from view holders, get activated when a popup option is clicked
 
     @Override
-    public void onReplyClick(String commentId, Pair<Integer, Integer> commentIndex, String targetName) {
+    public void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex) {
 
     }
 
     @Override
-    public void onDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex) {
+
+    }
+
+    @Override
+    public void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId) {
+
+    }
+
+
+   /* @Override
+    public void onReplyClick(String commentId, Pair<Integer, Integer> commentIndex, String targetName) {
+
+    }*/
+
+    @Override
+    public void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
         presenter.deleteThreadComment(commentId, commentIndex);
     }
 
     @Override
-    public void onUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
+    public void onActionUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
         presenter.updateComment(commentId, commentIndex, updatedText);
     }
 
     @Override
-    public void onMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
         presenter.markAsSpam(commentId, commentIndex);
     }
 

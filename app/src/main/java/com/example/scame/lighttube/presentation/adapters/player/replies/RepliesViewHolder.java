@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.presentation.adapters.player;
+package com.example.scame.lighttube.presentation.adapters.player.replies;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
+import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.squareup.picasso.Picasso;
@@ -31,11 +31,10 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
 
     private PopupHandler popupHandler;
 
-    public RepliesViewHolder(CommentActionListener commentActionListener, View itemView, String identifier,
-                             EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+    public RepliesViewHolder(View itemView, PopupHandler popupHandler) {
         super(itemView);
 
-        popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
+        this.popupHandler = popupHandler;
         ButterKnife.bind(this, itemView);
     }
 
@@ -56,7 +55,7 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
 
     private void handleReplyPopup(ReplyModel replyModel) {
         menuOptions.setOnClickListener(v -> {
-            int position = getAdapterPosition() - RepliesAdapter.VIEW_ABOVE_NUMBER;
+            int position = getAdapterPosition() - RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE;
             Pair<Integer, Integer> commentIndex = new Pair<>(-1, position);
             popupHandler.showPopup(menuOptions, replyModel.getAuthorChannelId(), replyModel.getCommentId(), commentIndex);
         });
