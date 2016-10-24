@@ -17,6 +17,8 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
         void onMarkedAsSpam(Pair<Integer, Integer> commentIndex);
 
         void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel);
+
+        void displayPostedComment(ThreadCommentModel threadComment);
     }
 
     void getCommentList(String videoId);
@@ -26,4 +28,6 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
     void markAsSpam(String commentId, Pair<Integer, Integer> commentIndex);
 
     void updateComment(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
+
+    void postComment(String commentText, String videoId);
 }

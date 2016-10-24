@@ -7,6 +7,7 @@ import android.util.Pair;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
+import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
@@ -27,6 +28,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private UpdateThreadUseCase updateThreadUseCase;
 
+    private PostThreadCommentUseCase postCommentUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
@@ -40,8 +43,10 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
                                     DeleteCommentUseCase deleteCommentUseCase,
                                     MarkAsSpamUseCase markAsSpamUseCase,
                                     UpdateThreadUseCase updateThreadUseCase,
+                                    PostThreadCommentUseCase postCommentUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
         this.identifierUseCase = identifierUseCase;
+        this.postCommentUseCase = postCommentUseCase;
         this.markAsSpamUseCase = markAsSpamUseCase;
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
@@ -78,6 +83,13 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
+    public void postComment(String commentText, String videoId) {
+        postCommentUseCase.setCommentText(commentText);
+        postCommentUseCase.setVideoId(videoId);
+        postCommentUseCase.execute(new PostResponseSubscriber());
+    }
+
+    @Override
     public void setView(T view) {
         this.view = view;
     }
@@ -96,6 +108,24 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     public void destroy() {
         view = null;
         subscriptionsHandler.unsubscribe();
+    }
+
+    private final class PostResponseSubscriber extends DefaultSubscriber<ThreadCommentModel> {
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxPostResponseErr", e.getMessage());
+        }
+
+        @Override
+        public void onNext(ThreadCommentModel threadCommentModel) {
+            super.onNext(threadCommentModel);
+
+            if (view != null) {
+                view.displayPostedComment(threadCommentModel);
+            }
+        }
     }
 
     private final class RetrieveCommentsSubscriber extends DefaultSubscriber<CommentListModel> {

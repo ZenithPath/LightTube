@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +24,6 @@ import com.example.scame.lighttube.presentation.adapters.player.threads.UpdateCo
 import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
-import com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
 
@@ -38,7 +36,7 @@ import icepick.State;
 // TODO: add thread replies editing
 
 public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView,
-        CommentActionListener, IReplyInputPresenter.ReplyView, ICommentInputPresenter.CommentInputView {
+        CommentActionListener, IReplyInputPresenter.ReplyView {
 
     private static final int INSERT_COMMENT_POS = 0;
 
@@ -47,9 +45,6 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Inject
     IReplyInputPresenter<IReplyInputPresenter.ReplyView> replyInputPresenter;
-
-    @Inject
-    ICommentInputPresenter<ICommentInputPresenter.CommentInputView> commentInputPresenter;
 
     @BindView(R.id.player_footer_rv)
     RecyclerView footerRv;
@@ -106,7 +101,6 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
         footerPresenter.setView(this);
         replyInputPresenter.setView(this);
-        commentInputPresenter.setView(this);
 
         supplyComments();
 
@@ -133,7 +127,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
-                commentText -> commentInputPresenter.postComment(commentText, videoId));
+                commentText -> footerPresenter.postComment(commentText, videoId));
 
         commentsAdapter = new CommentsAdapter(delegatesManager, commentListModel.getThreadComments());
 
@@ -264,6 +258,5 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         super.onDestroy();
         footerPresenter.destroy();
         replyInputPresenter.destroy();
-        commentInputPresenter.destroy();
     }
 }
