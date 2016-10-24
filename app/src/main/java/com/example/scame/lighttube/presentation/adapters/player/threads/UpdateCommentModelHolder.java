@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.presentation.adapters.player;
+package com.example.scame.lighttube.presentation.adapters.player.threads;
 
 
 import android.util.Pair;

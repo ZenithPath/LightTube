@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.presentation.adapters.player;
+package com.example.scame.lighttube.presentation.adapters.player.replies;
 
 
 import com.example.scame.lighttube.presentation.model.ReplyModel;

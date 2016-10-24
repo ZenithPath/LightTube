@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.presentation.adapters.player;
+package com.example.scame.lighttube.presentation.adapters.player.threads;
 
 
 import android.content.Context;
@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
@@ -25,7 +26,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-class CommentsViewHolder extends RecyclerView.ViewHolder {
+public class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private static final int SECOND_REPLY_POS = 0;
     private static final int FIRST_REPLY_POS = 1;
@@ -65,38 +66,39 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private String identifier;
 
+    private CommentActionListener commentActionListener;
 
-    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener,
-                              EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+    private PlayerFooterFragment.PlayerFooterListener footerListener;
+
+    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener) {
         super(itemView);
 
-        //popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
+        popupHandler = new PopupHandler(commentActionListener, identifier);
+        this.commentActionListener = commentActionListener;
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
         findViews();
     }
 
-    CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
-                       CommentActionListener commentActionListener,
-                       View itemView, List<ThreadCommentModel> comments, String identifier,
-                       EditCommentListener editCommentListener, ReplyToIndividualListener toIndividualListener) {
+    public CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
+                       View itemView, String identifier, CommentActionListener commentActionListener) {
         super(itemView);
 
-        //popupHandler = new PopupHandler(commentActionListener, toIndividualListener, editCommentListener, identifier);
+        this.footerListener = footerListener;
+        popupHandler = new PopupHandler(commentActionListener, identifier);
+        this.commentActionListener = commentActionListener;
         this.identifier = identifier;
         IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
         ButterKnife.bind(this, itemView);
         findViews();
-
-        setAllRepliesClickListener(footerListener, comments);
     }
 
     private void setAllRepliesClickListener(PlayerFooterFragment.PlayerFooterListener footerListener,
                                             List<ThreadCommentModel> comments) {
         allRepliesTv.setOnClickListener(v ->
-                footerListener.onRepliesClick(comments.get(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER)
-                        .getThreadId(), identifier)
+                footerListener.onRepliesClick(comments.get(getAdapterPosition()
+                        - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE).getThreadId(), identifier)
         );
     }
 
@@ -122,41 +124,38 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         secondReplyMenuOptions = ButterKnife.findById(secondReplyRoot, R.id.more_option_ib);
     }
 
-    void bindThreadCommentView(int position, List<ThreadCommentModel> comments,
-                               ReplyToIndividualListener tempListener) {
-        bindThreadUtil(position, comments, tempListener);
+    void bindThreadCommentView(int position, List<ThreadCommentModel> comments) {
+        bindThreadUtil(position, comments);
 
         firstReplyRoot.setVisibility(View.GONE);
         secondReplyRoot.setVisibility(View.GONE);
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindOneReplyView(int position, List<ThreadCommentModel> comments,
-                          ReplyToIndividualListener tempListener) {
-        bindThreadUtil(position, comments, tempListener);
+    void bindOneReplyView(int position, List<ThreadCommentModel> comments) {
+        bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, SECOND_REPLY_POS);
 
         secondReplyRoot.setVisibility(View.GONE);
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindTwoRepliesView(int position, List<ThreadCommentModel> comments,
-                            ReplyToIndividualListener tempListener) {
-        bindThreadUtil(position, comments, tempListener);
+    void bindTwoRepliesView(int position, List<ThreadCommentModel> comments) {
+        bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, FIRST_REPLY_POS);
         bindSecondReplyUtil(position, comments, SECOND_REPLY_POS);
 
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindAllRepliesView(int position, List<ThreadCommentModel> comments,
-                            ReplyToIndividualListener tempListener) {
-        bindThreadUtil(position, comments, tempListener);
+    void bindAllRepliesView(int position, List<ThreadCommentModel> comments) {
+        setAllRepliesClickListener(footerListener, comments); // not the best place
+        bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, FIRST_REPLY_POS);
         bindSecondReplyUtil(position, comments, SECOND_REPLY_POS);
     }
 
-    private void bindThreadUtil(int position, List<ThreadCommentModel> comments, ReplyToIndividualListener tempListener) {
+    private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
         ThreadCommentModel commentModel = comments.get(position);
 
         handleThreadCommentPopup(commentModel);
@@ -169,8 +168,9 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
         repliesIb.setImageDrawable(repliesIb.getContext().getResources()
                 .getDrawable(R.drawable.ic_question_answer_black_24dp));
-        repliesIb.setOnClickListener(v ->
-                tempListener.onReplyToReplyClick(new Pair<>(position, -1), commentModel.getThreadId()));
+
+        repliesIb.setOnClickListener(v -> commentActionListener.onActionReplyClick(commentModel.getThreadId(),
+                new Pair<>(position, -1)));
 
         if (commentModel.getReplyCount() != 0) {
             repliesCount.setText(String.valueOf(commentModel.getReplyCount()));
@@ -179,7 +179,6 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
         threadCommentText.setText(commentModel.getTextDisplay());
         threadCommentDate.setText(commentModel.getDate());
         threadCommentAuthor.setText(commentModel.getAuthorName());
-        // add replies IV
     }
 
     private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
@@ -219,25 +218,27 @@ class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void handleThreadCommentPopup(ThreadCommentModel commentModel) {
         threadMenuOptions.setOnClickListener(v -> {
-            Pair<Integer, Integer> commentIndex = new Pair<>(getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER, -1);
+            int datasetIndex = getAdapterPosition() - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE;
+            Pair<Integer, Integer> commentIndex = new Pair<>(datasetIndex, -1);
             popupHandler.showPopup(v, commentModel.getAuthorChannelId(), commentModel.getThreadId(), commentIndex);
         });
     }
 
     private void handleReplyPopup(ImageButton menuOptions, ReplyModel replyModel, int replyPosition) {
         menuOptions.setOnClickListener(v -> {
-            int position = getAdapterPosition() - CommentsAdapter.VIEW_ABOVE_NUMBER;
-            Pair<Integer, Integer> commentIndex = new Pair<>(position, replyPosition);
+            int datasetIndex = getAdapterPosition() - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE;
+            Pair<Integer, Integer> commentIndex = new Pair<>(datasetIndex, replyPosition);
             popupHandler.showPopup(v, replyModel.getAuthorChannelId(), replyModel.getCommentId(), commentIndex);
         });
     }
 
-    public void activateReplyInputField(View.OnClickListener clickListener, String target) {
+    public void giveFocusToInputField(View.OnClickListener clickListener, String target) {
         replyInputView.setVisibility(View.VISIBLE);
 
         if (replyInputView.requestFocus()) {
             replyInputView.setText("");
             replyInputView.append("+" + target + " ");
+
             InputMethodManager imm = (InputMethodManager) replyInputView.getContext().
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);

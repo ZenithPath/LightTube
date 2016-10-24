@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
-import com.example.scame.lighttube.presentation.adapters.player.UpdateReplyModelHolder;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
@@ -85,7 +84,7 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
         return items.getReplyModels().size() + NUMBER_OF_VIEW_ABOVE;
     }
 
-    // FIXME: this hack was made to give an adapter time to bound inputView and only then make it active
+    // FIXME: this hack was made to give an adapter a time to bound inputView and only then make it active
     public void setModeFields(boolean asReply, int position) {
         for (AdapterDelegate<ReplyListModel> delegate : delegates) {
             if (delegate instanceof RepliesInputDelegate) {

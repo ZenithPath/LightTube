@@ -10,6 +10,8 @@ import com.example.scame.lighttube.presentation.presenters.CommentInputPresenter
 import com.example.scame.lighttube.presentation.presenters.ICommentInputPresenter;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -22,8 +24,8 @@ public class CommentsModule {
 
     @Provides
     @PerActivity
-    ICommentInputPresenter<CommentInputView> provideCommentInputPresenter(SubscriptionsHandler subscriptionsHandler,
-                                                                          PostThreadCommentUseCase threadCommentUseCase) {
+    ICommentInputPresenter<CommentInputView> provideInputPresenter(@Named("commInput")SubscriptionsHandler subscriptionsHandler,
+                                                                   PostThreadCommentUseCase threadCommentUseCase) {
         return new CommentInputPresenterImp<>(threadCommentUseCase, subscriptionsHandler);
     }
 
@@ -35,6 +37,7 @@ public class CommentsModule {
     }
 
     @Provides
+    @Named("commInput")
     @PerActivity
     SubscriptionsHandler provideInputSubscriptionsHandler(PostThreadCommentUseCase threadCommentUseCase) {
         return new SubscriptionsHandler(threadCommentUseCase);

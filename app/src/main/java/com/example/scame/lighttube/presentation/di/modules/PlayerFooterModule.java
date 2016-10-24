@@ -8,6 +8,7 @@ import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
+import com.example.scame.lighttube.domain.usecases.PostReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
@@ -15,8 +16,10 @@ import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
+import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
 import com.example.scame.lighttube.presentation.presenters.IVideoRatingPresenter;
 import com.example.scame.lighttube.presentation.presenters.PlayerFooterPresenterImp;
+import com.example.scame.lighttube.presentation.presenters.ReplyInputPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 import com.example.scame.lighttube.presentation.presenters.VideoRatingPresenterImp;
 
@@ -27,9 +30,10 @@ import dagger.Provides;
 
 import static com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter.FooterView;
 import static com.example.scame.lighttube.presentation.presenters.IVideoRatingPresenter.*;
+import static com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter.*;
 
-// contains classes that let to retrieve list of comments and get videos rating (as well as rate)
-
+// contains classes that let to retrieve a list of comments and get videos rating (as well as rate)
+// TODO: decompose
 @Module
 public class PlayerFooterModule {
 
@@ -125,5 +129,28 @@ public class PlayerFooterModule {
                                                            RateVideoUseCase rateVideoUseCase) {
 
         return new SubscriptionsHandler(retrieveRatingUseCase, rateVideoUseCase);
+    }
+
+    // new dependencies
+
+    @Provides
+    @PerActivity
+    IReplyInputPresenter<ReplyView> provideReplyInputPresenter(@Named("replyInput")SubscriptionsHandler subscriptionsHandler,
+                                                               PostReplyUseCase postReplyUseCase) {
+        return new ReplyInputPresenterImp<>(postReplyUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    PostReplyUseCase providePostReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                             ICommentsDataManager commentsDataManager) {
+        return new PostReplyUseCase(subscribeOn, observeOn, commentsDataManager);
+    }
+
+    @Provides
+    @Named("replyInput")
+    @PerActivity
+    SubscriptionsHandler provideReplyInputSubscriptionsHandler(PostReplyUseCase replyUseCase) {
+        return new SubscriptionsHandler(replyUseCase);
     }
 }

@@ -5,7 +5,6 @@ import android.app.Activity;
 
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.di.modules.ChannelVideosModule;
-import com.example.scame.lighttube.presentation.di.modules.CommentsModule;
 import com.example.scame.lighttube.presentation.di.modules.GridModule;
 import com.example.scame.lighttube.presentation.di.modules.PlayerFooterModule;
 import com.example.scame.lighttube.presentation.di.modules.RecentVideosModule;
@@ -29,8 +28,6 @@ public class ComponentsManager {
     private RecentVideosComponent recentVideosComponent;
 
     private ChannelVideosComponent channelVideosComponent;
-
-    private CommentsComponent commentsComponent;
 
     private PlayerFooterComponent playerFooterComponent;
 
@@ -104,17 +101,6 @@ public class ComponentsManager {
         }
 
         return channelVideosComponent;
-    }
-
-    public CommentsComponent provideCommentsComponent() {
-        if (commentsComponent == null) {
-            commentsComponent = DaggerCommentsComponent.builder()
-                    .applicationComponent(LightTubeApp.getAppComponent())
-                    .commentsModule(new CommentsModule())
-                    .build();
-        }
-
-        return commentsComponent;
     }
 
     public PlayerFooterComponent providePlayerFooterComponent() {

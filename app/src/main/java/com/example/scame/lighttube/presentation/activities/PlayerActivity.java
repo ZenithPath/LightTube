@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.presentation.di.components.CommentsComponent;
 import com.example.scame.lighttube.presentation.di.components.ComponentsManager;
 import com.example.scame.lighttube.presentation.di.components.PlayerFooterComponent;
 import com.example.scame.lighttube.presentation.di.components.RepliesComponent;
@@ -164,10 +163,6 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         doLayout();
-    }
-
-    public CommentsComponent getCommentsComponent() {
-        return componentsManager.provideCommentsComponent();
     }
 
     public PlayerFooterComponent getPlayerFooterComponent() {

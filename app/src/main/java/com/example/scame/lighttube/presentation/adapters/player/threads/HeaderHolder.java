@@ -1,4 +1,4 @@
-package com.example.scame.lighttube.presentation.adapters.player;
+package com.example.scame.lighttube.presentation.adapters.player.threads;
 
 
 import android.content.Context;
@@ -19,7 +19,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HeaderViewHolder extends RecyclerView.ViewHolder implements IVideoRatingPresenter.PlayerView {
+// TODO: refactor this (move out presenter and related code)
+
+public class HeaderHolder extends RecyclerView.ViewHolder implements IVideoRatingPresenter.PlayerView {
 
     private static final String LIKE = "like";
     private static final String DISLIKE = "dislike";
@@ -36,17 +38,14 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder implements IVideoR
 
     private String videoId;
 
-    private String identifier;
-
-    public HeaderViewHolder(View itemView, Context context, String videoId, String videoTitle, String identifier) {
+    public HeaderHolder(View itemView, Context context, String videoId, String videoTitle) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
 
         this.videoId = videoId;
-        this.identifier = identifier;
         videoTitleTv.setText(videoTitle);
-        
+
         inject(context);
         presenter.setView(this);
         presenter.getVideoRating(videoId);

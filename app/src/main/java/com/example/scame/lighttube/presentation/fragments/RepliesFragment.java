@@ -16,7 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
-import com.example.scame.lighttube.presentation.adapters.player.UpdateReplyModelHolder;
+import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyModelHolder;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.replies.ReplyInputViewHolder;
@@ -199,5 +199,6 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     public void onDestroy() {
         super.onDestroy();
         repliesPresenter.destroy();
+        replyInputPresenter.destroy();
     }
 }
