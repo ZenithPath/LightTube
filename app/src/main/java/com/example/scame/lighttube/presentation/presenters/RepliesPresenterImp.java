@@ -25,6 +25,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     private String userIdentifier;
 
+    // TODO: indexes should be assigned to each type of use cases, otherwise can be overwritten
     private int index;
 
     private T view;

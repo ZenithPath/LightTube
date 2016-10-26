@@ -10,8 +10,10 @@ import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import static android.util.Log.i;
@@ -30,12 +32,15 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private PostThreadCommentUseCase postCommentUseCase;
 
+    private UpdateReplyUseCase updateReplyUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
 
     private CommentListModel commentListModel;
 
+    // TODO: indexes should be assigned to each type of use cases, otherwise can be overwritten
     private Pair<Integer, Integer> commentIndex;
 
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
@@ -44,8 +49,10 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
                                     MarkAsSpamUseCase markAsSpamUseCase,
                                     UpdateThreadUseCase updateThreadUseCase,
                                     PostThreadCommentUseCase postCommentUseCase,
+                                    UpdateReplyUseCase updateReplyUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
         this.identifierUseCase = identifierUseCase;
+        this.updateReplyUseCase = updateReplyUseCase;
         this.postCommentUseCase = postCommentUseCase;
         this.markAsSpamUseCase = markAsSpamUseCase;
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
@@ -79,7 +86,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         this.commentIndex = commentIndex;
         updateThreadUseCase.setCommentId(commentId);
         updateThreadUseCase.setUpdatedText(updatedText);
-        updateThreadUseCase.execute(new UpdateSubscriber());
+        updateThreadUseCase.execute(new UpdateThreadSubscriber());
     }
 
     @Override
@@ -87,6 +94,14 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         postCommentUseCase.setCommentText(commentText);
         postCommentUseCase.setVideoId(videoId);
         postCommentUseCase.execute(new PostResponseSubscriber());
+    }
+
+    @Override
+    public void updateReply(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
+        this.commentIndex = commentIndex;
+        updateReplyUseCase.setUpdatedText(updatedText);
+        updateReplyUseCase.setReplyId(commentId);
+        updateReplyUseCase.execute(new UpdateReplySubscriber());
     }
 
     @Override
@@ -108,6 +123,23 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     public void destroy() {
         view = null;
         subscriptionsHandler.unsubscribe();
+    }
+
+    private final class UpdateReplySubscriber extends DefaultSubscriber<ReplyModel> {
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxErrUpdate", e.getLocalizedMessage());
+        }
+
+        @Override
+        public void onNext(ReplyModel replyModel) {
+            super.onNext(replyModel);
+
+            if (view != null) {
+                view.onReplyUpdated(commentIndex, replyModel);
+            }
+        }
     }
 
     private final class PostResponseSubscriber extends DefaultSubscriber<ThreadCommentModel> {
@@ -203,7 +235,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
     }
 
-    private final class UpdateSubscriber extends DefaultSubscriber<ThreadCommentModel> {
+    private final class UpdateThreadSubscriber extends DefaultSubscriber<ThreadCommentModel> {
 
         @Override
         public void onError(Throwable e) {

@@ -10,6 +10,7 @@ import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
@@ -35,10 +36,18 @@ public class PlayerFooterModule {
                                                                 MarkAsSpamUseCase markAsSpamUseCase,
                                                                 UpdateThreadUseCase updateThreadUseCase,
                                                                 PostThreadCommentUseCase postThreadCommentUseCase,
+                                                                UpdateReplyUseCase updateReplyUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
         return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase,
                 deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase,
-                subscriptionsHandler);
+                updateReplyUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    UpdateReplyUseCase provideUpdateReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                 ICommentsDataManager commentsDataManager) {
+        return new UpdateReplyUseCase(subscribeOn, observeOn, commentsDataManager);
     }
 
     @Provides

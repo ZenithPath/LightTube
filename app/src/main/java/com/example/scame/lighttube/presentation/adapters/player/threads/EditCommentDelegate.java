@@ -37,8 +37,17 @@ public class EditCommentDelegate implements AdapterDelegate<List<ThreadCommentMo
 
         UpdateCommentModelHolder updateCommentHolder = (UpdateCommentModelHolder) items.get(position);
         Pair<Integer, Integer> commentIndex = updateCommentHolder.getPairedPosition();
-        String commentId = updateCommentHolder.getThreadId();
-        String commentText = items.get(commentIndex.first).getTextDisplay();
+
+        String commentId;
+        String commentText;
+
+        if (commentIndex.second == -1) {
+            commentId = updateCommentHolder.getThreadId();
+            commentText = items.get(commentIndex.first).getTextDisplay();
+        } else {
+            commentId = updateCommentHolder.getReplies().get(commentIndex.second).getCommentId();
+            commentText = updateCommentHolder.getReplies().get(commentIndex.second).getTextDisplay();
+        }
 
         editCommentHolder.bindCommentEditorHolder(commentIndex, commentText, commentId);
     }

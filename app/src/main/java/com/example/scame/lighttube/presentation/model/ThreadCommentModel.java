@@ -22,6 +22,17 @@ public class ThreadCommentModel {
 
     private String authorChannelId;
 
+    public ThreadCommentModel(ThreadCommentModel threadCommentModel) {
+        this.setAuthorChannelId(threadCommentModel.getAuthorChannelId());
+        this.setThreadId(threadCommentModel.getThreadId());
+        this.setTextDisplay(threadCommentModel.getTextDisplay());
+        this.setAuthorName(threadCommentModel.getAuthorName());
+        this.setDate(threadCommentModel.getDate());
+        this.setProfileImageUrl(threadCommentModel.getProfileImageUrl());
+        this.setReplies(threadCommentModel.getReplies());
+        this.setReplyCount(threadCommentModel.getReplyCount());
+    }
+
     public ThreadCommentModel() {
         replies = new ArrayList<>();
     }
@@ -52,6 +63,10 @@ public class ThreadCommentModel {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void setReply(int index, ReplyModel replyModel) {
+        this.replies.set(index, replyModel);
     }
 
     public void setAuthorName(String authorName) {

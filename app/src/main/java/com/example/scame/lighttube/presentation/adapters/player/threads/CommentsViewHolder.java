@@ -159,6 +159,7 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         ThreadCommentModel commentModel = comments.get(position);
 
         handleThreadCommentPopup(commentModel);
+        bindRepliesSection(position, commentModel);
 
         Picasso.with(threadProfileIv.getContext())
                 .load(commentModel.getProfileImageUrl())
@@ -166,6 +167,12 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
                 .placeholder(R.drawable.placeholder_grey)
                 .into(threadProfileIv);
 
+        threadCommentText.setText(commentModel.getTextDisplay());
+        threadCommentDate.setText(commentModel.getDate());
+        threadCommentAuthor.setText(commentModel.getAuthorName());
+    }
+
+    private void bindRepliesSection(int position, ThreadCommentModel commentModel) {
         repliesIb.setImageDrawable(repliesIb.getContext().getResources()
                 .getDrawable(R.drawable.ic_question_answer_black_24dp));
 
@@ -175,10 +182,6 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         if (commentModel.getReplyCount() != 0) {
             repliesCount.setText(String.valueOf(commentModel.getReplyCount()));
         }
-
-        threadCommentText.setText(commentModel.getTextDisplay());
-        threadCommentDate.setText(commentModel.getDate());
-        threadCommentAuthor.setText(commentModel.getAuthorName());
     }
 
     private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments, int index) {

@@ -164,6 +164,19 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     @Override
+    public void onReplyUpdated(Pair<Integer, Integer> replyIndex, ReplyModel replyModel) {
+        UpdateCommentModelHolder modelHolder = (UpdateCommentModelHolder) commentListModel
+                .getThreadComments().remove(+replyIndex.first);
+
+        ThreadCommentModel updatedThreadModel = new ThreadCommentModel(modelHolder);
+        replyModel.setAuthorChannelId(userIdentifier);
+        updatedThreadModel.setReply(replyIndex.second, replyModel);
+
+        commentListModel.getThreadComments().add(replyIndex.first, updatedThreadModel);
+        commentsAdapter.notifyItemChanged(replyIndex.first + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+    }
+
+    @Override
     public void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel) {
         commentListModel.getThreadComments().remove(+commentIndex.first);
         commentListModel.getThreadComments().add(commentIndex.first, threadCommentModel);
@@ -223,9 +236,9 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Override
     public void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        UpdateCommentModelHolder updateCommentHolder = new UpdateCommentModelHolder();
+        ThreadCommentModel threadCommentModel = commentListModel.getThreadComments().get(commentIndex.first);
+        UpdateCommentModelHolder updateCommentHolder = new UpdateCommentModelHolder(threadCommentModel);
         updateCommentHolder.setPairedPosition(commentIndex);
-        updateCommentHolder.setThreadId(commentId);
 
         // FIXME: it's not cool that while editing all parts of a thread aren't visible
         commentListModel.getThreadComments().remove(+commentIndex.first);
@@ -235,7 +248,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Override
     public void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId) {
-        footerPresenter.updateComment(commentId, commentIndex, commentText);
+        if (commentIndex.second == -1) {
+            footerPresenter.updateComment(commentId, commentIndex, commentText);
+        } else {
+            footerPresenter.updateReply(commentId, commentIndex, commentText);
+        }
     }
 
     @Override

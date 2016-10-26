@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.presenters;
 import android.util.Pair;
 
 import com.example.scame.lighttube.presentation.model.CommentListModel;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 public interface IPlayerFooterPresenter<T> extends Presenter<T> {
@@ -18,6 +19,8 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
 
         void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel);
 
+        void onReplyUpdated(Pair<Integer, Integer> replyIndex, ReplyModel replyModel);
+
         void displayPostedComment(ThreadCommentModel threadComment);
     }
 
@@ -30,4 +33,6 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
     void updateComment(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
 
     void postComment(String commentText, String videoId);
+
+    void updateReply(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
 }
