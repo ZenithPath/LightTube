@@ -16,10 +16,10 @@ import android.view.inputmethod.InputMethodManager;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
-import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyModelHolder;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.replies.ReplyInputViewHolder;
+import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyModelHolder;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
@@ -99,7 +99,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         repliesDelegatesManager = new RepliesDelegatesManager(
                 replyText -> replyInputPresenter.postReply(threadCommentId, replyText), this, userIdentifier
         );
-        repliesAdapter = new RepliesAdapter(repliesDelegatesManager, replyListModel);
+        repliesAdapter = new RepliesAdapter(repliesDelegatesManager, replies);
 
         repliesRv.setHasFixedSize(true);
         repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(),

@@ -20,10 +20,13 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
     public static final int VIEW_TYPE_REPLY_COMMENT = 0;
     public static final int VIEW_TYPE_REPLY_INPUT = 1;
     public static final int VIEW_TYPE_EDIT_REPLY = 2;
+    public static final int VIEW_TYPE_HEADER_COMMENT = 3;
 
-    public static final int NUMBER_OF_VIEW_ABOVE = 1;
+    public static final int NUMBER_OF_VIEW_ABOVE = 2;
 
-    public static final int REPLY_INPUT_POS = 0;
+    public static final int REPLY_INPUT_POS = 1;
+
+    public static final int HEADER_COMMENT_POS = 0;
 
     private List<AdapterDelegate<ReplyListModel>> delegates;
 
@@ -32,6 +35,7 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
                                    String userIdentifier) {
         delegates = new ArrayList<>();
         delegates.add(new RepliesViewDelegate(new PopupHandler(commentActionListener, userIdentifier)));
+        delegates.add(new HeaderCommentDelegate(new PopupHandler(commentActionListener, userIdentifier)));
         delegates.add(new RepliesInputDelegate(replyInputListener));
         delegates.add(new EditReplyDelegate(commentActionListener));
     }
@@ -48,7 +52,9 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
 
     @Override
     public int getItemViewType(@NonNull ReplyListModel items, int position) {
-        if (position == REPLY_INPUT_POS) {
+        if (position == HEADER_COMMENT_POS) {
+            return VIEW_TYPE_HEADER_COMMENT;
+        } else if (position == REPLY_INPUT_POS) {
             return VIEW_TYPE_REPLY_INPUT;
         } else if (items.getReplyModel(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateReplyModelHolder) {
             return VIEW_TYPE_EDIT_REPLY;
@@ -64,7 +70,7 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
                 return delegate.onCreateViewHolder(parent);
             }
         }
-        throw new IllegalArgumentException("No delegate found");
+        throw new IllegalArgumentException("No delegate with type " + viewType + " found");
     }
 
     @Override

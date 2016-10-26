@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 
+// TODO: generify dataset
 public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private RepliesDelegatesManager delegatesManager;

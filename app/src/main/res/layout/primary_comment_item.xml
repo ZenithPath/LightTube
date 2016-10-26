@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    app:columnCount="5"
+    app:orientation="horizontal"
+    app:rowCount="2">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_iv"
+        android:layout_width="@dimen/primary_profile_img_size"
+        android:layout_height="@dimen/primary_profile_img_size"
+        android:layout_margin="@dimen/primary_comment_margin"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="1dp"
+        app:layout_rowSpan="2" />
+
+    <TextView
+        android:id="@+id/comment_text_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/primary_comment_margin"
+        android:textColor="@color/textPrimary"
+        android:textSize="@dimen/comment_text"
+        app:layout_columnSpan="3"
+        app:layout_columnWeight="1" />
+
+    <ImageButton
+        android:id="@+id/more_option_ib"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_margin="@dimen/primary_comment_margin"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="@dimen/image_button_padding"
+        android:src="@drawable/ic_more_vert_black_24dp" />
+
+    <TextView
+        android:id="@+id/author_name_tv"
+        android:layout_width="0dp"
+        android:layout_margin="@dimen/primary_comment_margin"
+        android:clickable="true"
+        android:textColor="@color/textSecondary"
+        android:textSize="@dimen/comment_meta_text"
+        app:layout_columnSpan="2"
+        app:layout_columnWeight="1" />
+
+    <TextView
+        android:id="@+id/comment_date_tv"
+        android:layout_width="0dp"
+        android:layout_margin="@dimen/primary_comment_margin"
+        android:textColor="@color/textSecondary"
+        app:layout_columnWeight="2.5" />
+
+    <LinearLayout
+        android:id="@+id/replies_group"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/replies_iv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="@dimen/primary_comment_margin"
+            android:layout_marginLeft="@dimen/primary_comment_margin"
+            android:layout_marginTop="@dimen/primary_comment_margin"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/image_button_padding" />
+
+        <TextView
+            android:id="@+id/replies_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/primary_comment_margin" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.GridLayout>
