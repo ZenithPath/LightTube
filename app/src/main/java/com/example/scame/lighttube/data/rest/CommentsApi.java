@@ -21,6 +21,7 @@ public interface CommentsApi {
 
     @GET("youtube/v3/commentThreads")
     Observable<CommentThreadsEntity> getCommentThreads(@Query(encoded = true, value = "part") String part,
+                                                       @Query("order") String order,
                                                        @Query("maxResults") Integer maxResults,
                                                        @Query("pageToken") String pageToken,
                                                        @Query("textFormat") String textFormat,

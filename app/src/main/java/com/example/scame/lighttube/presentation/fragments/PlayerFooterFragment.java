@@ -64,7 +64,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     public interface PlayerFooterListener {
 
-        void onRepliesClick(String threadCommentId, String identifier);
+        void onRepliesClick(ThreadCommentModel threadCommentModel, String identifier);
     }
 
     public interface PostedCommentListener {

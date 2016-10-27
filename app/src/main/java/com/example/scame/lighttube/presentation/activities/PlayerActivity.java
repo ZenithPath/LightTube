@@ -18,6 +18,7 @@ import com.example.scame.lighttube.presentation.di.components.PlayerFooterCompon
 import com.example.scame.lighttube.presentation.di.components.RepliesComponent;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
@@ -83,8 +84,8 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
     }
 
     @Override
-    public void onRepliesClick(String threadCommentId, String identifier) {
-        RepliesFragment repliesFragment = RepliesFragment.newInstance(threadCommentId, identifier);
+    public void onRepliesClick(ThreadCommentModel threadCommentModel, String identifier) {
+        RepliesFragment repliesFragment = RepliesFragment.newInstance(threadCommentModel, identifier);
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
                 .replace(R.id.player_activity_fl, repliesFragment, REPLIES_FRAG_TAG)

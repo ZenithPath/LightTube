@@ -52,7 +52,7 @@ public class HeaderCommentHolder extends RecyclerView.ViewHolder {
     private void handlePopup(ThreadCommentModel model) {
         menuOptions.setOnClickListener(v -> {
             int position = RepliesDelegatesManager.HEADER_COMMENT_POS;
-            Pair<Integer, Integer> commentIndex = new Pair<>(-1, position);
+            Pair<Integer, Integer> commentIndex = new Pair<>(position, -1);
             popupHandler.showPopup(menuOptions, model.getAuthorChannelId(), model.getThreadId(), commentIndex);
         });
     }

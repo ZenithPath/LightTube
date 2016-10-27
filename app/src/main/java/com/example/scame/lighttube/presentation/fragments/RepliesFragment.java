@@ -19,9 +19,11 @@ import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.replies.ReplyInputViewHolder;
+import com.example.scame.lighttube.presentation.adapters.player.replies.TemporaryPrimaryHolder;
 import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyModelHolder;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
 
@@ -52,7 +54,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     private ReplyListModel replies;
 
-    private String threadCommentId;
+    private ThreadCommentModel unparceledModel;
 
     private String userIdentifier;
 
@@ -61,11 +63,11 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         void onPostReplyClicked(String replyText);
     }
 
-    public static RepliesFragment newInstance(String threadCommentId, String identifier) {
+    public static RepliesFragment newInstance(ThreadCommentModel threadCommentModel, String identifier) {
         RepliesFragment repliesFragment = new RepliesFragment();
 
         Bundle args = new Bundle();
-        args.putString(RepliesFragment.class.getCanonicalName(), threadCommentId);
+        args.putParcelable(RepliesFragment.class.getCanonicalName(), threadCommentModel);
         args.putString(LightTubeApp.getAppComponent().getContext().getString(R.string.identifier_key), identifier);
         repliesFragment.setArguments(args);
 
@@ -79,12 +81,12 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
         ButterKnife.bind(this, repliesView);
         ((PlayerActivity) getActivity()).getRepliesComponent().inject(this);
-        this.threadCommentId = getArguments().getString(RepliesFragment.class.getCanonicalName());
+        this.unparceledModel = getArguments().getParcelable(RepliesFragment.class.getCanonicalName());
         this.userIdentifier = getArguments().getString(getString(R.string.identifier_key));
 
         repliesPresenter.setView(this);
         replyInputPresenter.setView(this);
-        repliesPresenter.getRepliesList(threadCommentId);
+        repliesPresenter.getRepliesList(unparceledModel.getThreadId());
 
         return repliesView;
     }
@@ -96,8 +98,12 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     @Override
     public void displayReplies(ReplyListModel replyListModel) {
         replies = replyListModel;
+        TemporaryPrimaryHolder temporaryPrimaryHolder = new TemporaryPrimaryHolder(unparceledModel);
+        replies.addReplyModel(0, temporaryPrimaryHolder);
+
         repliesDelegatesManager = new RepliesDelegatesManager(
-                replyText -> replyInputPresenter.postReply(threadCommentId, replyText), this, userIdentifier
+                replyText -> replyInputPresenter.postReply(unparceledModel.getThreadId(), replyText),
+                this, userIdentifier
         );
         repliesAdapter = new RepliesAdapter(repliesDelegatesManager, replies);
 

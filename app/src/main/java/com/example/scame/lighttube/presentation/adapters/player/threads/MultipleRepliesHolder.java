@@ -10,6 +10,6 @@ public class MultipleRepliesHolder extends CommentsViewHolder {
 
     public MultipleRepliesHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
                                  CommentActionListener actionListener, String identifier, View itemView) {
-        super(footerListener, itemView, identifier, actionListener);
+        super(itemView, identifier, actionListener, footerListener);
     }
 }

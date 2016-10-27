@@ -1,10 +1,13 @@
 package com.example.scame.lighttube.presentation.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThreadCommentModel {
+public class ThreadCommentModel implements Parcelable {
 
     private List<ReplyModel> replies;
 
@@ -108,4 +111,45 @@ public class ThreadCommentModel {
     public String getThreadId() {
         return threadId;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(this.replies);
+        dest.writeString(this.threadId);
+        dest.writeInt(this.replyCount);
+        dest.writeString(this.textDisplay);
+        dest.writeString(this.profileImageUrl);
+        dest.writeString(this.authorName);
+        dest.writeString(this.date);
+        dest.writeString(this.authorChannelId);
+    }
+
+    protected ThreadCommentModel(Parcel in) {
+        this.replies = in.createTypedArrayList(ReplyModel.CREATOR);
+        this.threadId = in.readString();
+        this.replyCount = in.readInt();
+        this.textDisplay = in.readString();
+        this.profileImageUrl = in.readString();
+        this.authorName = in.readString();
+        this.date = in.readString();
+        this.authorChannelId = in.readString();
+    }
+
+    public static final Parcelable.Creator<ThreadCommentModel> CREATOR = new Parcelable.Creator<ThreadCommentModel>() {
+        @Override
+        public ThreadCommentModel createFromParcel(Parcel source) {
+            return new ThreadCommentModel(source);
+        }
+
+        @Override
+        public ThreadCommentModel[] newArray(int size) {
+            return new ThreadCommentModel[size];
+        }
+    };
 }

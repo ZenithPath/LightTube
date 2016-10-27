@@ -22,7 +22,7 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
     public static final int VIEW_TYPE_EDIT_REPLY = 2;
     public static final int VIEW_TYPE_HEADER_COMMENT = 3;
 
-    public static final int NUMBER_OF_VIEW_ABOVE = 2;
+    public static final int NUMBER_OF_VIEW_ABOVE = 1;
 
     public static final int REPLY_INPUT_POS = 1;
 

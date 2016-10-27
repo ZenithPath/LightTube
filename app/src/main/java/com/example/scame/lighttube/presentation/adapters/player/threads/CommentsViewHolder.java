@@ -70,19 +70,8 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private PlayerFooterFragment.PlayerFooterListener footerListener;
 
-    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener) {
-        super(itemView);
-
-        popupHandler = new PopupHandler(commentActionListener, identifier);
-        this.commentActionListener = commentActionListener;
-        this.identifier = identifier;
-        IMAGE_SIZE = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.profile_image_size);
-        ButterKnife.bind(this, itemView);
-        findViews();
-    }
-
-    public CommentsViewHolder(PlayerFooterFragment.PlayerFooterListener footerListener,
-                       View itemView, String identifier, CommentActionListener commentActionListener) {
+    public CommentsViewHolder(View itemView, String identifier, CommentActionListener commentActionListener,
+                              PlayerFooterFragment.PlayerFooterListener footerListener) {
         super(itemView);
 
         this.footerListener = footerListener;
@@ -96,10 +85,10 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void setAllRepliesClickListener(PlayerFooterFragment.PlayerFooterListener footerListener,
                                             List<ThreadCommentModel> comments) {
-        allRepliesTv.setOnClickListener(v ->
-                footerListener.onRepliesClick(comments.get(getAdapterPosition()
-                        - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE).getThreadId(), identifier)
-        );
+        allRepliesTv.setOnClickListener(v -> {
+                    int position = getAdapterPosition() - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE;
+                    footerListener.onRepliesClick(comments.get(position), identifier);
+                });
     }
 
     private void findViews() {

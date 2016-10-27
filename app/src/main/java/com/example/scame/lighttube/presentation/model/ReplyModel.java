@@ -1,7 +1,10 @@
 package com.example.scame.lighttube.presentation.model;
 
 
-public class ReplyModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ReplyModel implements Parcelable {
 
     private String textDisplay;
 
@@ -72,4 +75,46 @@ public class ReplyModel {
     public String getAuthorChannelId() {
         return authorChannelId;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.textDisplay);
+        dest.writeString(this.profileImageUrl);
+        dest.writeString(this.authorName);
+        dest.writeString(this.date);
+        dest.writeString(this.parentId);
+        dest.writeString(this.commentId);
+        dest.writeString(this.authorChannelId);
+    }
+
+    public ReplyModel() {
+    }
+
+    protected ReplyModel(Parcel in) {
+        this.textDisplay = in.readString();
+        this.profileImageUrl = in.readString();
+        this.authorName = in.readString();
+        this.date = in.readString();
+        this.parentId = in.readString();
+        this.commentId = in.readString();
+        this.authorChannelId = in.readString();
+    }
+
+    public static final Parcelable.Creator<ReplyModel> CREATOR = new Parcelable.Creator<ReplyModel>() {
+        @Override
+        public ReplyModel createFromParcel(Parcel source) {
+            return new ReplyModel(source);
+        }
+
+        @Override
+        public ReplyModel[] newArray(int size) {
+            return new ReplyModel[size];
+        }
+    };
 }

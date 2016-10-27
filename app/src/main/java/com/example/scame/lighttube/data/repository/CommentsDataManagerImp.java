@@ -24,6 +24,8 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     private static final String SNIPPET_PART = "snippet";
 
+    private static final String THREADS_ORDER = "relevance";
+
     private static final int MAX_RES = 50;
 
     private static final String TEXT_FORMAT = "plainText";
@@ -64,7 +66,8 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     @Override
     public Observable<CommentListModel> getCommentList(String videoId) {
-        return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, MAX_RES, null, TEXT_FORMAT, videoId, PrivateValues.API_KEY)
+        return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, THREADS_ORDER,MAX_RES, null,
+                TEXT_FORMAT, videoId, PrivateValues.API_KEY)
                 .map(commentListMapper::convert);
     }
 

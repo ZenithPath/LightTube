@@ -8,6 +8,10 @@ public class TemporaryPrimaryHolder extends ReplyModel {
 
     private ThreadCommentModel threadCommentModel;
 
+    public TemporaryPrimaryHolder(ThreadCommentModel threadCommentModel) {
+        this.threadCommentModel = threadCommentModel;
+    }
+
     public void setThreadCommentModel(ThreadCommentModel threadCommentModel) {
         this.threadCommentModel = threadCommentModel;
     }

@@ -8,6 +8,6 @@ import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 public class CoupleRepliesHolder extends CommentsViewHolder {
 
     public CoupleRepliesHolder(View itemView, CommentActionListener actionListener, String identifier) {
-        super(itemView, identifier, actionListener);
+        super(itemView, identifier, actionListener, null);
     }
 }
