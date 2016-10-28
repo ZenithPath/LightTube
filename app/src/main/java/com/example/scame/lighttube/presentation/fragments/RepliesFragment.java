@@ -125,7 +125,11 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     @Override
     public void onDeletedComment(int position) {
         replies.remove(position);
-        repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
+            repliesAdapter.notifyItemRemoved(RepliesDelegatesManager.HEADER_COMMENT_POS);
+        } else {
+            repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        }
     }
 
     @Override
@@ -206,7 +210,8 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        repliesPresenter.deleteComment(commentId, commentIndex.second);
+        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
+        repliesPresenter.deleteComment(commentId, index);
     }
 
     @Override
