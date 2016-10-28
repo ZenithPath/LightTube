@@ -38,7 +38,7 @@ import static com.example.scame.lighttube.presentation.adapters.player.replies.R
 public class RepliesFragment extends Fragment implements IRepliesPresenter.RepliesView, CommentActionListener,
         IReplyInputPresenter.ReplyView {
 
-    private static final int INSERT_REPLY_POS = 0;
+    private static final int INSERT_REPLY_POS = 1;
 
     @BindView(R.id.replies_fragment_rv) RecyclerView repliesRv;
 
@@ -124,18 +124,24 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onDeletedComment(int position) {
-        replies.remove(position);
         if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
-            repliesAdapter.notifyItemRemoved(RepliesDelegatesManager.HEADER_COMMENT_POS);
+            replies.clear();
+            repliesAdapter.notifyDataSetChanged();
         } else {
+            replies.remove(position);
             repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
         }
     }
 
     @Override
     public void onMarkedAsSpam(int position) {
-        replies.remove(position);
-        repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
+            replies.clear();
+            repliesAdapter.notifyDataSetChanged();
+        } else {
+            replies.remove(position);
+            repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        }
     }
 
     // TODO: check if user channel id is OK
@@ -156,7 +162,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     private void insertPostedReply(ReplyModel replyModel) {
         replies.addReplyModel(INSERT_REPLY_POS, replyModel);
-        repliesAdapter.notifyItemInserted(INSERT_REPLY_POS);
+        repliesAdapter.notifyItemInserted(INSERT_REPLY_POS + 1); // take into account an input field
     }
 
     private void hideKeyboard() {
@@ -170,14 +176,16 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex) {
+        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
+
         if (repliesAdapter.getItemViewType(REPLY_INPUT_POS) == VIEW_TYPE_REPLY_INPUT) {
             if (repliesRv.findViewHolderForAdapterPosition(REPLY_INPUT_POS) == null) {
-                repliesDelegatesManager.setModeFields(true, commentIndex.second);
+                repliesDelegatesManager.setModeFields(true, index);
                 repliesRv.scrollToPosition(REPLY_INPUT_POS); // will be bound soon
             } else {
                 ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder)
                         repliesRv.findViewHolderForAdapterPosition(REPLY_INPUT_POS);
-                replyInputViewHolder.giveFocus(replies.getReplyModel(commentIndex.second).getAuthorName());
+                replyInputViewHolder.giveFocus(replies.getReplyModel(index).getAuthorName());
             }
         }
     }
@@ -215,13 +223,9 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onActionUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
-        repliesPresenter.updateReply(commentId, updatedText, commentIndex.second, userIdentifier);
-    }
-
-    @Override
     public void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        repliesPresenter.markAsSpam(commentId, commentIndex.second);
+        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
+        repliesPresenter.markAsSpam(commentId, index);
     }
 
     @Override

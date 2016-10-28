@@ -7,8 +7,6 @@ public interface CommentActionListener {
 
     void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex);
 
-    void onActionUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
-
     void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex);
 
     void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex);

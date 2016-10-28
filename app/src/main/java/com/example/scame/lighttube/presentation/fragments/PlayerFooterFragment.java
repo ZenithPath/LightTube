@@ -261,11 +261,6 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     @Override
-    public void onActionUpdateClick(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
-        footerPresenter.updateComment(commentId, commentIndex, updatedText);
-    }
-
-    @Override
     public void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
         footerPresenter.markAsSpam(commentId, commentIndex);
     }

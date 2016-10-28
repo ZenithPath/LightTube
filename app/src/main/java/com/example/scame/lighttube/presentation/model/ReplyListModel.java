@@ -8,6 +8,10 @@ public class ReplyListModel {
 
     private List<ReplyModel> replyModels;
 
+    public void clear() {
+        replyModels.clear();
+    }
+
     public ReplyListModel() {
         replyModels = new ArrayList<>();
     }
