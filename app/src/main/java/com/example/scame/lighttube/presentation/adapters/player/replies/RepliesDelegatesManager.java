@@ -52,8 +52,13 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
 
     @Override
     public int getItemViewType(@NonNull ReplyListModel items, int position) {
-        if (position == HEADER_COMMENT_POS) {
+
+        if (position == HEADER_COMMENT_POS
+                && items.getReplyModel(HEADER_COMMENT_POS) instanceof TemporaryPrimaryHolder) {
             return VIEW_TYPE_HEADER_COMMENT;
+        } else if (position == HEADER_COMMENT_POS
+                && items.getReplyModel(HEADER_COMMENT_POS) instanceof UpdateReplyModelHolder) {
+            return VIEW_TYPE_EDIT_REPLY;
         } else if (position == REPLY_INPUT_POS) {
             return VIEW_TYPE_REPLY_INPUT;
         } else if (items.getReplyModel(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateReplyModelHolder) {
@@ -87,7 +92,7 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<ReplyLis
 
     @Override
     public int getItemCount(@NonNull ReplyListModel items) {
-        return items.getReplyModels().size() + NUMBER_OF_VIEW_ABOVE;
+        return items.size() == 0 ? 0 : items.size() + NUMBER_OF_VIEW_ABOVE;
     }
 
     // FIXME: this hack was made to give an adapter a time to bound inputView and only then make it active

@@ -38,7 +38,6 @@ public class HeaderCommentHolder extends RecyclerView.ViewHolder {
 
     public void bindHeaderCommentHolder(ThreadCommentModel model) {
         handlePopup(model);
-        menuOptions.setVisibility(View.INVISIBLE);
 
         Picasso.with(profileImage.getContext()).load(model.getProfileImageUrl())
                 .noFade().resize(48, 48).centerCrop()

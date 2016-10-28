@@ -39,8 +39,19 @@ public class RepliesInputDelegate implements AdapterDelegate<ReplyListModel> {
     public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof ReplyInputViewHolder && asReply) {
             ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder) holder;
-            replyInputViewHolder.giveFocus(items.getReplyModel(replyPosition).getAuthorName());
+            replyInputViewHolder.giveFocus(getAuthorName(position, items));
             setModeFields(false, -1);
+        }
+    }
+
+    private String getAuthorName(int position, ReplyListModel items) {
+        if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
+            TemporaryPrimaryHolder holder = (TemporaryPrimaryHolder) items
+                    .getReplyModel(RepliesDelegatesManager.HEADER_COMMENT_POS);
+
+            return holder.getThreadCommentModel().getAuthorName();
+        } else {
+            return items.getReplyModel(position).getAuthorName();
         }
     }
 

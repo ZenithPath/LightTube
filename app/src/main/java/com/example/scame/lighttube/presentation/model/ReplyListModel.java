@@ -39,4 +39,8 @@ public class ReplyListModel {
     public void remove(int index) {
         replyModels.remove(index);
     }
+
+    public int size() {
+        return replyModels.size();
+    }
 }

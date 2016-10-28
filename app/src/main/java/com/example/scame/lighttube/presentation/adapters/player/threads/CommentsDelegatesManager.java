@@ -96,6 +96,6 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<Th
 
     @Override
     public int getItemCount(@NonNull List<ThreadCommentModel> items) {
-        return items.size() + NUMBER_OF_VIEW_ABOVE;
+        return items.size() == 0 ? 0 : items.size() + NUMBER_OF_VIEW_ABOVE;
     }
 }

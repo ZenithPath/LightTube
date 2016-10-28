@@ -33,7 +33,10 @@ public class EditReplyDelegate implements AdapterDelegate<ReplyListModel> {
     @Override
     public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof EditCommentViewHolder) {
-            UpdateReplyModelHolder replyModelHolder = (UpdateReplyModelHolder) items.getReplyModel(position);
+            // position -1 means that we are editing a primary comment
+            int relativePosition = position == -1 ? RepliesDelegatesManager.HEADER_COMMENT_POS : position;
+
+            UpdateReplyModelHolder replyModelHolder = (UpdateReplyModelHolder) items.getReplyModel(relativePosition);
             Pair<Integer, Integer> index = replyModelHolder.getPosition();
 
             ((EditCommentViewHolder) holder).bindCommentEditorHolder(index, replyModelHolder.getTextDisplay(),

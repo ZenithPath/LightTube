@@ -185,9 +185,16 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
             } else {
                 ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder)
                         repliesRv.findViewHolderForAdapterPosition(REPLY_INPUT_POS);
-                replyInputViewHolder.giveFocus(replies.getReplyModel(index).getAuthorName());
+                replyInputViewHolder.giveFocus(getAuthorName());
             }
         }
+    }
+
+    // shouldn't be here
+    private String getAuthorName() {
+        TemporaryPrimaryHolder temporaryPrimaryHolder = (TemporaryPrimaryHolder) replies
+                .getReplyModel(RepliesDelegatesManager.HEADER_COMMENT_POS);
+        return temporaryPrimaryHolder.getThreadCommentModel().getAuthorName();
     }
 
     @Override
