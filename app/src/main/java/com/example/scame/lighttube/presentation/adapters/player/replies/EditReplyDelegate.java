@@ -12,9 +12,8 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
-import com.example.scame.lighttube.presentation.model.ReplyModel;
 
-import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.*;
+import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_EDIT_REPLY;
 
 public class EditReplyDelegate implements AdapterDelegate<ReplyListModel> {
 
@@ -34,11 +33,11 @@ public class EditReplyDelegate implements AdapterDelegate<ReplyListModel> {
     @Override
     public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof EditCommentViewHolder) {
-            Pair<Integer, Integer> replyIndex = new Pair<>(-1, position);
-            ReplyModel replyModel = items.getReplyModel(position);
+            UpdateReplyModelHolder replyModelHolder = (UpdateReplyModelHolder) items.getReplyModel(position);
+            Pair<Integer, Integer> index = replyModelHolder.getPosition();
 
-            ((EditCommentViewHolder) holder).bindCommentEditorHolder(replyIndex, replyModel.getTextDisplay(),
-                    replyModel.getCommentId());
+            ((EditCommentViewHolder) holder).bindCommentEditorHolder(index, replyModelHolder.getTextDisplay(),
+                    replyModelHolder.getCommentId());
         }
     }
 

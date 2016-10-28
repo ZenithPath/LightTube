@@ -123,7 +123,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onDeletedReply(int position) {
+    public void onDeletedComment(int position) {
         replies.remove(position);
         repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
@@ -140,6 +140,14 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
         replies.remove(position);
         replies.addReplyModel(position, replyModel);
         repliesAdapter.notifyItemChanged(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+    }
+
+    @Override
+    public void onUpdatedPrimaryComment(ThreadCommentModel threadCommentModel) {
+        TemporaryPrimaryHolder primaryHolder = new TemporaryPrimaryHolder(threadCommentModel);
+        replies.remove(RepliesDelegatesManager.HEADER_COMMENT_POS);
+        replies.addReplyModel(RepliesDelegatesManager.HEADER_COMMENT_POS, primaryHolder);
+        repliesAdapter.notifyItemChanged(RepliesDelegatesManager.HEADER_COMMENT_POS);
     }
 
     private void insertPostedReply(ReplyModel replyModel) {
@@ -172,23 +180,33 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex) {
+        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
+
         UpdateReplyModelHolder updateReplyModelHolder = new UpdateReplyModelHolder();
-        updateReplyModelHolder.setPosition(commentIndex.second);
+        updateReplyModelHolder.setPosition(commentIndex);
         updateReplyModelHolder.setCommentId(commentId);
 
-        replies.remove(commentIndex.second);
-        replies.addReplyModel(commentIndex.second, updateReplyModelHolder);
-        repliesAdapter.notifyItemChanged(commentIndex.second + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        replies.remove(index);
+        replies.addReplyModel(index, updateReplyModelHolder);
+        if (commentIndex.first == -1) {
+            repliesAdapter.notifyItemChanged(index + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        } else {
+            repliesAdapter.notifyItemChanged(index);
+        }
     }
 
     @Override
     public void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId) {
-        repliesPresenter.updateReply(commentId, commentText, commentIndex.second, userIdentifier);
+        if (commentIndex.first == -1) {
+            repliesPresenter.updateReply(commentId, commentText, commentIndex.second, userIdentifier);
+        } else {
+            repliesPresenter.updatePrimaryComment(commentId, commentText);
+        }
     }
 
     @Override
     public void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        repliesPresenter.deleteReply(commentId, commentIndex.second);
+        repliesPresenter.deleteComment(commentId, commentIndex.second);
     }
 
     @Override

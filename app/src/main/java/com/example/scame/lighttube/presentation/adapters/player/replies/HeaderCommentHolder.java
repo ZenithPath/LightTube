@@ -2,6 +2,7 @@ package com.example.scame.lighttube.presentation.adapters.player.replies;
 
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class HeaderCommentHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindHeaderCommentHolder(ThreadCommentModel model) {
-        //handlePopup(model);
+        handlePopup(model);
         menuOptions.setVisibility(View.INVISIBLE);
 
         Picasso.with(profileImage.getContext()).load(model.getProfileImageUrl())
@@ -50,11 +51,11 @@ public class HeaderCommentHolder extends RecyclerView.ViewHolder {
     }
 
     // TODO: implement correct primary comment popup handling
-//    private void handlePopup(ThreadCommentModel model) {
-//        menuOptions.setOnClickListener(v -> {
-//            int position = RepliesDelegatesManager.HEADER_COMMENT_POS;
-//            Pair<Integer, Integer> commentIndex = new Pair<>(position, -1);
-//            popupHandler.showPopup(menuOptions, model.getAuthorChannelId(), model.getThreadId(), commentIndex);
-//        });
-//    }
+    private void handlePopup(ThreadCommentModel model) {
+        menuOptions.setOnClickListener(v -> {
+            int position = RepliesDelegatesManager.HEADER_COMMENT_POS;
+            Pair<Integer, Integer> commentIndex = new Pair<>(position, -1);
+            popupHandler.showPopup(menuOptions, model.getAuthorChannelId(), model.getThreadId(), commentIndex);
+        });
+    }
 }

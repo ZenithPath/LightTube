@@ -8,8 +8,10 @@ import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implements IRepliesPresenter<T> {
 
@@ -20,6 +22,8 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
     private MarkAsSpamUseCase markAsSpamUseCase;
 
     private UpdateReplyUseCase updateReplyUseCase;
+
+    private UpdateThreadUseCase updatePrimaryUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
@@ -34,8 +38,10 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
                                DeleteCommentUseCase deleteCommentUseCase,
                                MarkAsSpamUseCase markAsSpamUseCase,
                                UpdateReplyUseCase updateReplyUseCase,
+                               UpdateThreadUseCase updatePrimaryUseCase,
                                SubscriptionsHandler subscriptionsHandler) {
         this.markAsSpamUseCase = markAsSpamUseCase;
+        this.updatePrimaryUseCase = updatePrimaryUseCase;
         this.updateReplyUseCase = updateReplyUseCase;
         this.retrieveRepliesUseCase = retrieveRepliesUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
@@ -49,7 +55,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
     }
 
     @Override
-    public void deleteReply(String replyId, int position) {
+    public void deleteComment(String replyId, int position) {
         index = position;
         deleteCommentUseCase.setCommentId(replyId);
         deleteCommentUseCase.execute(new DeletionSubscriber());
@@ -72,6 +78,13 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
     }
 
     @Override
+    public void updatePrimaryComment(String commentId, String updatedText) {
+        updatePrimaryUseCase.setCommentId(commentId);
+        updatePrimaryUseCase.setUpdatedText(updatedText);
+        updatePrimaryUseCase.execute(new UpdatePrimarySubscriber());
+    }
+
+    @Override
     public void setView(T view) {
         this.view = view;
     }
@@ -90,6 +103,24 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
     public void destroy() {
         view = null;
         subscriptionsHandler.unsubscribe();
+    }
+
+    private final class UpdatePrimarySubscriber extends DefaultSubscriber<ThreadCommentModel> {
+
+        @Override
+        public void onNext(ThreadCommentModel threadCommentModel) {
+            super.onNext(threadCommentModel);
+
+            if (view != null) {
+                view.onUpdatedPrimaryComment(threadCommentModel);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxUpdatePrimaryErr", e.getLocalizedMessage());
+        }
     }
 
     private final class RepliesSubscriber extends DefaultSubscriber<ReplyListModel> {
@@ -118,7 +149,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
             super.onCompleted();
 
             if (view != null) {
-                view.onDeletedReply(index);
+                view.onDeletedComment(index);
             }
         }
 

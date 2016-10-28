@@ -8,6 +8,7 @@ import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.RepliesPresenterImp;
@@ -20,7 +21,7 @@ import dagger.Provides;
 
 import static com.example.scame.lighttube.presentation.presenters.IRepliesPresenter.RepliesView;
 
-// contains classes that allow replies modifying
+// contains classes that allow replies (and primary comment) modifying
 
 @Module(includes = InsertReplyModule.class)
 public class RepliesModule {
@@ -31,9 +32,17 @@ public class RepliesModule {
                                                            DeleteCommentUseCase deleteCommentUseCase,
                                                            MarkAsSpamUseCase markAsSpamUseCase,
                                                            UpdateReplyUseCase updateReplyUseCase,
+                                                           UpdateThreadUseCase updatePrimaryUseCase,
                                                            @Named("replies")SubscriptionsHandler subscriptionsHandler) {
         return new RepliesPresenterImp<>(retrieveRepliesUseCase, deleteCommentUseCase,
-                markAsSpamUseCase, updateReplyUseCase, subscriptionsHandler);
+                markAsSpamUseCase, updateReplyUseCase, updatePrimaryUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    UpdateThreadUseCase updatePrimaryUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                             ICommentsDataManager dataManager) {
+        return new UpdateThreadUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides
@@ -70,8 +79,9 @@ public class RepliesModule {
     SubscriptionsHandler provideRepliesSubscriptionsHandler(RetrieveRepliesUseCase retrieveRepliesUseCase,
                                                             DeleteCommentUseCase deleteCommentUseCase,
                                                             MarkAsSpamUseCase markAsSpamUseCase,
-                                                            UpdateReplyUseCase updateReplyUseCase) {
+                                                            UpdateReplyUseCase updateReplyUseCase,
+                                                            UpdateThreadUseCase updatePrimaryUseCase) {
         return new SubscriptionsHandler(retrieveRepliesUseCase, deleteCommentUseCase, markAsSpamUseCase,
-                updateReplyUseCase);
+                updateReplyUseCase, updatePrimaryUseCase);
     }
 }
