@@ -10,22 +10,24 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 
-public class RepliesInputDelegate implements AdapterDelegate<ReplyListModel> {
+import java.util.List;
+
+public class RepliesInputDelegate implements AdapterDelegate<List<?>> {
 
     private RepliesFragment.RepliesListener replyInputListener;
+
+    private boolean asReply;
+
+    private String authorName;
 
     public RepliesInputDelegate(RepliesFragment.RepliesListener replyInputListener) {
         this.replyInputListener = replyInputListener;
     }
 
-    private boolean asReply;
-    private int replyPosition;
-
-    public void setModeFields(boolean asReply, int position) {
+    public void setModeFields(boolean asReply, String authorName) {
         this.asReply = asReply;
-        this.replyPosition = position;
+        this.authorName = authorName;
     }
 
     @NonNull
@@ -36,22 +38,11 @@ public class RepliesInputDelegate implements AdapterDelegate<ReplyListModel> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof ReplyInputViewHolder && asReply) {
             ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder) holder;
-            replyInputViewHolder.giveFocus(getAuthorName(position, items));
-            setModeFields(false, -1);
-        }
-    }
-
-    private String getAuthorName(int position, ReplyListModel items) {
-        if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
-            TemporaryPrimaryHolder holder = (TemporaryPrimaryHolder) items
-                    .getReplyModel(RepliesDelegatesManager.HEADER_COMMENT_POS);
-
-            return holder.getThreadCommentModel().getAuthorName();
-        } else {
-            return items.getReplyModel(position).getAuthorName();
+            replyInputViewHolder.giveFocus(authorName);
+            setModeFields(false, null);
         }
     }
 

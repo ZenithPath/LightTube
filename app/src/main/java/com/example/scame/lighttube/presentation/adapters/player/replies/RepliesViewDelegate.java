@@ -10,11 +10,12 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
+
+import java.util.List;
 
 import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_REPLY_COMMENT;
 
-public class RepliesViewDelegate implements AdapterDelegate<ReplyListModel> {
+public class RepliesViewDelegate implements AdapterDelegate<List<?>> {
 
     private PopupHandler popupHandler;
 
@@ -30,7 +31,7 @@ public class RepliesViewDelegate implements AdapterDelegate<ReplyListModel> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof RepliesViewHolder) {
             ((RepliesViewHolder) holder).bindRepliesView(position, items);
         }

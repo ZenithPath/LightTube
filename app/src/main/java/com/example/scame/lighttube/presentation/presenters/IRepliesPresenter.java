@@ -1,15 +1,16 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+
+import java.util.List;
 
 public interface IRepliesPresenter<T> extends Presenter<T> {
 
     interface RepliesView {
 
-        void displayReplies(ReplyListModel replyListModel);
+        void displayReplies(List<ReplyModel> repliesList);
 
         void onDeletedComment(int position);
 

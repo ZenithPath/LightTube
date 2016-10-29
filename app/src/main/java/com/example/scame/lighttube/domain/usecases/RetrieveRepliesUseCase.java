@@ -4,11 +4,13 @@ package com.example.scame.lighttube.domain.usecases;
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
+import com.example.scame.lighttube.presentation.model.ReplyModel;
+
+import java.util.List;
 
 import rx.Observable;
 
-public class RetrieveRepliesUseCase extends UseCase<ReplyListModel> {
+public class RetrieveRepliesUseCase extends UseCase<List<ReplyModel>> {
 
     private ICommentsDataManager dataManager;
 
@@ -20,7 +22,7 @@ public class RetrieveRepliesUseCase extends UseCase<ReplyListModel> {
     }
 
     @Override
-    protected Observable<ReplyListModel> getUseCaseObservable() {
+    protected Observable<List<ReplyModel>> getUseCaseObservable() {
         return dataManager.getReplyList(parentId);
     }
 

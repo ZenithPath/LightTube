@@ -10,10 +10,11 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
-public class HeaderCommentDelegate implements AdapterDelegate<ReplyListModel> {
+import java.util.List;
+
+public class HeaderCommentDelegate implements AdapterDelegate<List<?>> {
 
     private PopupHandler popupHandler;
 
@@ -29,10 +30,10 @@ public class HeaderCommentDelegate implements AdapterDelegate<ReplyListModel> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         int relativePosition = position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE;
-        ThreadCommentModel threadCommentModel = ((TemporaryPrimaryHolder) items.getReplyModels()
-                .get(relativePosition)).getThreadCommentModel();
+
+        ThreadCommentModel threadCommentModel = (ThreadCommentModel) items.get(relativePosition);
         ((HeaderCommentHolder) holder).bindHeaderCommentHolder(threadCommentModel);
     }
 

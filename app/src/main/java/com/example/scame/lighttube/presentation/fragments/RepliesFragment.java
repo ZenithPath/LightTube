@@ -19,13 +19,14 @@ import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.replies.ReplyInputViewHolder;
-import com.example.scame.lighttube.presentation.adapters.player.replies.TemporaryPrimaryHolder;
-import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyModelHolder;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
+import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyObj;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -52,7 +53,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     private RepliesAdapter repliesAdapter;
 
-    private ReplyListModel replies;
+    private List<Object> replies;
 
     private ThreadCommentModel unparceledModel;
 
@@ -96,10 +97,9 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
      */
 
     @Override
-    public void displayReplies(ReplyListModel replyListModel) {
-        replies = replyListModel;
-        TemporaryPrimaryHolder temporaryPrimaryHolder = new TemporaryPrimaryHolder(unparceledModel);
-        replies.addReplyModel(0, temporaryPrimaryHolder);
+    public void displayReplies(List<ReplyModel> repliesList) {
+        this.replies = new ArrayList<>(repliesList);
+        replies.add(0, unparceledModel);
 
         repliesDelegatesManager = new RepliesDelegatesManager(
                 replyText -> replyInputPresenter.postReply(unparceledModel.getThreadId(), replyText),
@@ -148,20 +148,20 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     @Override
     public void onUpdatedReply(int position, ReplyModel replyModel) {
         replies.remove(position);
-        replies.addReplyModel(position, replyModel);
+        replies.add(position, replyModel);
         repliesAdapter.notifyItemChanged(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
     @Override
     public void onUpdatedPrimaryComment(ThreadCommentModel threadCommentModel) {
-        TemporaryPrimaryHolder primaryHolder = new TemporaryPrimaryHolder(threadCommentModel);
+        this.unparceledModel = threadCommentModel;
         replies.remove(RepliesDelegatesManager.HEADER_COMMENT_POS);
-        replies.addReplyModel(RepliesDelegatesManager.HEADER_COMMENT_POS, primaryHolder);
+        replies.add(RepliesDelegatesManager.HEADER_COMMENT_POS, threadCommentModel);
         repliesAdapter.notifyItemChanged(RepliesDelegatesManager.HEADER_COMMENT_POS);
     }
 
     private void insertPostedReply(ReplyModel replyModel) {
-        replies.addReplyModel(INSERT_REPLY_POS, replyModel);
+        replies.add(INSERT_REPLY_POS, replyModel);
         repliesAdapter.notifyItemInserted(INSERT_REPLY_POS + 1); // take into account an input field
     }
 
@@ -176,42 +176,46 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
-
         if (repliesAdapter.getItemViewType(REPLY_INPUT_POS) == VIEW_TYPE_REPLY_INPUT) {
             if (repliesRv.findViewHolderForAdapterPosition(REPLY_INPUT_POS) == null) {
-                repliesDelegatesManager.setModeFields(true, index);
+                repliesDelegatesManager.setAuthorName(true, getAuthorName(commentIndex));
                 repliesRv.scrollToPosition(REPLY_INPUT_POS); // will be bound soon
             } else {
                 ReplyInputViewHolder replyInputViewHolder = (ReplyInputViewHolder)
                         repliesRv.findViewHolderForAdapterPosition(REPLY_INPUT_POS);
-                replyInputViewHolder.giveFocus(getAuthorName());
+                replyInputViewHolder.giveFocus(getAuthorName(commentIndex));
             }
         }
     }
 
     // shouldn't be here
-    private String getAuthorName() {
-        TemporaryPrimaryHolder temporaryPrimaryHolder = (TemporaryPrimaryHolder) replies
-                .getReplyModel(RepliesDelegatesManager.HEADER_COMMENT_POS);
-        return temporaryPrimaryHolder.getThreadCommentModel().getAuthorName();
+    private String getAuthorName(Pair<Integer, Integer> index) {
+        if (index.first == -1) {
+            return ((ReplyModel) replies.get(index.second)).getAuthorName();
+        } else {
+            return ((ThreadCommentModel) replies.get(RepliesDelegatesManager.HEADER_COMMENT_POS)).getAuthorName();
+        }
     }
 
     @Override
     public void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex) {
         int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
 
-        UpdateReplyModelHolder updateReplyModelHolder = new UpdateReplyModelHolder();
-        updateReplyModelHolder.setPosition(commentIndex);
-        updateReplyModelHolder.setCommentId(commentId);
+        UpdateReplyObj updateReplyObj = new UpdateReplyObj(commentIndex, commentId, extractText(commentIndex));
 
         replies.remove(index);
-        replies.addReplyModel(index, updateReplyModelHolder);
+        replies.add(index, updateReplyObj);
         if (commentIndex.first == -1) {
             repliesAdapter.notifyItemChanged(index + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
         } else {
             repliesAdapter.notifyItemChanged(index);
         }
+    }
+
+    // refactor
+    private String extractText(Pair<Integer, Integer> commentIndex) {
+        return commentIndex.first == -1 ? ((ReplyModel) replies.get(commentIndex.second)).getTextDisplay()
+                                        : ((ThreadCommentModel) replies.get(commentIndex.first)).getTextDisplay();
     }
 
     @Override

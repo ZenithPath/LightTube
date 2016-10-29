@@ -9,9 +9,10 @@ import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,8 +39,8 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void bindRepliesView(int position, ReplyListModel replies) {
-        ReplyModel replyModel = replies.getReplyModel(position);
+    public void bindRepliesView(int position, List<?> replies) {
+        ReplyModel replyModel = (ReplyModel) replies.get(position);
 
         handleReplyPopup(replyModel);
 

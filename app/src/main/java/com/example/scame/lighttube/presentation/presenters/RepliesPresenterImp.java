@@ -9,9 +9,10 @@ import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+
+import java.util.List;
 
 public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implements IRepliesPresenter<T> {
 
@@ -123,14 +124,14 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         }
     }
 
-    private final class RepliesSubscriber extends DefaultSubscriber<ReplyListModel> {
+    private final class RepliesSubscriber extends DefaultSubscriber<List<ReplyModel>> {
 
         @Override
-        public void onNext(ReplyListModel replyListModel) {
-            super.onNext(replyListModel);
+        public void onNext(List<ReplyModel> repliesList) {
+            super.onNext(repliesList);
 
             if (view != null) {
-                view.displayReplies(replyListModel);
+                view.displayReplies(repliesList);
             }
         }
 

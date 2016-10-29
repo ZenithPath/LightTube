@@ -11,11 +11,12 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
+
+import java.util.List;
 
 import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_EDIT_REPLY;
 
-public class EditReplyDelegate implements AdapterDelegate<ReplyListModel> {
+public class EditReplyDelegate implements AdapterDelegate<List<?>> {
 
     private CommentActionListener commentActionListener;
 
@@ -31,15 +32,15 @@ public class EditReplyDelegate implements AdapterDelegate<ReplyListModel> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReplyListModel items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof EditCommentViewHolder) {
             // position -1 means that we are editing a primary comment
             int relativePosition = position == -1 ? RepliesDelegatesManager.HEADER_COMMENT_POS : position;
 
-            UpdateReplyModelHolder replyModelHolder = (UpdateReplyModelHolder) items.getReplyModel(relativePosition);
+            UpdateReplyObj replyModelHolder = (UpdateReplyObj) items.get(relativePosition);
             Pair<Integer, Integer> index = replyModelHolder.getPosition();
 
-            ((EditCommentViewHolder) holder).bindCommentEditorHolder(index, replyModelHolder.getTextDisplay(),
+            ((EditCommentViewHolder) holder).bindCommentEditorHolder(index, replyModelHolder.getTextToUpdate(),
                     replyModelHolder.getCommentId());
         }
     }

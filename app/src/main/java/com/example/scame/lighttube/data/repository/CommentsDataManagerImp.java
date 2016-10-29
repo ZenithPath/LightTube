@@ -4,17 +4,18 @@ package com.example.scame.lighttube.data.repository;
 import com.example.scame.lighttube.PrivateValues;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
-import com.example.scame.lighttube.data.mappers.ReplyResponseMapper;
 import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
+import com.example.scame.lighttube.data.mappers.ReplyResponseMapper;
 import com.example.scame.lighttube.data.mappers.ReplyUpdateBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.presentation.model.CommentListModel;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -72,7 +73,7 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     }
 
     @Override
-    public Observable<ReplyListModel> getReplyList(String parentId) {
+    public Observable<List<ReplyModel>> getReplyList(String parentId) {
         return commentsApi.getReplies(SNIPPET_PART, MAX_RES, TEXT_FORMAT, null, parentId, PrivateValues.API_KEY)
                 .map(replyListMapper::convert);
     }

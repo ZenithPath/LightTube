@@ -4,13 +4,15 @@ package com.example.scame.lighttube.data.mappers;
 import com.example.scame.lighttube.data.entities.replies.ReplyEntity;
 import com.example.scame.lighttube.data.entities.replies.ReplyItem;
 import com.example.scame.lighttube.data.entities.replies.ReplySnippet;
-import com.example.scame.lighttube.presentation.model.ReplyListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReplyListMapper {
 
-    public ReplyListModel convert(ReplyEntity replyEntity) {
-        ReplyListModel replyListModel = new ReplyListModel();
+    public List<ReplyModel> convert(ReplyEntity replyEntity) {
+        List<ReplyModel> repliesList = new ArrayList<>(replyEntity.getItems().size());
 
         for (ReplyItem replyItem : replyEntity.getItems()) {
             ReplyModel replyModel = new ReplyModel();
@@ -24,9 +26,9 @@ public class ReplyListMapper {
             replyModel.setCommentId(replyItem.getId());
             replyModel.setAuthorChannelId(replySnippet.getAuthorChannelId().getValue());
 
-            replyListModel.addReplyModel(replyModel);
+            repliesList.add(replyModel);
         }
 
-        return replyListModel;
+        return repliesList;
     }
 }
