@@ -24,6 +24,7 @@ import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
+import com.example.scame.lighttube.utility.CommentsUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,33 +124,39 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onDeletedComment(int position) {
-        if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
+    public void onDeletedComment(String deletedCommentId) {
+        int index = CommentsUtility.getFilteredIndex(deletedCommentId, replies);
+
+        if (index == RepliesDelegatesManager.HEADER_COMMENT_POS) {
             replies.clear();
             repliesAdapter.notifyDataSetChanged();
         } else {
-            replies.remove(position);
-            repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+            replies.remove(index);
+            repliesAdapter.notifyItemRemoved(index + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
         }
     }
 
     @Override
-    public void onMarkedAsSpam(int position) {
-        if (position == RepliesDelegatesManager.HEADER_COMMENT_POS) {
+    public void onMarkedAsSpam(String markedCommentId) {
+        int index = CommentsUtility.getFilteredIndex(markedCommentId, replies);
+
+        if (index == RepliesDelegatesManager.HEADER_COMMENT_POS) {
             replies.clear();
             repliesAdapter.notifyDataSetChanged();
         } else {
-            replies.remove(position);
-            repliesAdapter.notifyItemRemoved(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+            replies.remove(index);
+            repliesAdapter.notifyItemRemoved(index + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
         }
     }
 
     // TODO: check if user channel id is OK
     @Override
-    public void onUpdatedReply(int position, ReplyModel replyModel) {
-        replies.remove(position);
-        replies.add(position, replyModel);
-        repliesAdapter.notifyItemChanged(position + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+    public void onUpdatedReply(ReplyModel replyModel) {
+        int index = CommentsUtility.getFilteredIndex(replyModel.getCommentId(), replies);
+
+        replies.remove(index);
+        replies.add(index, replyModel);
+        repliesAdapter.notifyItemChanged(index + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
     @Override
@@ -221,7 +228,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     @Override
     public void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId) {
         if (commentIndex.first == -1) {
-            repliesPresenter.updateReply(commentId, commentText, commentIndex.second, userIdentifier);
+            repliesPresenter.updateReply(commentId, commentText, userIdentifier);
         } else {
             repliesPresenter.updatePrimaryComment(commentId, commentText);
         }
@@ -229,14 +236,12 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
-        repliesPresenter.deleteComment(commentId, index);
+        repliesPresenter.deleteComment(commentId);
     }
 
     @Override
     public void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
-        repliesPresenter.markAsSpam(commentId, index);
+        repliesPresenter.markAsSpam(commentId);
     }
 
     @Override

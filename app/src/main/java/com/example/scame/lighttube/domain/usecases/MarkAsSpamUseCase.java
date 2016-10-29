@@ -7,7 +7,7 @@ import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
 import rx.Observable;
 
-public class MarkAsSpamUseCase extends UseCase<Void> {
+public class MarkAsSpamUseCase extends UseCase<String> {
 
     private ICommentsDataManager dataManager;
 
@@ -19,8 +19,8 @@ public class MarkAsSpamUseCase extends UseCase<Void> {
     }
 
     @Override
-    protected Observable<Void> getUseCaseObservable() {
-        return dataManager.markAsSpam(commentId);
+    protected Observable<String> getUseCaseObservable() {
+        return dataManager.markAsSpam(commentId).map(aVoid -> commentId);
     }
 
     public void setCommentId(String commentId) {

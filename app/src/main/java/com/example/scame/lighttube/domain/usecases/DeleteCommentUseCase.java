@@ -7,7 +7,7 @@ import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
 import rx.Observable;
 
-public class DeleteCommentUseCase extends UseCase<Void> {
+public class DeleteCommentUseCase extends UseCase<String> {
 
     private ICommentsDataManager dataManager;
 
@@ -19,8 +19,8 @@ public class DeleteCommentUseCase extends UseCase<Void> {
     }
 
     @Override
-    protected Observable<Void> getUseCaseObservable() {
-        return dataManager.deleteComment(commentId);
+    protected Observable<String> getUseCaseObservable() {
+        return dataManager.deleteComment(commentId).map(aVoid -> commentId);
     }
 
     public void setCommentId(String commentId) {

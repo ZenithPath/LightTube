@@ -30,9 +30,6 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     private String userIdentifier;
 
-    // TODO: indexes should be assigned to each type of use cases, otherwise can be overwritten
-    private int index;
-
     private T view;
 
     public RepliesPresenterImp(RetrieveRepliesUseCase retrieveRepliesUseCase,
@@ -56,22 +53,19 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
     }
 
     @Override
-    public void deleteComment(String replyId, int position) {
-        index = position;
+    public void deleteComment(String replyId) {
         deleteCommentUseCase.setCommentId(replyId);
         deleteCommentUseCase.execute(new DeletionSubscriber());
     }
 
     @Override
-    public void markAsSpam(String replyId, int position) {
-        index = position;
+    public void markAsSpam(String replyId) {
         markAsSpamUseCase.setCommentId(replyId);
         markAsSpamUseCase.execute(new SpamSubscriber());
     }
 
     @Override
-    public void updateReply(String replyId, String updatedText, int position, String userIdentifier) {
-        index = position;
+    public void updateReply(String replyId, String updatedText, String userIdentifier) {
         this.userIdentifier = userIdentifier;
         updateReplyUseCase.setReplyId(replyId);
         updateReplyUseCase.setUpdatedText(updatedText);
@@ -143,14 +137,14 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         }
     }
 
-    private final class DeletionSubscriber extends DefaultSubscriber<Void> {
+    private final class DeletionSubscriber extends DefaultSubscriber<String> {
 
         @Override
-        public void onCompleted() {
-            super.onCompleted();
+        public void onNext(String deletedCommentId) {
+            super.onNext(deletedCommentId);
 
             if (view != null) {
-                view.onDeletedComment(index);
+                view.onDeletedComment(deletedCommentId);
             }
         }
 
@@ -161,14 +155,14 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         }
     }
 
-    private final class SpamSubscriber extends DefaultSubscriber<Void> {
+    private final class SpamSubscriber extends DefaultSubscriber<String> {
 
         @Override
-        public void onCompleted() {
-            super.onCompleted();
+        public void onNext(String markedCommentId) {
+            super.onNext(markedCommentId);
 
             if (view != null) {
-                view.onMarkedAsSpam(index);
+                view.onMarkedAsSpam(markedCommentId);
             }
         }
 
@@ -187,7 +181,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
             if (view != null) {
                 replyModel.setAuthorChannelId(userIdentifier); // again, thanks to Youtube Data API, reply update response
-                view.onUpdatedReply(index, replyModel);        // doesn't contain authorChannelId, so except setting it by hand
+                view.onUpdatedReply(replyModel);               // doesn't contain authorChannelId, so except setting it by hand
             }                                                  // we can get this info only by making an additional request
         }
 

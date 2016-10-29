@@ -12,22 +12,22 @@ public interface IRepliesPresenter<T> extends Presenter<T> {
 
         void displayReplies(List<ReplyModel> repliesList);
 
-        void onDeletedComment(int position);
+        void onDeletedComment(String deletedCommentId);
 
-        void onMarkedAsSpam(int position);
+        void onMarkedAsSpam(String markedAsSpamId);
 
-        void onUpdatedReply(int position, ReplyModel replyModel);
+        void onUpdatedReply(ReplyModel replyModel);
 
         void onUpdatedPrimaryComment(ThreadCommentModel threadCommentModel);
     }
 
     void getRepliesList(String parentId);
 
-    void deleteComment(String replyId, int position);
+    void deleteComment(String replyId);
 
-    void markAsSpam(String replyId, int position);
+    void markAsSpam(String replyId);
 
-    void updateReply(String replyId, String updatedText, int position, String userIdentifier);
+    void updateReply(String replyId, String updatedText, String userIdentifier);
 
     void updatePrimaryComment(String commentId, String updatedText);
 }
