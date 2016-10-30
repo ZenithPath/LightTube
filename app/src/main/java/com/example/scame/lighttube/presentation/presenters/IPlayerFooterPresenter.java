@@ -1,38 +1,37 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import android.util.Pair;
-
-import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+
+import java.util.List;
 
 public interface IPlayerFooterPresenter<T> extends Presenter<T> {
 
     interface FooterView {
 
-        void displayComments(CommentListModel commentListModel, String userIdentifier);
+        void displayComments(List<?> models, String userIdentifier);
 
-        void onCommentDeleted(Pair<Integer, Integer> commentIndex);
+        void onCommentDeleted(String deletedCommentId);
 
-        void onMarkedAsSpam(Pair<Integer, Integer> commentIndex);
+        void onMarkedAsSpam(String markedCommentId);
 
-        void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel);
+        void onCommentUpdated(ThreadCommentModel threadCommentModel);
 
-        void onReplyUpdated(Pair<Integer, Integer> replyIndex, ReplyModel replyModel);
+        void onReplyUpdated(ReplyModel replyModel);
 
         void displayPostedComment(ThreadCommentModel threadComment);
     }
 
     void getCommentList(String videoId);
 
-    void deleteThreadComment(String commentId, Pair<Integer, Integer> commentIndex);
+    void deleteThreadComment(String commentId);
 
-    void markAsSpam(String commentId, Pair<Integer, Integer> commentIndex);
+    void markAsSpam(String commentId);
 
-    void updateComment(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
+    void updateComment(String commentId, String updatedText);
 
     void postComment(String commentText, String videoId);
 
-    void updateReply(String commentId, Pair<Integer, Integer> commentIndex, String updatedText);
+    void updateReply(String commentId, String updatedText);
 }

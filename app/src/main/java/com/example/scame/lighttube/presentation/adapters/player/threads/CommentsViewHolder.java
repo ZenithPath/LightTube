@@ -4,7 +4,6 @@ package com.example.scame.lighttube.presentation.adapters.player.threads;
 import android.content.Context;
 import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -84,10 +83,11 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setAllRepliesClickListener(PlayerFooterFragment.PlayerFooterListener footerListener,
-                                            List<ThreadCommentModel> comments) {
+                                            List<?> comments) {
         allRepliesTv.setOnClickListener(v -> {
                     int position = getAdapterPosition() - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE;
-                    footerListener.onRepliesClick(comments.get(position), identifier);
+                    ThreadCommentModel threadCommentModel = (ThreadCommentModel) comments.get(position);
+                    footerListener.onRepliesClick(threadCommentModel, identifier);
                 });
     }
 
@@ -113,7 +113,7 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         secondReplyMenuOptions = ButterKnife.findById(secondReplyRoot, R.id.more_option_ib);
     }
 
-    void bindThreadCommentView(int position, List<ThreadCommentModel> comments) {
+    void bindThreadCommentView(int position, List<?> comments) {
         bindThreadUtil(position, comments);
 
         firstReplyRoot.setVisibility(View.GONE);
@@ -121,7 +121,7 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindOneReplyView(int position, List<ThreadCommentModel> comments) {
+    void bindOneReplyView(int position, List<?> comments) {
         bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, SECOND_REPLY_POS);
 
@@ -129,7 +129,7 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindTwoRepliesView(int position, List<ThreadCommentModel> comments) {
+    void bindTwoRepliesView(int position, List<?> comments) {
         bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, FIRST_REPLY_POS);
         bindSecondReplyUtil(position, comments, SECOND_REPLY_POS);
@@ -137,18 +137,18 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         allRepliesTv.setVisibility(View.GONE);
     }
 
-    void bindAllRepliesView(int position, List<ThreadCommentModel> comments) {
+    void bindAllRepliesView(int position, List<?> comments) {
         setAllRepliesClickListener(footerListener, comments); // not the best place
         bindThreadUtil(position, comments);
         bindFirstReplyUtil(position, comments, FIRST_REPLY_POS);
         bindSecondReplyUtil(position, comments, SECOND_REPLY_POS);
     }
 
-    private void bindThreadUtil(int position, List<ThreadCommentModel> comments) {
-        ThreadCommentModel commentModel = comments.get(position);
+    private void bindThreadUtil(int position, List<?> comments) {
+        ThreadCommentModel commentModel = (ThreadCommentModel) comments.get(position);
 
         handleThreadCommentPopup(commentModel);
-        bindRepliesSection(position, commentModel);
+        bindRepliesSection(commentModel);
 
         Picasso.with(threadProfileIv.getContext())
                 .load(commentModel.getProfileImageUrl())
@@ -161,23 +161,21 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
         threadCommentAuthor.setText(commentModel.getAuthorName());
     }
 
-    private void bindRepliesSection(int position, ThreadCommentModel commentModel) {
+    private void bindRepliesSection(ThreadCommentModel commentModel) {
         repliesIb.setImageDrawable(repliesIb.getContext().getResources()
                 .getDrawable(R.drawable.ic_question_answer_black_24dp));
 
-        repliesIb.setOnClickListener(v -> commentActionListener.onActionReplyClick(commentModel.getThreadId(),
-                new Pair<>(position, -1)));
+        repliesIb.setOnClickListener(v -> commentActionListener.onActionReplyClick(commentModel.getThreadId()));
 
         if (commentModel.getReplyCount() != 0) {
             repliesCount.setText(String.valueOf(commentModel.getReplyCount()));
         }
     }
 
-    private void bindFirstReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
-        ReplyModel replyModel = comments.get(position)
-                .getReplies().get(index);
+    private void bindFirstReplyUtil(int position, List<?> comments, int index) {
+        ReplyModel replyModel = ((ThreadCommentModel) comments.get(position)).getReplies().get(index);
 
-        handleReplyPopup(firstReplyMenuOptions, replyModel, index);
+        handleReplyPopup(firstReplyMenuOptions, replyModel);
 
         Picasso.with(firstReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -191,11 +189,11 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    private void bindSecondReplyUtil(int position, List<ThreadCommentModel> comments, int index) {
-        ReplyModel replyModel = comments.get(position)
+    private void bindSecondReplyUtil(int position, List<?> comments, int index) {
+        ReplyModel replyModel = ((ThreadCommentModel) comments.get(position))
                 .getReplies().get(index);
 
-        handleReplyPopup(secondReplyMenuOptions, replyModel, index);
+        handleReplyPopup(secondReplyMenuOptions, replyModel);
 
         Picasso.with(secondReplyProfileIv.getContext())
                 .load(replyModel.getProfileImageUrl())
@@ -210,17 +208,13 @@ public class CommentsViewHolder extends RecyclerView.ViewHolder {
 
     private void handleThreadCommentPopup(ThreadCommentModel commentModel) {
         threadMenuOptions.setOnClickListener(v -> {
-            int datasetIndex = getAdapterPosition() - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE;
-            Pair<Integer, Integer> commentIndex = new Pair<>(datasetIndex, -1);
-            popupHandler.showPopup(v, commentModel.getAuthorChannelId(), commentModel.getThreadId(), commentIndex);
+            popupHandler.showPopup(v, commentModel.getAuthorChannelId(), commentModel.getThreadId());
         });
     }
 
-    private void handleReplyPopup(ImageButton menuOptions, ReplyModel replyModel, int replyPosition) {
+    private void handleReplyPopup(ImageButton menuOptions, ReplyModel replyModel) {
         menuOptions.setOnClickListener(v -> {
-            int datasetIndex = getAdapterPosition() - CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE;
-            Pair<Integer, Integer> commentIndex = new Pair<>(datasetIndex, replyPosition);
-            popupHandler.showPopup(v, replyModel.getAuthorChannelId(), replyModel.getCommentId(), commentIndex);
+            popupHandler.showPopup(v, replyModel.getAuthorChannelId(), replyModel.getCommentId());
         });
     }
 

@@ -3,7 +3,6 @@ package com.example.scame.lighttube.presentation.adapters.player.replies;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +35,11 @@ public class EditReplyDelegate implements AdapterDelegate<List<?>> {
         if (holder instanceof EditCommentViewHolder) {
             // position -1 means that we are editing a primary comment
             int relativePosition = position == -1 ? RepliesDelegatesManager.HEADER_COMMENT_POS : position;
-
             UpdateReplyObj replyModelHolder = (UpdateReplyObj) items.get(relativePosition);
-            Pair<Integer, Integer> index = replyModelHolder.getPosition();
 
-            ((EditCommentViewHolder) holder).bindCommentEditorHolder(index, replyModelHolder.getTextToUpdate(),
-                    replyModelHolder.getCommentId());
+            ((EditCommentViewHolder) holder).bindCommentEditorHolder(
+                    replyModelHolder.getTextToUpdate(), replyModelHolder.getCommentId()
+            );
         }
     }
 

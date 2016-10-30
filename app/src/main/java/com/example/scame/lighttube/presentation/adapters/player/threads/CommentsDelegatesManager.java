@@ -15,7 +15,7 @@ import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommentsDelegatesManager implements AdapterDelegatesManager<List<ThreadCommentModel>> {
+public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>> {
 
     public static final int NUMBER_OF_VIEW_ABOVE = 2;
 
@@ -30,7 +30,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<Th
     private static final int HEADER_LAYOUT_POSITION = 0;
     private static final int COMMENT_INPUT_POSITION = 1;
 
-    private List<AdapterDelegate<List<ThreadCommentModel>>> delegates;
+    private List<AdapterDelegate<List<?>>> delegates;
 
     public CommentsDelegatesManager(CommentActionListener actionListener, Context context,
                                     String userIdentifier, String videoId,
@@ -48,33 +48,43 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<Th
     }
 
     @Override
-    public AdapterDelegatesManager<List<ThreadCommentModel>> addDelegate(@NonNull AdapterDelegate<List<ThreadCommentModel>> delegate) {
+    public AdapterDelegatesManager<List<?>> addDelegate(@NonNull AdapterDelegate<List<?>> delegate) {
         delegates.add(delegate);
         return this;
     }
 
     @Override
-    public int getItemViewType(@NonNull List<ThreadCommentModel> items, int position) {
+    public int getItemViewType(@NonNull List<?> items, int position) {
+        ThreadCommentModel commentModel = getThreadModelByPosition(items, position);
+
         if (position == HEADER_LAYOUT_POSITION) {
             return VIEW_TYPE_HEADER;
         } else if (position == COMMENT_INPUT_POSITION) {
             return VIEW_TYPE_COMMENT_INPUT;
-        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateCommentModelHolder) {
+        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateCommentObj) {
             return VIEW_TYPE_EDIT_COMMENT;
-        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE).getReplies().size() == 0) {
+        } else if (commentModel != null && commentModel.getReplies().size() == 0) {
             return VIEW_TYPE_THREAD_COMMENT;
-        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE).getReplies().size() == 1) {
+        } else if (commentModel != null && commentModel.getReplies().size() == 1) {
             return VIEW_TYPE_ONE_REPLY;
-        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE).getReplies().size() == 2) {
+        } else if (commentModel != null && commentModel.getReplies().size() == 2) {
             return VIEW_TYPE_TWO_REPLIES;
         } else {
             return VIEW_TYPE_ALL_REPLIES;
         }
     }
 
+    private ThreadCommentModel getThreadModelByPosition(List<?> items,int position) {
+        int relativePosition = position - NUMBER_OF_VIEW_ABOVE;
+        if (relativePosition >= 0 && items.get(relativePosition) instanceof ThreadCommentModel) {
+            return (ThreadCommentModel) items.get(relativePosition);
+        }
+        return null;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        for (AdapterDelegate<List<ThreadCommentModel>> delegate : delegates) {
+        for (AdapterDelegate<List<?>> delegate : delegates) {
             if (delegate.getViewType() == viewType) {
                 return delegate.onCreateViewHolder(parent);
             }
@@ -83,10 +93,10 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<Th
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<ThreadCommentModel> items, int position, @NonNull RecyclerView.ViewHolder viewHolder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder viewHolder) {
         int viewType = viewHolder.getItemViewType();
 
-        for (AdapterDelegate<List<ThreadCommentModel>> delegate : delegates) {
+        for (AdapterDelegate<List<?>> delegate : delegates) {
             if (delegate.getViewType() == viewType) {
                 delegate.onBindViewHolder(items, position - NUMBER_OF_VIEW_ABOVE, viewHolder);
                 break;
@@ -95,7 +105,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<Th
     }
 
     @Override
-    public int getItemCount(@NonNull List<ThreadCommentModel> items) {
+    public int getItemCount(@NonNull List<?> items) {
         return items.size() == 0 ? 0 : items.size() + NUMBER_OF_VIEW_ABOVE;
     }
 }

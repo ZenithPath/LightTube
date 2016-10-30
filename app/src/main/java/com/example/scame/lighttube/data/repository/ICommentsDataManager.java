@@ -1,7 +1,6 @@
 package com.example.scame.lighttube.data.repository;
 
 
-import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
@@ -11,7 +10,7 @@ import rx.Observable;
 
 public interface ICommentsDataManager {
 
-    Observable<CommentListModel> getCommentList(String videoId);
+    Observable<List<ThreadCommentModel>> getCommentList(String videoId);
 
     Observable<ThreadCommentModel> postThreadComment(String commentText, String videoId);
 
@@ -21,9 +20,9 @@ public interface ICommentsDataManager {
 
     Observable<ReplyModel> postReply(String replyText, String parentId);
 
-    Observable<Void> deleteComment(String commentId);
+    Observable<String> deleteComment(String commentId);
 
     Observable<ReplyModel> updateReply(String replyText, String replyId);
 
-    Observable<Void> markAsSpam(String commentId);
+    Observable<String> markAsSpam(String commentId);
 }

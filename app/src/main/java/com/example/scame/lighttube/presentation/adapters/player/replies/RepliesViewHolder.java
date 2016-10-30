@@ -2,7 +2,6 @@ package com.example.scame.lighttube.presentation.adapters.player.replies;
 
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -56,9 +55,7 @@ public class RepliesViewHolder extends RecyclerView.ViewHolder {
 
     private void handleReplyPopup(ReplyModel replyModel) {
         menuOptions.setOnClickListener(v -> {
-            int position = getAdapterPosition() - RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE;
-            Pair<Integer, Integer> commentIndex = new Pair<>(-1, position);
-            popupHandler.showPopup(menuOptions, replyModel.getAuthorChannelId(), replyModel.getCommentId(), commentIndex);
+            popupHandler.showPopup(menuOptions, replyModel.getAuthorChannelId(), replyModel.getCommentId());
         });
     }
 }

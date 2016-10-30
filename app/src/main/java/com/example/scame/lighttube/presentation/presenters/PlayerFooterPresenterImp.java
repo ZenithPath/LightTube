@@ -2,7 +2,6 @@ package com.example.scame.lighttube.presentation.presenters;
 
 
 import android.util.Log;
-import android.util.Pair;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
@@ -12,9 +11,10 @@ import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
-import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+
+import java.util.List;
 
 import static android.util.Log.i;
 
@@ -38,10 +38,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private T view;
 
-    private CommentListModel commentListModel;
-
-    // TODO: indexes should be assigned to each type of use cases, otherwise can be overwritten
-    private Pair<Integer, Integer> commentIndex;
+    // refactor
+    private List<ThreadCommentModel> models;
 
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                     RetrieveUserIdentifierUseCase identifierUseCase,
@@ -68,22 +66,19 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
-    public void deleteThreadComment(String commentId, Pair<Integer, Integer> commentIndex) {
-        this.commentIndex = commentIndex;
+    public void deleteThreadComment(String commentId) {
         deleteCommentUseCase.setCommentId(commentId);
         deleteCommentUseCase.execute(new DeletionSubscriber());
     }
 
     @Override
-    public void markAsSpam(String commentId, Pair<Integer, Integer> commentIndex) {
-        this.commentIndex = commentIndex;
+    public void markAsSpam(String commentId) {
         markAsSpamUseCase.setCommentId(commentId);
         markAsSpamUseCase.execute(new SpamSubscriber());
     }
 
     @Override
-    public void updateComment(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
-        this.commentIndex = commentIndex;
+    public void updateComment(String commentId, String updatedText) {
         updateThreadUseCase.setCommentId(commentId);
         updateThreadUseCase.setUpdatedText(updatedText);
         updateThreadUseCase.execute(new UpdateThreadSubscriber());
@@ -97,8 +92,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
-    public void updateReply(String commentId, Pair<Integer, Integer> commentIndex, String updatedText) {
-        this.commentIndex = commentIndex;
+    public void updateReply(String commentId, String updatedText) {
         updateReplyUseCase.setUpdatedText(updatedText);
         updateReplyUseCase.setReplyId(commentId);
         updateReplyUseCase.execute(new UpdateReplySubscriber());
@@ -137,7 +131,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
             super.onNext(replyModel);
 
             if (view != null) {
-                view.onReplyUpdated(commentIndex, replyModel);
+                view.onReplyUpdated(replyModel);
             }
         }
     }
@@ -160,7 +154,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
     }
 
-    private final class RetrieveCommentsSubscriber extends DefaultSubscriber<CommentListModel> {
+    private final class RetrieveCommentsSubscriber extends DefaultSubscriber<List<ThreadCommentModel>> {
 
         @Override
         public void onError(Throwable e) {
@@ -169,9 +163,9 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
 
         @Override
-        public void onNext(CommentListModel commentListModel) {
-            super.onNext(commentListModel);
-            PlayerFooterPresenterImp.this.commentListModel = commentListModel;
+        public void onNext(List<ThreadCommentModel> models) {
+            super.onNext(models);
+            PlayerFooterPresenterImp.this.models = models;
         }
 
         @Override
@@ -187,7 +181,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         public void onNext(String identifier) {
             super.onNext(identifier);
 
-            view.displayComments(commentListModel, identifier);
+            view.displayComments(models, identifier);
         }
 
 
@@ -198,14 +192,14 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
     }
 
-    private final class DeletionSubscriber extends DefaultSubscriber<Void> {
+    private final class DeletionSubscriber extends DefaultSubscriber<String> {
 
         @Override
-        public void onCompleted() {
-            super.onCompleted();
+        public void onNext(String deletedCommentId) {
+            super.onNext(deletedCommentId);
 
             if (view != null) {
-                view.onCommentDeleted(commentIndex);
+                view.onCommentDeleted(deletedCommentId);
             }
         }
 
@@ -217,14 +211,14 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
     }
 
-    private final class SpamSubscriber extends DefaultSubscriber<Void> {
+    private final class SpamSubscriber extends DefaultSubscriber<String> {
 
         @Override
-        public void onCompleted() {
-            super.onCompleted();
+        public void onNext(String markedCommentId) {
+            super.onNext(markedCommentId);
 
             if (view != null) {
-                view.onMarkedAsSpam(commentIndex);
+                view.onMarkedAsSpam(markedCommentId);
             }
         }
 
@@ -248,7 +242,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
             super.onNext(threadCommentModel);
 
             if (view != null) {
-                view.onCommentUpdated(commentIndex, threadCommentModel);
+                view.onCommentUpdated(threadCommentModel);
             }
         }
     }

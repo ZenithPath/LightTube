@@ -10,11 +10,10 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
-import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
 
-public class HeaderDelegate implements AdapterDelegate<List<ThreadCommentModel>> {
+public class HeaderDelegate implements AdapterDelegate<List<?>> {
 
     private Context context;
 
@@ -36,7 +35,7 @@ public class HeaderDelegate implements AdapterDelegate<List<ThreadCommentModel>>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<ThreadCommentModel> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
 
     }
 

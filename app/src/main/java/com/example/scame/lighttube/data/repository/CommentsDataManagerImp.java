@@ -11,7 +11,6 @@ import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.rest.CommentsApi;
-import com.example.scame.lighttube.presentation.model.CommentListModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
@@ -66,7 +65,7 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     }
 
     @Override
-    public Observable<CommentListModel> getCommentList(String videoId) {
+    public Observable<List<ThreadCommentModel>> getCommentList(String videoId) {
         return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, THREADS_ORDER,MAX_RES, null,
                 TEXT_FORMAT, videoId, PrivateValues.API_KEY)
                 .map(commentListMapper::convert);
@@ -91,8 +90,8 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     }
 
     @Override
-    public Observable<Void> deleteComment(String commentId) {
-        return commentsApi.deleteComment(commentId, PrivateValues.API_KEY);
+    public Observable<String> deleteComment(String commentId) {
+        return commentsApi.deleteComment(commentId, PrivateValues.API_KEY).map(aVoid -> commentId);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     }
 
     @Override
-    public Observable<Void> markAsSpam(String commentId) {
-        return commentsApi.markAsSpam(commentId, PrivateValues.API_KEY);
+    public Observable<String> markAsSpam(String commentId) {
+        return commentsApi.markAsSpam(commentId, PrivateValues.API_KEY).map(aVoid -> commentId);
     }
 }

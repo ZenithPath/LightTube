@@ -20,7 +20,7 @@ public class MarkAsSpamUseCase extends UseCase<String> {
 
     @Override
     protected Observable<String> getUseCaseObservable() {
-        return dataManager.markAsSpam(commentId).map(aVoid -> commentId);
+        return dataManager.markAsSpam(commentId);
     }
 
     public void setCommentId(String commentId) {

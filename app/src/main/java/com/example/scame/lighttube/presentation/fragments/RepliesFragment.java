@@ -24,7 +24,7 @@ import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
-import com.example.scame.lighttube.utility.CommentsUtility;
+import com.example.scame.lighttube.utility.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +125,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onDeletedComment(String deletedCommentId) {
-        int index = CommentsUtility.getFilteredIndex(deletedCommentId, replies);
+        int index = Utility.RepliesUtil.getFilteredIndex(deletedCommentId, replies);
 
         if (index == RepliesDelegatesManager.HEADER_COMMENT_POS) {
             replies.clear();
@@ -138,7 +138,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     @Override
     public void onMarkedAsSpam(String markedCommentId) {
-        int index = CommentsUtility.getFilteredIndex(markedCommentId, replies);
+        int index = Utility.RepliesUtil.getFilteredIndex(markedCommentId, replies);
 
         if (index == RepliesDelegatesManager.HEADER_COMMENT_POS) {
             replies.clear();
@@ -152,7 +152,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     // TODO: check if user channel id is OK
     @Override
     public void onUpdatedReply(ReplyModel replyModel) {
-        int index = CommentsUtility.getFilteredIndex(replyModel.getCommentId(), replies);
+        int index = Utility.RepliesUtil.getFilteredIndex(replyModel.getCommentId(), replies);
 
         replies.remove(index);
         replies.add(index, replyModel);
@@ -182,7 +182,9 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
      */
 
     @Override
-    public void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onActionReplyClick(String commentId) {
+        Pair<Integer, Integer> commentIndex = Utility.RepliesUtil.getReplyIndexById(commentId, replies);
+
         if (repliesAdapter.getItemViewType(REPLY_INPUT_POS) == VIEW_TYPE_REPLY_INPUT) {
             if (repliesRv.findViewHolderForAdapterPosition(REPLY_INPUT_POS) == null) {
                 repliesDelegatesManager.setAuthorName(true, getAuthorName(commentIndex));
@@ -205,14 +207,15 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        int index = commentIndex.first == -1 ? commentIndex.second : commentIndex.first;
+    public void onActionEditClick(String commentId) {
+        Pair<Integer, Integer> pairedIndex = Utility.RepliesUtil.getReplyIndexById(commentId, replies);
+        int index = Utility.RepliesUtil.getFilteredIndex(commentId, replies);
 
-        UpdateReplyObj updateReplyObj = new UpdateReplyObj(commentIndex, commentId, extractText(commentIndex));
+        UpdateReplyObj updateReplyObj = new UpdateReplyObj(pairedIndex, commentId, extractText(pairedIndex));
 
         replies.remove(index);
         replies.add(index, updateReplyObj);
-        if (commentIndex.first == -1) {
+        if (pairedIndex.first == -1) {
             repliesAdapter.notifyItemChanged(index + RepliesDelegatesManager.NUMBER_OF_VIEW_ABOVE);
         } else {
             repliesAdapter.notifyItemChanged(index);
@@ -226,7 +229,8 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId) {
+    public void onSendEditedClick(String commentText, String commentId) {
+        Pair<Integer, Integer> commentIndex = Utility.RepliesUtil.getReplyIndexById(commentId, replies);
         if (commentIndex.first == -1) {
             repliesPresenter.updateReply(commentId, commentText, userIdentifier);
         } else {
@@ -235,12 +239,12 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     }
 
     @Override
-    public void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onActionDeleteClick(String commentId) {
         repliesPresenter.deleteComment(commentId);
     }
 
     @Override
-    public void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onActionMarkAsSpamClick(String commentId) {
         repliesPresenter.markAsSpam(commentId);
     }
 

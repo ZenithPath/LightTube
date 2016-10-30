@@ -12,11 +12,10 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.adapters.player.replies.EditCommentViewHolder;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
-import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
 
-public class EditCommentDelegate implements AdapterDelegate<List<ThreadCommentModel>> {
+public class EditCommentDelegate implements AdapterDelegate<List<?>> {
 
     private CommentActionListener commentActionListener;
 
@@ -32,24 +31,24 @@ public class EditCommentDelegate implements AdapterDelegate<List<ThreadCommentMo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<ThreadCommentModel> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         EditCommentViewHolder editCommentHolder = (EditCommentViewHolder) holder;
 
-        UpdateCommentModelHolder updateCommentHolder = (UpdateCommentModelHolder) items.get(position);
+        UpdateCommentObj updateCommentHolder = (UpdateCommentObj) items.get(position);
         Pair<Integer, Integer> commentIndex = updateCommentHolder.getPairedPosition();
 
         String commentId;
         String commentText;
 
         if (commentIndex.second == -1) {
-            commentId = updateCommentHolder.getThreadId();
-            commentText = items.get(commentIndex.first).getTextDisplay();
+            commentId = updateCommentHolder.getThreadCommentModel().getThreadId();
+            commentText = updateCommentHolder.getThreadCommentModel().getTextDisplay();
         } else {
-            commentId = updateCommentHolder.getReplies().get(commentIndex.second).getCommentId();
-            commentText = updateCommentHolder.getReplies().get(commentIndex.second).getTextDisplay();
+            commentId = updateCommentHolder.getThreadCommentModel().getReplies().get(commentIndex.second).getCommentId();
+            commentText = updateCommentHolder.getThreadCommentModel().getReplies().get(commentIndex.second).getTextDisplay();
         }
 
-        editCommentHolder.bindCommentEditorHolder(commentIndex, commentText, commentId);
+        editCommentHolder.bindCommentEditorHolder(commentText, commentId);
     }
 
     @Override

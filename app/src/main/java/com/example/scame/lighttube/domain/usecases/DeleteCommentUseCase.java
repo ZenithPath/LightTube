@@ -20,7 +20,7 @@ public class DeleteCommentUseCase extends UseCase<String> {
 
     @Override
     protected Observable<String> getUseCaseObservable() {
-        return dataManager.deleteComment(commentId).map(aVoid -> commentId);
+        return dataManager.deleteComment(commentId);
     }
 
     public void setCommentId(String commentId) {

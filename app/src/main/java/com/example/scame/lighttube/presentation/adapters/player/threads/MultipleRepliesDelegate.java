@@ -11,11 +11,10 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
-import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.List;
 
-public class MultipleRepliesDelegate implements AdapterDelegate<List<ThreadCommentModel>> {
+public class MultipleRepliesDelegate implements AdapterDelegate<List<?>> {
 
     private PlayerFooterFragment.PlayerFooterListener footerListener;
 
@@ -38,7 +37,7 @@ public class MultipleRepliesDelegate implements AdapterDelegate<List<ThreadComme
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<ThreadCommentModel> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<?> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         if (holder instanceof MultipleRepliesHolder) {
             ((MultipleRepliesHolder) holder).bindAllRepliesView(position, items);
         }

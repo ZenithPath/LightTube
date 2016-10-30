@@ -4,11 +4,13 @@ package com.example.scame.lighttube.domain.usecases;
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.CommentListModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+
+import java.util.List;
 
 import rx.Observable;
 
-public class RetrieveCommentsUseCase extends UseCase<CommentListModel> {
+public class RetrieveCommentsUseCase extends UseCase<List<ThreadCommentModel>> {
 
     ICommentsDataManager dataManager;
 
@@ -21,7 +23,7 @@ public class RetrieveCommentsUseCase extends UseCase<CommentListModel> {
     }
 
     @Override
-    protected Observable<CommentListModel> getUseCaseObservable() {
+    protected Observable<List<ThreadCommentModel>> getUseCaseObservable() {
         return dataManager.getCommentList(videoId);
     }
 

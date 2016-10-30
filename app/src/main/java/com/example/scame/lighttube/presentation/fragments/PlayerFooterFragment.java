@@ -20,18 +20,20 @@ import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecor
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsAdapter;
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsViewHolder;
-import com.example.scame.lighttube.presentation.adapters.player.threads.UpdateCommentModelHolder;
-import com.example.scame.lighttube.presentation.model.CommentListModel;
+import com.example.scame.lighttube.presentation.adapters.player.threads.UpdateCommentObj;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
+import com.example.scame.lighttube.utility.Utility;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import icepick.State;
 
 // TODO: add thread replies editing
 
@@ -53,14 +55,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private CommentsAdapter commentsAdapter;
 
-    private CommentListModel commentListModel;
+    private List<Object> modelsList;
 
     private String videoId;
 
     private String userIdentifier;
-
-    // FIXME: it's more a workaround than a normal solution, flow should be changed
-    @State int updatedCommentPosition = -1;
 
     public interface PlayerFooterListener {
 
@@ -108,11 +107,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     private void supplyComments() {
-        if (commentListModel == null) {
+        if (modelsList == null) {
             footerPresenter.setView(this);
             footerPresenter.getCommentList(videoId);
         } else {
-            displayComments(commentListModel, userIdentifier);
+            displayComments(modelsList, userIdentifier);
         }
     }
 
@@ -121,15 +120,15 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
      */
 
     @Override
-    public void displayComments(CommentListModel commentsList, String userIdentifier) {
-        this.commentListModel = commentsList;
+    public void displayComments(List<?> commentsList, String userIdentifier) {
+        this.modelsList = new ArrayList<>(commentsList);
         this.userIdentifier = userIdentifier;
 
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
                 commentText -> footerPresenter.postComment(commentText, videoId));
 
-        commentsAdapter = new CommentsAdapter(delegatesManager, commentListModel.getThreadComments());
+        commentsAdapter = new CommentsAdapter(delegatesManager, modelsList);
 
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
@@ -139,12 +138,12 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Override
     public void displayReply(ReplyModel replyModel) {
-        if (updatedCommentPosition != -1) {
-            ThreadCommentModel threadCommentModel = commentListModel.getThreadComments().get(updatedCommentPosition);
-            replyModel.setAuthorChannelId(userIdentifier);
-            threadCommentModel.getReplies().add(0, replyModel);
-            commentsAdapter.notifyItemChanged(updatedCommentPosition + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
-        }
+        int index = Utility.FooterUtil.getFilteredIndex(replyModel.getCommentId(), modelsList);
+
+        ThreadCommentModel threadCommentModel = (ThreadCommentModel) modelsList.get(index);
+        replyModel.setAuthorChannelId(userIdentifier);
+        threadCommentModel.getReplies().add(0, replyModel);
+        commentsAdapter.notifyItemChanged(index + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
     @Override
@@ -154,7 +153,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     private void insertPostedComment(ThreadCommentModel threadComment) {
-        commentListModel.addThreadCommentModel(INSERT_COMMENT_POS, threadComment);
+        modelsList.add(INSERT_COMMENT_POS, threadComment);
         commentsAdapter.notifyItemInserted(INSERT_COMMENT_POS);
     }
 
@@ -164,35 +163,39 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     @Override
-    public void onReplyUpdated(Pair<Integer, Integer> replyIndex, ReplyModel replyModel) {
-        UpdateCommentModelHolder modelHolder = (UpdateCommentModelHolder) commentListModel
-                .getThreadComments().remove(+replyIndex.first);
+    public void onReplyUpdated(ReplyModel replyModel) {
+        String replyId = replyModel.getCommentId();
+        Pair<Integer, Integer> index = Utility.FooterUtil.getCommentIndexById(replyId, modelsList);
 
-        ThreadCommentModel updatedThreadModel = new ThreadCommentModel(modelHolder);
+        UpdateCommentObj modelHolder = (UpdateCommentObj) modelsList.remove((int) index.first);
+
+        ThreadCommentModel updatedThreadModel = new ThreadCommentModel(modelHolder.getThreadCommentModel());
         replyModel.setAuthorChannelId(userIdentifier);
-        updatedThreadModel.setReply(replyIndex.second, replyModel);
+        updatedThreadModel.setReply(index.second, replyModel);
 
-        commentListModel.getThreadComments().add(replyIndex.first, updatedThreadModel);
-        commentsAdapter.notifyItemChanged(replyIndex.first + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
+        modelsList.add(index.first, updatedThreadModel);
+        commentsAdapter.notifyItemChanged(index.first + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
     @Override
-    public void onCommentUpdated(Pair<Integer, Integer> commentIndex, ThreadCommentModel threadCommentModel) {
-        commentListModel.getThreadComments().remove(+commentIndex.first);
-        commentListModel.getThreadComments().add(commentIndex.first, threadCommentModel);
+    public void onCommentUpdated(ThreadCommentModel threadCommentModel) {
+        String threadId = threadCommentModel.getThreadId();
+        Pair<Integer, Integer> commentIndex = Utility.FooterUtil.getCommentIndexById(threadId, modelsList);
+        modelsList.remove((int) commentIndex.first);
+        modelsList.add(commentIndex.first, threadCommentModel);
         commentsAdapter.notifyItemChanged(commentIndex.first + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
     @Override
-    public void onMarkedAsSpam(Pair<Integer, Integer> commentIndex) {
-        commentListModel.deleteByPairIndex(commentIndex);
-        notifyOnDelete(commentIndex);
+    public void onMarkedAsSpam(String markedCommentId) {
+        Utility.FooterUtil.deleteById(modelsList, markedCommentId);
+        notifyOnDelete(Utility.FooterUtil.getCommentIndexById(markedCommentId, modelsList));
     }
 
     @Override
-    public void onCommentDeleted(Pair<Integer, Integer> commentIndex) {
-        commentListModel.deleteByPairIndex(commentIndex);
-        notifyOnDelete(commentIndex);
+    public void onCommentDeleted(String deletedCommentId) {
+        Utility.FooterUtil.deleteById(modelsList, deletedCommentId);
+        notifyOnDelete(Utility.FooterUtil.getCommentIndexById(deletedCommentId, modelsList));
     }
 
     private void notifyOnDelete(Pair<Integer, Integer> commentIndex) {
@@ -211,16 +214,16 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
      */
 
     @Override
-    public void onActionReplyClick(String commentId, Pair<Integer, Integer> commentIndex) {
+    public void onActionReplyClick(String commentId) {
+        Pair<Integer, Integer> commentIndex = Utility.FooterUtil.getCommentIndexById(commentId, modelsList);
+
         CommentsViewHolder commentsViewHolder = (CommentsViewHolder) footerRv
                 .findViewHolderForAdapterPosition(commentIndex.first + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
 
         if (commentsViewHolder != null) {
-            this.updatedCommentPosition = commentIndex.first;
-
             commentsViewHolder.giveFocusToInputField(v -> {
                 if (v instanceof EditText) {
-                    String threadId = commentListModel.getThreadComments().get(commentIndex.first).getThreadId();
+                    String threadId = ((ThreadCommentModel) modelsList.get(commentIndex.first)).getThreadId();
                     replyInputPresenter.postReply(threadId, ((EditText) v).getText().toString());
                 }
             }, extractTarget(commentIndex));
@@ -228,41 +231,44 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     private String extractTarget(Pair<Integer, Integer> commentIndex) {
-        ThreadCommentModel threadComment = commentListModel.getThreadComments().get(commentIndex.first);
+        ThreadCommentModel threadComment = (ThreadCommentModel) modelsList.get(commentIndex.first);
 
         return (commentIndex.second == -1) ? threadComment.getAuthorName()
                 : threadComment.getReplies().get(commentIndex.second).getAuthorName();
     }
 
     @Override
-    public void onActionEditClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        ThreadCommentModel threadCommentModel = commentListModel.getThreadComments().get(commentIndex.first);
-        UpdateCommentModelHolder updateCommentHolder = new UpdateCommentModelHolder(threadCommentModel);
+    public void onActionEditClick(String commentId) {
+        Pair<Integer, Integer> commentIndex = Utility.FooterUtil.getCommentIndexById(commentId, modelsList);
+
+        ThreadCommentModel threadCommentModel = (ThreadCommentModel) modelsList.get(commentIndex.first);
+        UpdateCommentObj updateCommentHolder = new UpdateCommentObj(threadCommentModel);
         updateCommentHolder.setPairedPosition(commentIndex);
 
         // FIXME: it's not cool that while editing all parts of a thread aren't visible
-        commentListModel.getThreadComments().remove(+commentIndex.first);
-        commentListModel.getThreadComments().add(commentIndex.first, updateCommentHolder);
+        modelsList.remove((int) commentIndex.first);
+        modelsList.add(commentIndex.first, updateCommentHolder);
         commentsAdapter.notifyItemChanged(commentIndex.first + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
     @Override
-    public void onSendEditedClick(Pair<Integer, Integer> commentIndex, String commentText, String commentId) {
+    public void onSendEditedClick(String commentText, String commentId) {
+        Pair<Integer, Integer> commentIndex = Utility.FooterUtil.getCommentIndexById(commentId, modelsList);
         if (commentIndex.second == -1) {
-            footerPresenter.updateComment(commentId, commentIndex, commentText);
+            footerPresenter.updateComment(commentId, commentText);
         } else {
-            footerPresenter.updateReply(commentId, commentIndex, commentText);
+            footerPresenter.updateReply(commentId, commentText);
         }
     }
 
     @Override
-    public void onActionDeleteClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        footerPresenter.deleteThreadComment(commentId, commentIndex);
+    public void onActionDeleteClick(String commentId) {
+        footerPresenter.deleteThreadComment(commentId);
     }
 
     @Override
-    public void onActionMarkAsSpamClick(String commentId, Pair<Integer, Integer> commentIndex) {
-        footerPresenter.markAsSpam(commentId, commentIndex);
+    public void onActionMarkAsSpamClick(String commentId) {
+        footerPresenter.markAsSpam(commentId);
     }
 
     @Override

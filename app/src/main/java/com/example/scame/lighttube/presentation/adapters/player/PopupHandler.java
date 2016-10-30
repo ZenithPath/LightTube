@@ -2,7 +2,6 @@ package com.example.scame.lighttube.presentation.adapters.player;
 
 
 import android.support.v7.widget.PopupMenu;
-import android.util.Pair;
 import android.view.View;
 
 import com.example.scame.lighttube.R;
@@ -19,15 +18,15 @@ public class PopupHandler {
         this.commentActionListener = commentActionListener;
     }
 
-    public void showPopup(View anchor, String userIdentifier, String commentId, Pair<Integer, Integer> commentIndex) {
+    public void showPopup(View anchor, String userIdentifier, String commentId) {
         if (userIdentifier.equals(identifier)) {
-            showAuthoredPopup(anchor, commentId, commentIndex);
+            showAuthoredPopup(anchor, commentId);
         } else {
-            showCommonPopup(anchor, commentId, commentIndex);
+            showCommonPopup(anchor, commentId);
         }
     }
 
-    private void showAuthoredPopup(View anchor, String commentId, Pair<Integer, Integer> commentIndex) {
+    private void showAuthoredPopup(View anchor, String commentId) {
         PopupMenu authoredPopup = new PopupMenu(anchor.getContext(), anchor);
         authoredPopup.inflate(R.menu.comment_popup);
         authoredPopup.getMenu().removeItem(R.id.report_option);
@@ -35,9 +34,9 @@ public class PopupHandler {
 
         authoredPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_option) {
-                commentActionListener.onActionDeleteClick(commentId, commentIndex);
+                commentActionListener.onActionDeleteClick(commentId);
             } else if (item.getItemId() == R.id.edit_option) {
-                commentActionListener.onActionEditClick(commentId, commentIndex);
+                commentActionListener.onActionEditClick(commentId);
             }
             return false;
         });
@@ -45,7 +44,7 @@ public class PopupHandler {
         authoredPopup.show();
     }
 
-    private void showCommonPopup(View anchor, String commentId, Pair<Integer, Integer> commentIndex) {
+    private void showCommonPopup(View anchor, String commentId) {
         PopupMenu commonPopup = new PopupMenu(anchor.getContext(), anchor);
         commonPopup.inflate(R.menu.comment_popup);
         commonPopup.getMenu().removeItem(R.id.delete_option);
@@ -53,9 +52,9 @@ public class PopupHandler {
 
         commonPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.report_option) {
-                commentActionListener.onActionMarkAsSpamClick(commentId, commentIndex);
+                commentActionListener.onActionMarkAsSpamClick(commentId);
             } else if (item.getItemId() == R.id.reply_option) {
-                commentActionListener.onActionReplyClick(commentId, commentIndex);
+                commentActionListener.onActionReplyClick(commentId);
             }
 
             return false;
