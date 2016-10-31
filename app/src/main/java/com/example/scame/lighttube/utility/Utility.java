@@ -53,7 +53,7 @@ public class Utility {
 
     public static final class FooterUtil {
 
-        public static void deleteById(List<?> dataset, String commentId) {
+        public static Pair<Integer, Integer> deleteById(List<?> dataset, String commentId) {
             Pair<Integer, Integer> index = getCommentIndexById(commentId, dataset);
             if (index.second == -1) {
                 dataset.remove((int) index.first);
@@ -61,6 +61,8 @@ public class Utility {
                 ThreadCommentModel threadCommentModel = getThreadModel(index.first, dataset);
                 threadCommentModel.getReplies().remove((int) index.second);
             }
+
+            return index;
         }
 
         public static int getFilteredIndex(String commentId, List<?> dataset) {

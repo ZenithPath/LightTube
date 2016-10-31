@@ -138,7 +138,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Override
     public void displayReply(ReplyModel replyModel) {
-        int index = Utility.FooterUtil.getFilteredIndex(replyModel.getCommentId(), modelsList);
+        int index = Utility.FooterUtil.getFilteredIndex(replyModel.getParentId(), modelsList);
 
         ThreadCommentModel threadCommentModel = (ThreadCommentModel) modelsList.get(index);
         replyModel.setAuthorChannelId(userIdentifier);
@@ -188,14 +188,14 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     @Override
     public void onMarkedAsSpam(String markedCommentId) {
-        Utility.FooterUtil.deleteById(modelsList, markedCommentId);
-        notifyOnDelete(Utility.FooterUtil.getCommentIndexById(markedCommentId, modelsList));
+        Pair<Integer, Integer> index = Utility.FooterUtil.deleteById(modelsList, markedCommentId);
+        notifyOnDelete(index);
     }
 
     @Override
     public void onCommentDeleted(String deletedCommentId) {
-        Utility.FooterUtil.deleteById(modelsList, deletedCommentId);
-        notifyOnDelete(Utility.FooterUtil.getCommentIndexById(deletedCommentId, modelsList));
+        Pair<Integer, Integer> index = Utility.FooterUtil.deleteById(modelsList, deletedCommentId);
+        notifyOnDelete(index);
     }
 
     private void notifyOnDelete(Pair<Integer, Integer> commentIndex) {
