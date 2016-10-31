@@ -1,5 +1,7 @@
 package com.example.scame.lighttube.data.mappers;
 
+import android.util.Log;
+
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
 import com.example.scame.lighttube.data.entities.search.SearchItem;
 import com.example.scame.lighttube.presentation.model.VideoModel;
@@ -15,6 +17,11 @@ public class SearchListMapper {
         for (SearchItem searchItem : searchEntity.getItems()) {
             VideoModel videoModel = new VideoModel();
 
+            if (searchItem.getId().getVideoId() == null) {
+                Log.i("onxNullId", searchItem.getSnippet().getTitle());
+            } else {
+                Log.i("onxNonNull", searchItem.getId().getVideoId());
+            }
             videoModel.setVideoId(searchItem.getId().getVideoId());
             videoModel.setTitle(searchItem.getSnippet().getTitle());
             videoModel.setImageUrl(searchItem.getSnippet().getThumbnails().getHigh().getUrl());

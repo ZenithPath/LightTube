@@ -1,8 +1,6 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import android.util.Log;
-
 import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.SearchUseCase;

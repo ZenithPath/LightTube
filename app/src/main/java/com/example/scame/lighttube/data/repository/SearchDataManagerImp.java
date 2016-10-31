@@ -62,7 +62,7 @@ public class SearchDataManagerImp implements ISearchDataManager {
     @Override
     public Observable<List<VideoModel>> search(String query, int page) {
 
-        return searchApi.searchVideo(PART, query, MAX_RESULTS, getNextPageToken(page), PrivateValues.API_KEY)
+        return searchApi.searchVideo(PART, TYPE, query, MAX_RESULTS, getNextPageToken(page), PrivateValues.API_KEY)
                 .doOnNext(searchEntity -> {
                     saveNextPageToken(searchEntity.getNextPageToken());
                     savePageNumber(page);

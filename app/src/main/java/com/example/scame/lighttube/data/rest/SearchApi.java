@@ -12,6 +12,7 @@ public interface SearchApi {
 
     @GET("youtube/v3/search")
     Observable<SearchEntity> searchVideo(@Query("part") String part,
+                                         @Query("type") String type,
                                          @Query("q") String q,
                                          @Query("maxResults") Integer maxResults,
                                          @Query("pageToken") String pageToken,

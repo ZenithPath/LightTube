@@ -20,8 +20,6 @@ public class ContentDetailsDataManagerImp implements IContentDetailsDataManager 
 
     private DurationsCombiner combiner;
 
-    private List<VideoModel> videoModels;
-
     public ContentDetailsDataManagerImp(VideoListApi videoListApi, IdsMapper idsMapper, DurationsCombiner durationsCombiner) {
         this.videoListApi = videoListApi;
         this.idsMapper = idsMapper;
@@ -32,9 +30,5 @@ public class ContentDetailsDataManagerImp implements IContentDetailsDataManager 
     public Observable<List<VideoModel>> getContentDetails(List<VideoModel> videoModels) {
         return videoListApi.getContentEntity(idsMapper.convert(videoModels), part, PrivateValues.API_KEY)
                 .map(contentEntity -> combiner.combine(contentEntity, videoModels)); // combine old video models and durations
-    }
-
-    public void setVideoModels(List<VideoModel> videoModels) {
-        this.videoModels = videoModels;
     }
 }
