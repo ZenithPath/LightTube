@@ -143,6 +143,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         ThreadCommentModel threadCommentModel = (ThreadCommentModel) modelsList.get(index);
         replyModel.setAuthorChannelId(userIdentifier);
         threadCommentModel.getReplies().add(0, replyModel);
+        threadCommentModel.setReplyCount(threadCommentModel.getReplyCount() + 1);
         commentsAdapter.notifyItemChanged(index + CommentsDelegatesManager.NUMBER_OF_VIEW_ABOVE);
     }
 
@@ -205,8 +206,14 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         if (adapterPairIndex.second == -1) {
             commentsAdapter.notifyItemRemoved(adapterPairIndex.first);
         } else {
+            decrementRepliesCounter(commentIndex.first);
             commentsAdapter.notifyItemChanged(adapterPairIndex.first);
         }
+    }
+
+    private void decrementRepliesCounter(int position) {
+        ThreadCommentModel model = (ThreadCommentModel) modelsList.get(position);
+        model.setReplyCount(model.getReplyCount() - 1);
     }
 
     /**
