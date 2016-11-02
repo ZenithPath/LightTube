@@ -2,6 +2,7 @@ package com.example.scame.lighttube.presentation.di.modules;
 
 
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
+import com.example.scame.lighttube.data.repository.IStatisticsDataManager;
 import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
@@ -12,6 +13,7 @@ import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
+import com.example.scame.lighttube.domain.usecases.VideoStatsUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.PlayerFooterPresenterImp;
@@ -37,10 +39,18 @@ public class PlayerFooterModule {
                                                                 UpdateThreadUseCase updateThreadUseCase,
                                                                 PostThreadCommentUseCase postThreadCommentUseCase,
                                                                 UpdateReplyUseCase updateReplyUseCase,
+                                                                VideoStatsUseCase videoStatsUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
         return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase,
                 deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase,
-                updateReplyUseCase, subscriptionsHandler);
+                updateReplyUseCase, videoStatsUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    VideoStatsUseCase provideVideoStatsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                               IStatisticsDataManager statisticsDataManager) {
+        return new VideoStatsUseCase(subscribeOn, observeOn, statisticsDataManager);
     }
 
     @Provides
@@ -101,8 +111,10 @@ public class PlayerFooterModule {
                                                              DeleteCommentUseCase deleteCommentUseCase,
                                                              MarkAsSpamUseCase markAsSpamUseCase,
                                                              UpdateThreadUseCase updateThreadUseCase,
-                                                             PostThreadCommentUseCase postThreadCommentUseCase) {
+                                                             PostThreadCommentUseCase postThreadCommentUseCase,
+                                                             VideoStatsUseCase videoStatsUseCase) {
         return new SubscriptionsHandler(retrieveCommentsUseCase, identifierUseCase,
-                deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase);
+                deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase,
+                videoStatsUseCase);
     }
 }

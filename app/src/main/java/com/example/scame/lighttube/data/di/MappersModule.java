@@ -19,6 +19,7 @@ import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
+import com.example.scame.lighttube.data.mappers.VideoStatsMapper;
 
 import javax.inject.Singleton;
 
@@ -121,5 +122,10 @@ public class MappersModule {
     @Singleton @Provides
     ThreadUpdateBuilder provideThreadUpdateBuilder() {
         return new ThreadUpdateBuilder();
+    }
+
+    @Singleton @Provides
+    VideoStatsMapper provideVideoStatsMapper() {
+        return new VideoStatsMapper();
     }
 }

@@ -20,6 +20,7 @@ import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.mappers.VideoListMapper;
+import com.example.scame.lighttube.data.mappers.VideoStatsMapper;
 import com.example.scame.lighttube.data.repository.AccountDataManagerImp;
 import com.example.scame.lighttube.data.repository.CategoryDataManagerImp;
 import com.example.scame.lighttube.data.repository.ChannelVideosDataManagerImp;
@@ -33,11 +34,13 @@ import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
+import com.example.scame.lighttube.data.repository.IStatisticsDataManager;
 import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
 import com.example.scame.lighttube.data.repository.RatingDataManagerImp;
 import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
+import com.example.scame.lighttube.data.repository.StatisticsDataManagerImp;
 import com.example.scame.lighttube.data.repository.UserChannelDataManagerImp;
 import com.example.scame.lighttube.data.repository.VideoListDataManagerImp;
 import com.example.scame.lighttube.data.rest.ChannelsApi;
@@ -45,6 +48,7 @@ import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.data.rest.RatingApi;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
 import com.example.scame.lighttube.data.rest.SearchApi;
+import com.example.scame.lighttube.data.rest.StatisticsApi;
 import com.example.scame.lighttube.data.rest.VideoListApi;
 
 import java.util.List;
@@ -134,5 +138,11 @@ public class DataManagersModule {
     IUserChannelDataManager provideUserChannelDataManager(ChannelsApi channelsApi, SharedPreferences sharedPrefs,
                                                           Context context) {
         return new UserChannelDataManagerImp(channelsApi, sharedPrefs, context);
+    }
+
+    @Singleton
+    @Provides
+    IStatisticsDataManager provideStatisticsDataManager(StatisticsApi statisticsApi, VideoStatsMapper statsMapper) {
+        return new StatisticsDataManagerImp(statsMapper, statisticsApi);
     }
 }

@@ -8,6 +8,7 @@ import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.data.rest.RatingApi;
 import com.example.scame.lighttube.data.rest.RecentVideosApi;
 import com.example.scame.lighttube.data.rest.SearchApi;
+import com.example.scame.lighttube.data.rest.StatisticsApi;
 import com.example.scame.lighttube.data.rest.TokenApi;
 import com.example.scame.lighttube.data.rest.VideoListApi;
 
@@ -95,6 +96,12 @@ public class NetworkingModule {
     @Provides
     ChannelsApi provideChannelsApi(Retrofit retrofit) {
         return retrofit.create(ChannelsApi.class);
+    }
+
+    @Singleton
+    @Provides
+    StatisticsApi provideStatisticsApi(Retrofit retrofit) {
+        return retrofit.create(StatisticsApi.class);
     }
 
     @Singleton

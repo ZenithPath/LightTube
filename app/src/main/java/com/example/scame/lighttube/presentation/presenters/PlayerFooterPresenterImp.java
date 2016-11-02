@@ -11,8 +11,10 @@ import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveUserIdentifierUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
+import com.example.scame.lighttube.domain.usecases.VideoStatsUseCase;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.VideoStatsModel;
 
 import java.util.List;
 
@@ -34,6 +36,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private UpdateReplyUseCase updateReplyUseCase;
 
+    private VideoStatsUseCase statsUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
@@ -48,7 +52,9 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
                                     UpdateThreadUseCase updateThreadUseCase,
                                     PostThreadCommentUseCase postCommentUseCase,
                                     UpdateReplyUseCase updateReplyUseCase,
+                                    VideoStatsUseCase statsUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
+        this.statsUseCase = statsUseCase;
         this.identifierUseCase = identifierUseCase;
         this.updateReplyUseCase = updateReplyUseCase;
         this.postCommentUseCase = postCommentUseCase;
@@ -117,6 +123,29 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     public void destroy() {
         view = null;
         subscriptionsHandler.unsubscribe();
+    }
+
+    private final class StatsSubscriber extends DefaultSubscriber<VideoStatsModel> {
+
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+            Log.i("onxCompleted", "true");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxErr", e.getLocalizedMessage());
+        }
+
+        @Override
+        public void onNext(VideoStatsModel videoStatsModel) {
+            super.onNext(videoStatsModel);
+            Log.i("onxNext", videoStatsModel.getVideoId() + " " + videoStatsModel.getCommentCount() + " "
+            + videoStatsModel.getDislikeCount() + " " + videoStatsModel.getLikeCount() + " " +
+            videoStatsModel.getViewCount());
+        }
     }
 
     private final class UpdateReplySubscriber extends DefaultSubscriber<ReplyModel> {
