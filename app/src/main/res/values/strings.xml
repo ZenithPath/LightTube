@@ -98,5 +98,6 @@
     <string name="edit">edit</string>
     <string name="report">report</string>
     <string name="reply_opt">reply</string>
+    <string name="comments" formatted="false">Comments: %d</string>
 
 </resources>

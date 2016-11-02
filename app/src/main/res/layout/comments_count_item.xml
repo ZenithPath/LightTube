@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/comments_count_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/comments"
+        android:padding="@dimen/comment_padding" />
+    
+    <ImageButton
+        android:id="@+id/comments_mode_ib"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="@dimen/comment_padding"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_reorder_black_24dp"/>
+    
+
+</LinearLayout>

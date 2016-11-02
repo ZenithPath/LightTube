@@ -123,7 +123,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     public void displayComments(List<?> commentsList, String userIdentifier) {
         this.modelsList = new ArrayList<>(commentsList);
         this.userIdentifier = userIdentifier;
-
+        modelsList.add(0, 999);
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
                 commentText -> footerPresenter.postComment(commentText, videoId));

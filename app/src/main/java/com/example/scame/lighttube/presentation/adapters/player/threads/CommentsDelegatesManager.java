@@ -17,6 +17,7 @@ import java.util.List;
 
 public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>> {
 
+    public static final int NUMBER_OF_VIEW_ABOVE_COUNTS = 1;
     public static final int NUMBER_OF_VIEW_ABOVE = 2;
 
     static final int VIEW_TYPE_HEADER = 0;
@@ -26,9 +27,11 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
     static final int VIEW_TYPE_ALL_REPLIES = 4;
     static final int VIEW_TYPE_COMMENT_INPUT = 5;
     static final int VIEW_TYPE_EDIT_COMMENT = 6;
+    static final int VIEW_TYPE_COMMENTS_COUNT = 7;
 
     private static final int HEADER_LAYOUT_POSITION = 0;
-    private static final int COMMENT_INPUT_POSITION = 1;
+    private static final int COMMENTS_COUNT_POSITION = 1;
+    private static final int COMMENT_INPUT_POSITION = 2;
 
     private List<AdapterDelegate<List<?>>> delegates;
 
@@ -45,6 +48,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
         delegates.add(new MultipleRepliesDelegate(footerListener, actionListener, userIdentifier));
         delegates.add(new HeaderDelegate(context, videoId, null));
         delegates.add(new EditCommentDelegate(actionListener));
+        delegates.add(new CommentsCountDelegate());
     }
 
     @Override
@@ -56,11 +60,14 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
     @Override
     public int getItemViewType(@NonNull List<?> items, int position) {
         ThreadCommentModel commentModel = getThreadModelByPosition(items, position);
+        Integer commentsCount = getCommentsCountByPosition(items, position);
 
         if (position == HEADER_LAYOUT_POSITION) {
             return VIEW_TYPE_HEADER;
         } else if (position == COMMENT_INPUT_POSITION) {
             return VIEW_TYPE_COMMENT_INPUT;
+        } else if (commentsCount != null) {
+            return VIEW_TYPE_COMMENTS_COUNT;
         } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateCommentObj) {
             return VIEW_TYPE_EDIT_COMMENT;
         } else if (commentModel != null && commentModel.getReplies().size() == 0) {
@@ -74,10 +81,18 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
         }
     }
 
-    private ThreadCommentModel getThreadModelByPosition(List<?> items,int position) {
+    private ThreadCommentModel getThreadModelByPosition(List<?> items, int position) {
         int relativePosition = position - NUMBER_OF_VIEW_ABOVE;
         if (relativePosition >= 0 && items.get(relativePosition) instanceof ThreadCommentModel) {
             return (ThreadCommentModel) items.get(relativePosition);
+        }
+        return null;
+    }
+
+    private Integer getCommentsCountByPosition(List<?> items, int position) {
+        int relativePosition = position - NUMBER_OF_VIEW_ABOVE_COUNTS;
+        if (relativePosition >= 0 && items.get(relativePosition) instanceof Integer) {
+            return (Integer) items.get(relativePosition);
         }
         return null;
     }
