@@ -1,11 +1,8 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
@@ -14,7 +11,6 @@ import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.MergedCommentsModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
@@ -56,22 +52,13 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
-    public void commentsOrderClick(String videoId, @CommentsDataManagerImp.CommentsOrders String order) {
-        if (isOrderChanged(order)) {
+    public void commentsOrderClick(String videoId, @CommentsDataManagerImp.CommentsOrders String previousOrder,
+                                   @CommentsDataManagerImp.CommentsOrders String newOrder) {
+        if (!previousOrder.equals(newOrder)) {
             retrieveCommentsUseCase.setVideoId(videoId);
-            retrieveCommentsUseCase.setOrder(order);
+            retrieveCommentsUseCase.setOrder(newOrder);
             retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
         }
-    }
-
-    // TODO: refactor, presenter must be android-components agnostic
-    private boolean isOrderChanged(@CommentsDataManagerImp.CommentsOrders String order) {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(LightTubeApp.getAppComponent().getContext());
-        @CommentsDataManagerImp.CommentsOrders String cachedOrder = sharedPrefs
-                .getString(LightTubeApp.getAppComponent().getContext().getString(R.string.current_comments_order), "");
-
-        return !order.equals(cachedOrder);
     }
 
     @Override
@@ -184,9 +171,10 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
             super.onNext(mergedModel);
 
             if (view != null) {
-                view.displayComments(mergedModel.getThreadCommentModels(),
+                view.displayComments(mergedModel.getCommentsWrapper().getComments(),
                         mergedModel.getUserIdentifier(),
-                        mergedModel.getVideoStatsModel().getCommentCount()
+                        mergedModel.getVideoStatsModel().getCommentCount(),
+                        mergedModel.getCommentsWrapper().getCommentsOrder()
                 );
             }
         }

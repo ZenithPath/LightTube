@@ -7,13 +7,14 @@ import com.example.scame.lighttube.data.entities.comments.responses.CommentSnipp
 import com.example.scame.lighttube.data.entities.comments.responses.CommentThreadsEntity;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentListMapper {
 
-    public List<ThreadCommentModel> convert(CommentThreadsEntity commentThreadsEntity) {
+    public ThreadCommentsWrapper convert(CommentThreadsEntity commentThreadsEntity, String commentsOrder) {
         List<ThreadCommentModel> modelsList = new ArrayList<>(commentThreadsEntity.getItems().size());
 
         for (CommentItem commentItem : commentThreadsEntity.getItems()) {
@@ -34,7 +35,7 @@ public class CommentListMapper {
 
             modelsList.add(threadCommentModel);
         }
-        return modelsList;
+        return new ThreadCommentsWrapper(commentsOrder, modelsList);
     }
 
     private void addReplies(CommentItem commentItem, ThreadCommentModel threadCommentModel) {

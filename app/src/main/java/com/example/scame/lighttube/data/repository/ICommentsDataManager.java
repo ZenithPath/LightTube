@@ -3,6 +3,7 @@ package com.example.scame.lighttube.data.repository;
 
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import rx.Observable;
 
 public interface ICommentsDataManager {
 
-    Observable<List<ThreadCommentModel>> getCommentList(String videoId, String order);
+    Observable<ThreadCommentsWrapper> getCommentList(String videoId, String order);
 
     Observable<ThreadCommentModel> postThreadComment(String commentText, String videoId);
 

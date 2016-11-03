@@ -1,11 +1,9 @@
 package com.example.scame.lighttube.presentation.model;
 
 
-import java.util.List;
-
 public class MergedCommentsModel {
 
-    private List<ThreadCommentModel> threadCommentModels;
+    private ThreadCommentsWrapper commentsWrapper;
 
     private VideoStatsModel videoStatsModel;
 
@@ -13,15 +11,15 @@ public class MergedCommentsModel {
 
     public MergedCommentsModel() {}
 
-    public MergedCommentsModel(List<ThreadCommentModel> threadCommentModels,
+    public MergedCommentsModel(ThreadCommentsWrapper commentsWrapper,
                                VideoStatsModel videoStatsModel, String userIdentifier) {
-        this.threadCommentModels = threadCommentModels;
+        this.commentsWrapper = commentsWrapper;
         this.videoStatsModel = videoStatsModel;
         this.userIdentifier = userIdentifier;
     }
 
-    public void setThreadCommentModels(List<ThreadCommentModel> threadCommentModels) {
-        this.threadCommentModels = threadCommentModels;
+    public void setCommentsWrapper(ThreadCommentsWrapper commentsWrapper) {
+        this.commentsWrapper = commentsWrapper;
     }
 
     public void setVideoStatsModel(VideoStatsModel videoStatsModel) {
@@ -32,8 +30,8 @@ public class MergedCommentsModel {
         this.userIdentifier = userIdentifier;
     }
 
-    public List<ThreadCommentModel> getThreadCommentModels() {
-        return threadCommentModels;
+    public ThreadCommentsWrapper getCommentsWrapper() {
+        return commentsWrapper;
     }
 
     public VideoStatsModel getVideoStatsModel() {

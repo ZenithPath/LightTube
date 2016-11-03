@@ -1,13 +1,9 @@
 package com.example.scame.lighttube.data.repository;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.StringDef;
 
 import com.example.scame.lighttube.PrivateValues;
-import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
@@ -19,6 +15,7 @@ import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,8 +55,6 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
 
     private ThreadUpdateBuilder threadUpdateBuilder;
 
-    private Context context;
-
     @StringDef ({RELEVANCE_ORDER, TIME_ORDER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CommentsOrders { }
@@ -68,8 +63,7 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
                                   ReplyListMapper replyListMapper, ThreadResponseMapper threadResponseMapper,
                                   ThreadPostBuilder threadPostBuilder, ReplyPostBuilder replyPostBuilder,
                                   ReplyResponseMapper replyResponseMapper, ReplyUpdateBuilder replyUpdateBuilder,
-                                  ThreadUpdateBuilder threadUpdateBuilder, Context context) {
-        this.context = context;
+                                  ThreadUpdateBuilder threadUpdateBuilder) {
         this.commentListMapper = commentListMapper;
         this.replyListMapper = replyListMapper;
         this.commentsApi = commentsApi;
@@ -82,16 +76,10 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     }
 
     @Override
-    public Observable<List<ThreadCommentModel>> getCommentList(String videoId, @CommentsOrders String order) {
+    public Observable<ThreadCommentsWrapper> getCommentList(String videoId, @CommentsOrders String order) {
         return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, order, MAX_RES, null,
                 TEXT_FORMAT, videoId, PrivateValues.API_KEY)
-                .map(commentListMapper::convert)
-                .doOnNext(models -> saveCommentsOrderType(order));
-    }
-
-    private void saveCommentsOrderType(@CommentsOrders String order) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        sharedPrefs.edit().putString(context.getString(R.string.current_comments_order), order).apply();
+                .map(commentThreadsEntity -> commentListMapper.convert(commentThreadsEntity, order));
     }
 
     @Override

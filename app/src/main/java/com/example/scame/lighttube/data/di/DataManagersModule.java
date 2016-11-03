@@ -128,9 +128,9 @@ public class DataManagersModule {
                                                     ReplyListMapper replyListMapper, ThreadResponseMapper threadMapper,
                                                     ThreadPostBuilder commentBuilder, ReplyPostBuilder replyBuilder,
                                                     ReplyResponseMapper replyMapper, ReplyUpdateBuilder replyUpdateBuilder,
-                                                    ThreadUpdateBuilder threadUpdateBuilder, Context context) {
+                                                    ThreadUpdateBuilder threadUpdateBuilder) {
         return new CommentsDataManagerImp(commentsApi, commentListMapper, replyListMapper, threadMapper, commentBuilder,
-                replyBuilder, replyMapper, replyUpdateBuilder, threadUpdateBuilder, context);
+                replyBuilder, replyMapper, replyUpdateBuilder, threadUpdateBuilder);
     }
 
     @Singleton

@@ -67,6 +67,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private int commentsCount;
 
+    private @CommentsDataManagerImp.CommentsOrders String commentsOrder;
+
     public interface PlayerFooterListener {
 
         void onRepliesClick(ThreadCommentModel threadCommentModel, String identifier);
@@ -117,7 +119,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
             footerPresenter.setView(this);
             footerPresenter.getCommentList(videoId, DEFAULT_COMMENTS_ORDER);
         } else {
-            displayComments(modelsList, userIdentifier, commentsCount);
+            displayComments(modelsList, userIdentifier, commentsCount, commentsOrder);
         }
     }
 
@@ -126,21 +128,33 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
      */
 
     @Override
-    public void displayComments(List<?> commentsList, String userIdentifier, int commentsCount) {
+    public void displayComments(List<?> commentsList, String userIdentifier, int commentsCount, String order) {
         this.modelsList = new ArrayList<>(commentsList);
+        this.commentsOrder = order;
         this.commentsCount = commentsCount;
         this.userIdentifier = userIdentifier;
+
+        addCommentsCountElem();
+        constructCommentsAdapter();
+        initializeFooterRecycler();
+    }
+
+    private void addCommentsCountElem() {
         if (modelsList.get(0) instanceof ThreadCommentModel) {
             modelsList.add(0, commentsCount);
         }
+    }
 
+    private void constructCommentsAdapter() {
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
                 commentText -> footerPresenter.postComment(commentText, videoId),
                 this::orderClickHandler);
 
         commentsAdapter = new CommentsAdapter(delegatesManager, modelsList);
+    }
 
+    private void initializeFooterRecycler() {
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
         footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -148,8 +162,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private void orderClickHandler(View view) {
         if (view.getTag() instanceof String) {
-            @CommentsDataManagerImp.CommentsOrders String orderType = (String) view.getTag();
-            footerPresenter.commentsOrderClick(videoId, orderType);
+            @CommentsDataManagerImp.CommentsOrders String newOrder = (String) view.getTag();
+            footerPresenter.commentsOrderClick(videoId, commentsOrder, newOrder);
         }
     }
 
