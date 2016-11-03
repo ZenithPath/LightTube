@@ -130,7 +130,9 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         this.modelsList = new ArrayList<>(commentsList);
         this.commentsCount = commentsCount;
         this.userIdentifier = userIdentifier;
-        modelsList.add(0, commentsCount);
+        if (modelsList.get(0) instanceof ThreadCommentModel) {
+            modelsList.add(0, commentsCount);
+        }
 
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
