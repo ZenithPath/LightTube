@@ -23,7 +23,9 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
         void displayPostedComment(ThreadCommentModel threadComment);
     }
 
-    void getCommentList(String videoId);
+    void commentsOrderClick(String videoId, String order);
+
+    void getCommentList(String videoId, String order);
 
     void deleteThreadComment(String commentId);
 

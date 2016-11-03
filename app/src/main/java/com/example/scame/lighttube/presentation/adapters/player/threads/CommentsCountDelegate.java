@@ -17,11 +17,17 @@ import static com.example.scame.lighttube.presentation.adapters.player.threads.C
 
 public class CommentsCountDelegate implements AdapterDelegate<List<?>> {
 
+    private View.OnClickListener orderListener;
+
+    public CommentsCountDelegate(View.OnClickListener orderListener) {
+        this.orderListener = orderListener;
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.comments_count_item, parent, false);
-        return new CommentsCountHolder(itemView);
+        return new CommentsCountHolder(itemView, orderListener);
     }
 
     @Override

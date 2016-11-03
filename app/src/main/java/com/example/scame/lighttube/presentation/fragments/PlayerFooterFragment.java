@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecoration;
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsAdapter;
@@ -39,6 +40,9 @@ import butterknife.ButterKnife;
 
 public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView,
         CommentActionListener, IReplyInputPresenter.ReplyView {
+
+    @CommentsDataManagerImp.CommentsOrders
+    private static final String DEFAULT_COMMENTS_ORDER = CommentsDataManagerImp.RELEVANCE_ORDER;
 
     private static final int INSERT_COMMENT_POS = 1;
 
@@ -111,7 +115,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     private void supplyComments() {
         if (modelsList == null) {
             footerPresenter.setView(this);
-            footerPresenter.getCommentList(videoId);
+            footerPresenter.getCommentList(videoId, DEFAULT_COMMENTS_ORDER);
         } else {
             displayComments(modelsList, userIdentifier, commentsCount);
         }
@@ -130,7 +134,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
-                commentText -> footerPresenter.postComment(commentText, videoId));
+                commentText -> footerPresenter.postComment(commentText, videoId),
+                this::orderClickHandler);
 
         commentsAdapter = new CommentsAdapter(delegatesManager, modelsList);
 
@@ -139,6 +144,12 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+    private void orderClickHandler(View view) {
+        if (view.getTag() instanceof String) {
+            @CommentsDataManagerImp.CommentsOrders String orderType = (String) view.getTag();
+            footerPresenter.commentsOrderClick(videoId, orderType);
+        }
+    }
 
     @Override
     public void displayReply(ReplyModel replyModel) {

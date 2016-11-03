@@ -1,8 +1,12 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
@@ -10,11 +14,10 @@ import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
+import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.MergedCommentsModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
-
-import java.util.List;
 
 import static android.util.Log.i;
 
@@ -36,9 +39,6 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private T view;
 
-    // refactor
-    private List<ThreadCommentModel> models;
-
     public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
                                     DeleteCommentUseCase deleteCommentUseCase,
                                     MarkAsSpamUseCase markAsSpamUseCase,
@@ -56,8 +56,28 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
-    public void getCommentList(String videoId) {
+    public void commentsOrderClick(String videoId, @CommentsDataManagerImp.CommentsOrders String order) {
+        if (isOrderChanged(order)) {
+            retrieveCommentsUseCase.setVideoId(videoId);
+            retrieveCommentsUseCase.setOrder(order);
+            retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
+        }
+    }
+
+    // TODO: refactor, presenter must be android-components agnostic
+    private boolean isOrderChanged(@CommentsDataManagerImp.CommentsOrders String order) {
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(LightTubeApp.getAppComponent().getContext());
+        @CommentsDataManagerImp.CommentsOrders String cachedOrder = sharedPrefs
+                .getString(LightTubeApp.getAppComponent().getContext().getString(R.string.current_comments_order), "");
+
+        return !order.equals(cachedOrder);
+    }
+
+    @Override
+    public void getCommentList(String videoId, @CommentsDataManagerImp.CommentsOrders String order) {
         retrieveCommentsUseCase.setVideoId(videoId);
+        retrieveCommentsUseCase.setOrder(order);
         retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
     }
 

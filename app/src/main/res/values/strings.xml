@@ -99,5 +99,8 @@
     <string name="report">report</string>
     <string name="reply_opt">reply</string>
     <string name="comments" formatted="false">Comments: %d</string>
+    <string name="order_recent">Recent</string>
+    <string name="order_popular">Popular</string>
+    <string name="current_comments_order">order_key</string>
 
 </resources>

@@ -4,6 +4,7 @@ package com.example.scame.lighttube.presentation.adapters.player.threads;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
@@ -38,7 +39,8 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
     public CommentsDelegatesManager(CommentActionListener actionListener, Context context,
                                     String userIdentifier, String videoId,
                                     PlayerFooterFragment.PlayerFooterListener footerListener,
-                                    PlayerFooterFragment.PostedCommentListener postedCommentListener) {
+                                    PlayerFooterFragment.PostedCommentListener postedCommentListener,
+                                    View.OnClickListener orderListener) {
         delegates = new ArrayList<>();
 
         delegates.add(new CommentInputDelegate(postedCommentListener));
@@ -48,7 +50,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
         delegates.add(new MultipleRepliesDelegate(footerListener, actionListener, userIdentifier));
         delegates.add(new HeaderDelegate(context, videoId, null));
         delegates.add(new EditCommentDelegate(actionListener));
-        delegates.add(new CommentsCountDelegate());
+        delegates.add(new CommentsCountDelegate(orderListener));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
+import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IStatisticsDataManager;
 import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
@@ -21,6 +22,8 @@ public class RetrieveCommentsUseCase extends UseCase<MergedCommentsModel> {
 
     private String videoId;
 
+    private String order;
+
     public RetrieveCommentsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICommentsDataManager commentsDataManager,
                                    IStatisticsDataManager statsDataManager, IUserChannelDataManager userChannelDataManager) {
         super(subscribeOn, observeOn);
@@ -32,10 +35,14 @@ public class RetrieveCommentsUseCase extends UseCase<MergedCommentsModel> {
 
     @Override
     protected Observable<MergedCommentsModel> getUseCaseObservable() {
-        return Observable.zip(commentsDataManager.getCommentList(videoId).subscribeOn(Schedulers.computation()),
+        return Observable.zip(commentsDataManager.getCommentList(videoId, order).subscribeOn(Schedulers.computation()),
                 statisticsDataManager.getVideoStatistics(videoId).subscribeOn(Schedulers.computation()),
                 userChannelDataManager.getUserChannelUrl().subscribeOn(Schedulers.computation()),
                         MergedCommentsModel::new);
+    }
+
+    public void setOrder(@CommentsDataManagerImp.CommentsOrders String order) {
+        this.order = order;
     }
 
     public void setVideoId(String videoId) {
@@ -44,5 +51,9 @@ public class RetrieveCommentsUseCase extends UseCase<MergedCommentsModel> {
 
     public String getVideoId() {
         return videoId;
+    }
+
+    public String getOrder() {
+        return order;
     }
 }

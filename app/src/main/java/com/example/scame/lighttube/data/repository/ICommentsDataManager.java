@@ -10,7 +10,7 @@ import rx.Observable;
 
 public interface ICommentsDataManager {
 
-    Observable<List<ThreadCommentModel>> getCommentList(String videoId);
+    Observable<List<ThreadCommentModel>> getCommentList(String videoId, String order);
 
     Observable<ThreadCommentModel> postThreadComment(String commentText, String videoId);
 
