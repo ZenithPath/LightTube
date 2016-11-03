@@ -91,7 +91,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
 
     private Integer getCommentsCountByPosition(List<?> items, int position) {
         int relativePosition = position - NUMBER_OF_VIEW_ABOVE_COUNTS;
-        if (relativePosition >= 0 && items.get(relativePosition) instanceof Integer) {
+        if (relativePosition >= 0 && relativePosition < items.size() && items.get(relativePosition) instanceof Integer) {
             return (Integer) items.get(relativePosition);
         }
         return null;

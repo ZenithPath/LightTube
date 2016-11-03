@@ -10,7 +10,7 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
 
     interface FooterView {
 
-        void displayComments(List<?> models, String userIdentifier);
+        void displayComments(List<?> models, String userIdentifier, int commentsCount);
 
         void onCommentDeleted(String deletedCommentId);
 

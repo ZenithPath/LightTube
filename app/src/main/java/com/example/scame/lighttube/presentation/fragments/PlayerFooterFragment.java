@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView,
         CommentActionListener, IReplyInputPresenter.ReplyView {
 
-    private static final int INSERT_COMMENT_POS = 0;
+    private static final int INSERT_COMMENT_POS = 1;
 
     @Inject
     IPlayerFooterPresenter<IPlayerFooterPresenter.FooterView> footerPresenter;
@@ -60,6 +60,8 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     private String videoId;
 
     private String userIdentifier;
+
+    private int commentsCount;
 
     public interface PlayerFooterListener {
 
@@ -111,7 +113,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
             footerPresenter.setView(this);
             footerPresenter.getCommentList(videoId);
         } else {
-            displayComments(modelsList, userIdentifier);
+            displayComments(modelsList, userIdentifier, commentsCount);
         }
     }
 
@@ -120,10 +122,12 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
      */
 
     @Override
-    public void displayComments(List<?> commentsList, String userIdentifier) {
+    public void displayComments(List<?> commentsList, String userIdentifier, int commentsCount) {
         this.modelsList = new ArrayList<>(commentsList);
+        this.commentsCount = commentsCount;
         this.userIdentifier = userIdentifier;
-        modelsList.add(0, 999);
+        modelsList.add(0, commentsCount);
+
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
                 userIdentifier, videoId, footerListener,
                 commentText -> footerPresenter.postComment(commentText, videoId));

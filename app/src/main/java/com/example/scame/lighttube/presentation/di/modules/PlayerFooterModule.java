@@ -33,17 +33,15 @@ public class PlayerFooterModule {
     @Provides
     @PerActivity
     IPlayerFooterPresenter<FooterView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
-                                                                RetrieveUserIdentifierUseCase identifierUseCase,
                                                                 DeleteCommentUseCase deleteCommentUseCase,
                                                                 MarkAsSpamUseCase markAsSpamUseCase,
                                                                 UpdateThreadUseCase updateThreadUseCase,
                                                                 PostThreadCommentUseCase postThreadCommentUseCase,
                                                                 UpdateReplyUseCase updateReplyUseCase,
-                                                                VideoStatsUseCase videoStatsUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
-        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase, identifierUseCase,
+        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase,
                 deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase,
-                updateReplyUseCase, videoStatsUseCase, subscriptionsHandler);
+                updateReplyUseCase, subscriptionsHandler);
     }
 
     @Provides
@@ -98,23 +96,23 @@ public class PlayerFooterModule {
     @Provides
     @PerActivity
     RetrieveCommentsUseCase provideRetrieveCommentsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                           ICommentsDataManager commentsDataManager) {
+                                                           ICommentsDataManager commentsDataManager,
+                                                           IUserChannelDataManager userChannelDataManager,
+                                                           IStatisticsDataManager statisticsDataManager) {
 
-        return new RetrieveCommentsUseCase(subscribeOn, observeOn, commentsDataManager);
+        return new RetrieveCommentsUseCase(subscribeOn, observeOn, commentsDataManager,
+                statisticsDataManager, userChannelDataManager);
     }
 
     @Provides
     @Named("footer")
     @PerActivity
     SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase,
-                                                             RetrieveUserIdentifierUseCase identifierUseCase,
                                                              DeleteCommentUseCase deleteCommentUseCase,
                                                              MarkAsSpamUseCase markAsSpamUseCase,
                                                              UpdateThreadUseCase updateThreadUseCase,
-                                                             PostThreadCommentUseCase postThreadCommentUseCase,
-                                                             VideoStatsUseCase videoStatsUseCase) {
-        return new SubscriptionsHandler(retrieveCommentsUseCase, identifierUseCase,
-                deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase,
-                videoStatsUseCase);
+                                                             PostThreadCommentUseCase postThreadCommentUseCase) {
+        return new SubscriptionsHandler(retrieveCommentsUseCase, deleteCommentUseCase,
+                markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase);
     }
 }
