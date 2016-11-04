@@ -4,28 +4,94 @@
     android:id="@+id/player_footer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/video_title_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/comment_padding" />
+
+        <ImageButton
+            android:id="@+id/description_ib"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_keyboard_arrow_down_black_24dp" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/video_title_tv"
-        android:layout_width="0dp"
+        android:id="@+id/view_count_tv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Video title" />
+        android:layout_margin="@dimen/comment_elem_margin"/>
 
-    <ImageButton
-        android:id="@+id/like_btn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/description_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="9dp"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_thumb_up_black_24dp" />
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <ImageButton
-        android:id="@+id/dislike_btn"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/video_description_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"/>
+
+        <TextView
+            android:id="@+id/category_description_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"/>
+
+        <TextView
+            android:id="@+id/license_description_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="9dp"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_thumb_down_black_24dp" />
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/like_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_thumb_up_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/dislike_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_thumb_down_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/share_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/comment_padding"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_share_black_24dp"/>
+
+    </LinearLayout>
+
+
 </LinearLayout>
