@@ -7,6 +7,7 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.activities.SearchActivity;
 import com.example.scame.lighttube.presentation.di.PerActivity;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import javax.inject.Inject;
 
@@ -16,10 +17,10 @@ public class Navigator {
     @Inject
     public Navigator() {}
 
-    public void navigateToPlayVideo(Context context, String videoId) {
+    public void navigateToPlayVideo(Context context, VideoModel videoModel) {
         if (context != null) {
             Intent intentToLaunch = new Intent(context, PlayerActivity.class);
-            intentToLaunch.putExtra(context.getString(R.string.video_id), videoId);
+            intentToLaunch.putExtra(context.getString(R.string.video_model_key), videoModel);
             context.startActivity(intentToLaunch);
         }
     }

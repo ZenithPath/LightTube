@@ -15,9 +15,15 @@ public class SnippetEntity {
 
     private String title;
 
+    private String categoryId;
+
     private ThumbnailsGroup thumbnails;
 
     private SubscriptionResourceId resourceId;
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public void setChannelTitle(String channelTitle) {
         this.channelTitle = channelTitle;
@@ -45,6 +51,10 @@ public class SnippetEntity {
 
     public void setThumbnails(ThumbnailsGroup thumbnails) {
         this.thumbnails = thumbnails;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
     }
 
     public String getChannelTitle() {

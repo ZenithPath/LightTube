@@ -12,7 +12,7 @@
     <string name="video_items_list">videoItems</string>
     <string name="page_number">pageNumber</string>
 
-    <string name="video_id">id</string>
+    <string name="video_model_key">modelKey</string>
 
     <string name="search_hint">Search LightTube</string>
     <string name="search">Search</string>
@@ -102,5 +102,9 @@
     <string name="order_recent">Recent</string>
     <string name="order_popular">Popular</string>
     <string name="current_comments_order">order_key</string>
+
+    <string name="view_count">%d views</string>
+    <string name="category_video_header">Category</string>
+    <string name="license_video_header">License</string>
 
 </resources>

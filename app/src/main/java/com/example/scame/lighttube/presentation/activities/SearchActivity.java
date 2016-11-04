@@ -21,6 +21,7 @@ import com.example.scame.lighttube.presentation.di.components.SearchComponent;
 import com.example.scame.lighttube.presentation.di.modules.SearchModule;
 import com.example.scame.lighttube.presentation.fragments.AutocompleteFragment;
 import com.example.scame.lighttube.presentation.fragments.SearchResultsFragment;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -147,7 +148,7 @@ public class SearchActivity extends BaseActivity implements HasComponent<SearchC
     }
 
     @Override
-    public void onVideoClick(String id) {
-        navigator.navigateToPlayVideo(this, id);
+    public void onVideoClick(VideoModel videoModel) {
+        navigator.navigateToPlayVideo(this, videoModel);
     }
 }

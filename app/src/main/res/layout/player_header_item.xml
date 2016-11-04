@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/player_footer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,6 +17,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/comment_text"
+            android:textColor="@color/textPrimary"
             android:padding="@dimen/comment_padding" />
 
         <ImageButton
@@ -34,32 +37,47 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/comment_elem_margin"/>
 
-    <LinearLayout
+    <android.support.v7.widget.GridLayout
         android:id="@+id/description_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        app:columnCount="2"
+        app:rowCount="3"
+        app:orientation="horizontal"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/video_description_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            app:layout_gravity="fill_horizontal"
+            app:layout_columnSpan="2"
             android:padding="@dimen/comment_padding"/>
+
+        <TextView
+            android:text="@string/category_video_header"
+            android:layout_width="0dp"
+            android:padding="@dimen/comment_padding"
+            app:layout_columnWeight="1"/>
 
         <TextView
             android:id="@+id/category_description_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/comment_padding"/>
+            android:layout_width="0dp"
+            android:padding="@dimen/comment_padding"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:text="@string/license_video_header"
+            android:layout_width="0dp"
+            android:padding="@dimen/comment_padding"
+            app:layout_columnWeight="1"/>
 
         <TextView
             android:id="@+id/license_description_tv"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/comment_padding"/>
+            android:padding="@dimen/comment_padding"
+            app:layout_columnWeight="1"/>
 
-    </LinearLayout>
+        </android.support.v7.widget.GridLayout>
 
 
     <LinearLayout
@@ -75,6 +93,13 @@
             android:background="?android:selectableItemBackground"
             android:src="@drawable/ic_thumb_up_black_24dp" />
 
+        <TextView
+            android:id="@+id/like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:paddingTop="@dimen/comment_padding" />
+
         <ImageButton
             android:id="@+id/dislike_btn"
             android:layout_width="wrap_content"
@@ -82,6 +107,13 @@
             android:padding="@dimen/comment_padding"
             android:background="?android:selectableItemBackground"
             android:src="@drawable/ic_thumb_down_black_24dp" />
+
+        <TextView
+            android:id="@+id/dislike_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:paddingTop="@dimen/comment_padding" />
 
         <ImageButton
             android:id="@+id/share_btn"

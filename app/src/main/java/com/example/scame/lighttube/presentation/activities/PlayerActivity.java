@@ -19,6 +19,7 @@ import com.example.scame.lighttube.presentation.di.components.RepliesComponent;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
@@ -47,7 +48,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private boolean fullscreen;
 
-    private String videoId;
+    private VideoModel videoModel;
 
     private AppCompatDelegate delegate;
 
@@ -61,7 +62,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         delegate.setContentView(R.layout.player_activity);
 
         componentsManager = new ComponentsManager(this);
-        videoId = getIntent().getStringExtra(getString(R.string.video_id));
+        videoModel = getIntent().getParcelableExtra(getString(R.string.video_model_key));
 
         ButterKnife.bind(this);
 
@@ -76,7 +77,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
 
     private void instantiateFooterFragment() {
         if (getFragmentManager().findFragmentByTag(PLAYER_FOOTER_TAG) == null) {
-            PlayerFooterFragment fragment = PlayerFooterFragment.newInstance(videoId);
+            PlayerFooterFragment fragment = PlayerFooterFragment.newInstance(videoModel);
             getFragmentManager().beginTransaction()
                     .replace(R.id.player_activity_fl, fragment, PLAYER_FOOTER_TAG)
                     .commit();
@@ -109,7 +110,7 @@ public class PlayerActivity extends YouTubeFailureRecoveryActivity implements
         setPortraitFullscreen();
 
         if (!wasRestored) {
-            this.youTubePlayer.cueVideo(videoId);
+            this.youTubePlayer.cueVideo(videoModel.getVideoId());
         }
     }
 

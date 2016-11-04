@@ -173,8 +173,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
             if (view != null) {
                 view.displayComments(mergedModel.getCommentsWrapper().getComments(),
                         mergedModel.getUserIdentifier(),
-                        mergedModel.getVideoStatsModel().getCommentCount(),
-                        mergedModel.getCommentsWrapper().getCommentsOrder()
+                        mergedModel.getCommentsWrapper().getCommentsOrder(),
+                        mergedModel.getVideoStatsModel()
                 );
             }
         }

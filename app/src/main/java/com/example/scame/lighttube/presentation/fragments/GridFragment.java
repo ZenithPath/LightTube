@@ -63,7 +63,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
 
     public interface GridFragmentListener {
 
-        void onVideoClick(String id);
+        void onVideoClick(VideoModel videoModel);
 
         void onScrolled(boolean scrolledToTop);
     }
@@ -162,8 +162,8 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
         if (gridAdapter instanceof GridAdapter) {
             GridAdapter adapter = (GridAdapter) gridAdapter;
             adapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((VideoModel) items.get(position)).getVideoId();
-                gridFragmentListener.onVideoClick(videoId);
+                VideoModel videoModel = ((VideoModel) items.get(position));
+                gridFragmentListener.onVideoClick(videoModel);
             });
         }
     }

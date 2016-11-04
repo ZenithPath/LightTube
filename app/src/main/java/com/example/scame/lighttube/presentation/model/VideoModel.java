@@ -1,11 +1,10 @@
 package com.example.scame.lighttube.presentation.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import java.util.Date;
 
-public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoModel> {
+public class VideoModel implements ModelMarker, Comparable<VideoModel> {
 
     private String publishedAt;
 
@@ -14,6 +13,10 @@ public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoMode
     private String channelId;
 
     private String duration;
+
+    private String category;
+
+    private String description;
 
     private String imageUrl;
 
@@ -26,6 +29,14 @@ public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoMode
     @Override
     public int compareTo(VideoModel o) {
         return date.compareTo(o.getDate());
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setPublishedAt(String publishedAt) {
@@ -58,6 +69,14 @@ public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoMode
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getPublishedAt() {
@@ -104,6 +123,8 @@ public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoMode
         dest.writeString(this.channelTitle);
         dest.writeString(this.channelId);
         dest.writeString(this.duration);
+        dest.writeString(this.category);
+        dest.writeString(this.description);
         dest.writeString(this.imageUrl);
         dest.writeString(this.title);
         dest.writeString(this.videoId);
@@ -118,6 +139,8 @@ public class VideoModel implements Parcelable, ModelMarker, Comparable<VideoMode
         this.channelTitle = in.readString();
         this.channelId = in.readString();
         this.duration = in.readString();
+        this.category = in.readString();
+        this.description = in.readString();
         this.imageUrl = in.readString();
         this.title = in.readString();
         this.videoId = in.readString();

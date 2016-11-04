@@ -58,7 +58,7 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     public interface SearchResultsListener {
 
-        void onVideoClick(String id);
+        void onVideoClick(VideoModel videoModel);
     }
 
     @Override
@@ -177,8 +177,8 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         if (adapter instanceof SearchResultsAdapter) {
             SearchResultsAdapter searchAdapter = (SearchResultsAdapter) adapter;
             searchAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((VideoModel) searchItems.get(position)).getVideoId();
-                listener.onVideoClick(videoId);
+                VideoModel videoModel = ((VideoModel) searchItems.get(position));
+                listener.onVideoClick(videoModel);
             });
         }
     }

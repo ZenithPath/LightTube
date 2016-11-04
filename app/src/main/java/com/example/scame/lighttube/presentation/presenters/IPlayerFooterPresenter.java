@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.VideoStatsModel;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface IPlayerFooterPresenter<T> extends Presenter<T> {
 
     interface FooterView {
 
-        void displayComments(List<?> comments, String userIdentifier, int commentsCount, String commentsOrder);
+        void displayComments(List<?> comments, String userIdentifier, String commentsOrder, VideoStatsModel statsModel);
 
         void onCommentDeleted(String deletedCommentId);
 

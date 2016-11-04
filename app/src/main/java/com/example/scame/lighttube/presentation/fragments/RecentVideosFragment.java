@@ -58,9 +58,9 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     public interface RecentVideosListener {
 
-        void onChannelClick(String channelId);
+        void onChannelClick(String channelI);
 
-        void onVideoClick(String videoId);
+        void onVideoClick(VideoModel videoModel);
 
         void onScrolled(boolean scrolledToTop);
     }
@@ -166,7 +166,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
 
     private void setAdapterListeners() {
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
-                recentVideosListener.onVideoClick(videoModels.get(position).getVideoId()));
+                recentVideosListener.onVideoClick(videoModels.get(position)));
 
 
         recentVideosAdapter.setDirectionScrollListener(scrollToTop ->

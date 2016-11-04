@@ -18,6 +18,10 @@ public class VideoListMapper {
             itemModel.setImageUrl(entity.getSnippet().getThumbnails().getHigh().getUrl());
             itemModel.setTitle(entity.getSnippet().getTitle());
             itemModel.setVideoId(entity.getId());
+            itemModel.setChannelTitle(entity.getSnippet().getChannelTitle());
+            itemModel.setPublishedAt(entity.getSnippet().getPublishedAt());
+            itemModel.setCategory(entity.getSnippet().getCategoryId());
+            itemModel.setDescription(entity.getSnippet().getDescription());
 
             modelList.add(itemModel);
         }

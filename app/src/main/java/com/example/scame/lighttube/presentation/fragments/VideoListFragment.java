@@ -59,7 +59,7 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
 
     public interface VideoListActivityListener {
 
-        void onVideoClick(String id);
+        void onVideoClick(VideoModel videoModel);
 
         void onScrolled(boolean scrolledToTop);
     }
@@ -185,8 +185,8 @@ public class VideoListFragment extends BaseFragment implements IVideoListPresent
         if (adapter instanceof VideoListAdapter) {
             VideoListAdapter videoAdapter = (VideoListAdapter) adapter;
             videoAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((VideoModel) items.get(position)).getVideoId();
-                listActivityListener.onVideoClick(videoId);
+                VideoModel videoModel = ((VideoModel) items.get(position));
+                listActivityListener.onVideoClick(videoModel);
             });
         }
     }

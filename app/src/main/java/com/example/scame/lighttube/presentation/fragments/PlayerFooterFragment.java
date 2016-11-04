@@ -22,8 +22,11 @@ import com.example.scame.lighttube.presentation.adapters.player.threads.Comments
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsViewHolder;
 import com.example.scame.lighttube.presentation.adapters.player.threads.UpdateCommentObj;
+import com.example.scame.lighttube.presentation.model.HeaderModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.VideoModel;
+import com.example.scame.lighttube.presentation.model.VideoStatsModel;
 import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
 import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
 import com.example.scame.lighttube.utility.Utility;
@@ -61,11 +64,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private List<Object> modelsList;
 
-    private String videoId;
+    private VideoModel videoModel;
 
     private String userIdentifier;
 
-    private int commentsCount;
+    private VideoStatsModel statsModel;
 
     private @CommentsDataManagerImp.CommentsOrders String commentsOrder;
 
@@ -78,11 +81,11 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         void onPostCommentClick(String commentText);
     }
 
-    public static PlayerFooterFragment newInstance(String videoId) {
+    public static PlayerFooterFragment newInstance(VideoModel videoModel) {
         PlayerFooterFragment fragment = new PlayerFooterFragment();
 
         Bundle args = new Bundle();
-        args.putString(PlayerFooterFragment.class.getCanonicalName(), videoId);
+        args.putParcelable(PlayerFooterFragment.class.getCanonicalName(), videoModel);
         fragment.setArguments(args);
 
         return fragment;
@@ -102,7 +105,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.player_footer_fragment, container, false);
 
-        videoId = getArguments().getString(PlayerFooterFragment.class.getCanonicalName());
+        videoModel = getArguments().getParcelable(PlayerFooterFragment.class.getCanonicalName());
         ((PlayerActivity) getActivity()).getPlayerFooterComponent().inject(this);
         ButterKnife.bind(this, fragmentView);
 
@@ -117,9 +120,9 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     private void supplyComments() {
         if (modelsList == null) {
             footerPresenter.setView(this);
-            footerPresenter.getCommentList(videoId, DEFAULT_COMMENTS_ORDER);
+            footerPresenter.getCommentList(videoModel.getVideoId(), DEFAULT_COMMENTS_ORDER);
         } else {
-            displayComments(modelsList, userIdentifier, commentsCount, commentsOrder);
+            displayComments(modelsList, userIdentifier, commentsOrder, statsModel);
         }
     }
 
@@ -128,10 +131,10 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
      */
 
     @Override
-    public void displayComments(List<?> commentsList, String userIdentifier, int commentsCount, String order) {
+    public void displayComments(List<?> commentsList, String userIdentifier, String order, VideoStatsModel statsModel) {
         this.modelsList = new ArrayList<>(commentsList);
         this.commentsOrder = order;
-        this.commentsCount = commentsCount;
+        this.statsModel = statsModel;
         this.userIdentifier = userIdentifier;
 
         addCommentsCountElem();
@@ -141,14 +144,14 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private void addCommentsCountElem() {
         if (modelsList.get(0) instanceof ThreadCommentModel) {
-            modelsList.add(0, commentsCount);
+            modelsList.add(0, statsModel.getCommentCount());
         }
     }
 
     private void constructCommentsAdapter() {
         CommentsDelegatesManager delegatesManager = new CommentsDelegatesManager(this, getActivity(),
-                userIdentifier, videoId, footerListener,
-                commentText -> footerPresenter.postComment(commentText, videoId),
+                userIdentifier, new HeaderModel(videoModel, statsModel), footerListener,
+                commentText -> footerPresenter.postComment(commentText, videoModel.getVideoId()),
                 this::orderClickHandler);
 
         commentsAdapter = new CommentsAdapter(delegatesManager, modelsList);
@@ -163,7 +166,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     private void orderClickHandler(View view) {
         if (view.getTag() instanceof String) {
             @CommentsDataManagerImp.CommentsOrders String newOrder = (String) view.getTag();
-            footerPresenter.commentsOrderClick(videoId, commentsOrder, newOrder);
+            footerPresenter.commentsOrderClick(videoModel.getVideoId(), commentsOrder, newOrder);
         }
     }
 

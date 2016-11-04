@@ -11,6 +11,7 @@ import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegatesManager;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.PlayerFooterFragment;
+import com.example.scame.lighttube.presentation.model.HeaderModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
     private List<AdapterDelegate<List<?>>> delegates;
 
     public CommentsDelegatesManager(CommentActionListener actionListener, Context context,
-                                    String userIdentifier, String videoId,
+                                    String userIdentifier, HeaderModel headerModel,
                                     PlayerFooterFragment.PlayerFooterListener footerListener,
                                     PlayerFooterFragment.PostedCommentListener postedCommentListener,
                                     View.OnClickListener orderListener) {
@@ -48,7 +49,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
         delegates.add(new SingleReplyDelegate(actionListener, userIdentifier));
         delegates.add(new CoupleRepliesDelegate(actionListener, userIdentifier));
         delegates.add(new MultipleRepliesDelegate(footerListener, actionListener, userIdentifier));
-        delegates.add(new HeaderDelegate(context, videoId, null));
+        delegates.add(new HeaderDelegate(context, headerModel));
         delegates.add(new EditCommentDelegate(actionListener));
         delegates.add(new CommentsCountDelegate(orderListener));
     }

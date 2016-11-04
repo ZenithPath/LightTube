@@ -60,7 +60,7 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
 
     public interface ChannelVideosListener {
 
-        void onVideoClick(String videoId);
+        void onVideoClick(VideoModel videoModel);
 
         void onScrolled(boolean scrolledToTop);
     }
@@ -188,8 +188,8 @@ public class ChannelVideosFragment extends BaseFragment implements IChannelVideo
         if (channelAdapter instanceof ChannelVideosAdapter) {
             ChannelVideosAdapter videosAdapter = (ChannelVideosAdapter) channelAdapter;
             videosAdapter.setupOnItemClickListener((itemView, position) -> {
-                String videoId = ((VideoModel) searchItems.get(position)).getVideoId();
-                channelVideosListener.onVideoClick(videoId);
+                VideoModel videoModel = ((VideoModel) searchItems.get(position));
+                channelVideosListener.onVideoClick(videoModel);
             });
         }
     }

@@ -26,6 +26,7 @@ import com.example.scame.lighttube.presentation.fragments.RecentVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.SignInFragment;
 import com.example.scame.lighttube.presentation.fragments.SurpriseMeFragment;
 import com.example.scame.lighttube.presentation.fragments.VideoListFragment;
+import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.ITabActivityPresenter;
 
 import javax.inject.Inject;
@@ -262,8 +263,8 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     }
 
     @Override
-    public void onVideoClick(String id) {
-        navigator.navigateToPlayVideo(this, id);
+    public void onVideoClick(VideoModel videoModel) {
+        navigator.navigateToPlayVideo(this, videoModel);
     }
 
     @Override

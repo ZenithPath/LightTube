@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
+import com.example.scame.lighttube.presentation.model.HeaderModel;
 
 import java.util.List;
 
@@ -17,21 +18,18 @@ public class HeaderDelegate implements AdapterDelegate<List<?>> {
 
     private Context context;
 
-    private String videoId;
+    private HeaderModel headerModel;
 
-    private String videoTitle;
-
-    public HeaderDelegate(Context context, String videoId, String videoTitle) {
+    public HeaderDelegate(Context context, HeaderModel headerModel) {
         this.context = context;
-        this.videoId = videoId;
-        this.videoTitle = videoTitle;
+        this.headerModel = headerModel;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         View headerView = LayoutInflater.from(parent.getContext()).inflate(R.layout.player_header_item, parent, false);
-        return new HeaderHolder(headerView, context, videoId, videoTitle);
+        return new HeaderHolder(headerView, context, headerModel);
     }
 
     @Override
