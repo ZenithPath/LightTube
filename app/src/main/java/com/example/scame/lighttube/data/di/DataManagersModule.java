@@ -31,12 +31,14 @@ import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
 import com.example.scame.lighttube.data.repository.ICommentsDataManager;
 import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
+import com.example.scame.lighttube.data.repository.IPageCacheUtility;
 import com.example.scame.lighttube.data.repository.IRatingDataManager;
 import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
 import com.example.scame.lighttube.data.repository.ISearchDataManager;
 import com.example.scame.lighttube.data.repository.IStatisticsDataManager;
 import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.data.repository.IVideoListDataManager;
+import com.example.scame.lighttube.data.repository.PageCacheUtilityImp;
 import com.example.scame.lighttube.data.repository.RatingDataManagerImp;
 import com.example.scame.lighttube.data.repository.RecentVideosDataManagerImp;
 import com.example.scame.lighttube.data.repository.SearchDataManagerImp;
@@ -144,5 +146,11 @@ public class DataManagersModule {
     @Provides
     IStatisticsDataManager provideStatisticsDataManager(StatisticsApi statisticsApi, VideoStatsMapper statsMapper) {
         return new StatisticsDataManagerImp(statsMapper, statisticsApi);
+    }
+
+
+    @Provides
+    IPageCacheUtility providePageCachingUtility(SharedPreferences sharedPreferences, Context context) {
+        return new PageCacheUtilityImp(sharedPreferences, context);
     }
 }

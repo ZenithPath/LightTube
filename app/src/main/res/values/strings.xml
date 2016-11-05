@@ -10,7 +10,7 @@
     <string name="access_token">accessToken</string>
 
     <string name="video_items_list">videoItems</string>
-    <string name="page_number">pageNumber</string>
+    <string name="page_number_key">pageNumberKey</string>
 
     <string name="video_model_key">modelKey</string>
 
@@ -24,6 +24,7 @@
     <string name="next_page_token_search">searchNextPage</string>
     <string name="search_page_number">searchPageNumber</string>
 
+    <string name="next_page_token_key">nextPageKey</string>
     <string name="next_page_token_list">listNextPage</string>
     <string name="list_page_number">listPageNumber</string>
     

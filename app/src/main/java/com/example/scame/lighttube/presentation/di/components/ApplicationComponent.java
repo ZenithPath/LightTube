@@ -3,6 +3,7 @@ package com.example.scame.lighttube.presentation.di.components;
 import android.content.Context;
 
 import com.example.scame.lighttube.data.di.DataModule;
+import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.data.repository.IAccountDataManager;
 import com.example.scame.lighttube.data.repository.ICategoryDataManager;
 import com.example.scame.lighttube.data.repository.IChannelVideosDataManager;
@@ -26,6 +27,8 @@ import retrofit2.Retrofit;
 @Singleton
 @Component(modules = {ApplicationModule.class, DataModule.class})
 public interface ApplicationComponent {
+
+    void inject(CommentsDataManagerImp commentsDataManager);
 
     Retrofit getRetrofit();
 

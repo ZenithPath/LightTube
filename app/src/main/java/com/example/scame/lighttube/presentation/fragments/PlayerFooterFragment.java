@@ -72,6 +72,10 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private @CommentsDataManagerImp.CommentsOrders String commentsOrder;
 
+    int currentPage;
+    boolean isLoading;
+    boolean isConnectedPreviously = true;
+
     public interface PlayerFooterListener {
 
         void onRepliesClick(ThreadCommentModel threadCommentModel, String identifier);
@@ -112,17 +116,17 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         footerPresenter.setView(this);
         replyInputPresenter.setView(this);
 
-        supplyComments();
+        initFragment();
 
         return fragmentView;
     }
 
-    private void supplyComments() {
+    private void initFragment() {
         if (modelsList == null) {
             footerPresenter.setView(this);
-            footerPresenter.getCommentList(videoModel.getVideoId(), DEFAULT_COMMENTS_ORDER);
+            footerPresenter.initializeFooter(videoModel.getVideoId(), DEFAULT_COMMENTS_ORDER, currentPage);
         } else {
-            displayComments(modelsList, userIdentifier, commentsOrder, statsModel);
+            initializeAdapter();
         }
     }
 
@@ -131,15 +135,47 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
      */
 
     @Override
-    public void displayComments(List<?> commentsList, String userIdentifier, String order, VideoStatsModel statsModel) {
-        this.modelsList = new ArrayList<>(commentsList);
-        this.commentsOrder = order;
+    public void onInitialized(List<?> comments, String userIdentifier, String commentsOrder, VideoStatsModel statsModel) {
+        this.modelsList = new ArrayList<>(comments);
+        this.commentsOrder = commentsOrder;
         this.statsModel = statsModel;
         this.userIdentifier = userIdentifier;
 
+        initializeAdapter();
+    }
+
+    @Override
+    public void onCommentsUpdated(List<?> commentsList, String order) {
+        if (order.equals(this.commentsOrder)) {
+            updateScrolledList(commentsList);
+        } else {
+            this.commentsOrder = order;
+            updateAdapterModels(commentsList);
+        }
+    }
+
+    private void updateAdapterModels(List<?> commentsList) {
+        modelsList.removeAll(modelsList);
         addCommentsCountElem();
+        modelsList.addAll(commentsList);
+        commentsAdapter.notifyDataSetChanged();
+    }
+
+    private void initializeAdapter() {
+        addCommentsCountElem();
+        footerRv.setLayoutManager(new LinearLayoutManager(getActivity())); // required by a scroll listener
         constructCommentsAdapter();
         initializeFooterRecycler();
+    }
+
+    private void updateScrolledList(List<?> commentsList) {
+        modelsList.remove(modelsList.size() - 1);
+        commentsAdapter.notifyItemRemoved(modelsList.size());
+
+        modelsList.addAll(commentsList);
+        commentsAdapter.notifyItemRangeInserted(commentsAdapter.getItemCount(), commentsList.size());
+
+        commentsAdapter.setLoading(false);
     }
 
     private void addCommentsCountElem() {
@@ -154,19 +190,34 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
                 commentText -> footerPresenter.postComment(commentText, videoModel.getVideoId()),
                 this::orderClickHandler);
 
-        commentsAdapter = new CommentsAdapter(delegatesManager, modelsList);
+        commentsAdapter = new CommentsAdapter(delegatesManager, modelsList, footerRv);
+
+        commentsAdapter.setCurrentPage(currentPage);
+        commentsAdapter.setConnectedPreviously(isConnectedPreviously);
+        commentsAdapter.setLoading(isLoading);
+
+        setupOnLoadMoreListener();
+    }
+
+    private void setupOnLoadMoreListener() {
+        commentsAdapter.setOnLoadMoreListener((page) -> {
+            modelsList.add(null);
+            commentsAdapter.notifyItemInserted(modelsList.size() - 1);
+
+            currentPage = page;
+            footerPresenter.getCommentList(videoModel.getVideoId(), commentsOrder, page);
+        });
     }
 
     private void initializeFooterRecycler() {
         footerRv.setAdapter(commentsAdapter);
         footerRv.addItemDecoration(new DividerItemDecoration(getActivity()));
-        footerRv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void orderClickHandler(View view) {
         if (view.getTag() instanceof String) {
             @CommentsDataManagerImp.CommentsOrders String newOrder = (String) view.getTag();
-            footerPresenter.commentsOrderClick(videoModel.getVideoId(), commentsOrder, newOrder);
+            footerPresenter.commentsOrderClick(videoModel.getVideoId(), commentsOrder, newOrder, currentPage);
         }
     }
 

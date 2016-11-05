@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.FooterInitializationUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
@@ -14,12 +15,13 @@ import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.model.MergedCommentsModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
+import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 
 import static android.util.Log.i;
 
 public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterView> implements IPlayerFooterPresenter<T> {
 
-    private RetrieveCommentsUseCase retrieveCommentsUseCase;
+    private FooterInitializationUseCase footerInitializationUseCase;
 
     private DeleteCommentUseCase deleteCommentUseCase;
 
@@ -31,30 +33,43 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private UpdateReplyUseCase updateReplyUseCase;
 
+    private RetrieveCommentsUseCase retrieveCommentsUseCase;
+
     private SubscriptionsHandler subscriptionsHandler;
 
     private T view;
 
-    public PlayerFooterPresenterImp(RetrieveCommentsUseCase retrieveCommentsUseCase,
+    public PlayerFooterPresenterImp(FooterInitializationUseCase footerInitializationUseCase,
                                     DeleteCommentUseCase deleteCommentUseCase,
                                     MarkAsSpamUseCase markAsSpamUseCase,
                                     UpdateThreadUseCase updateThreadUseCase,
                                     PostThreadCommentUseCase postCommentUseCase,
                                     UpdateReplyUseCase updateReplyUseCase,
+                                    RetrieveCommentsUseCase retrieveCommentsUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
         this.updateReplyUseCase = updateReplyUseCase;
         this.postCommentUseCase = postCommentUseCase;
         this.markAsSpamUseCase = markAsSpamUseCase;
         this.retrieveCommentsUseCase = retrieveCommentsUseCase;
+        this.footerInitializationUseCase = footerInitializationUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
         this.updateThreadUseCase = updateThreadUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
+    public void initializeFooter(String videoId, String order, int page) {
+        footerInitializationUseCase.setPage(page);
+        footerInitializationUseCase.setVideoId(videoId);
+        footerInitializationUseCase.setOrder(order);
+        footerInitializationUseCase.execute(new InitializationSubscriber());
+    }
+
+    @Override
     public void commentsOrderClick(String videoId, @CommentsDataManagerImp.CommentsOrders String previousOrder,
-                                   @CommentsDataManagerImp.CommentsOrders String newOrder) {
+                                   @CommentsDataManagerImp.CommentsOrders String newOrder, int page) {
         if (!previousOrder.equals(newOrder)) {
+            retrieveCommentsUseCase.setPage(page);
             retrieveCommentsUseCase.setVideoId(videoId);
             retrieveCommentsUseCase.setOrder(newOrder);
             retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
@@ -62,7 +77,8 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
-    public void getCommentList(String videoId, @CommentsDataManagerImp.CommentsOrders String order) {
+    public void getCommentList(String videoId, @CommentsDataManagerImp.CommentsOrders String order, int page) {
+        retrieveCommentsUseCase.setPage(page);
         retrieveCommentsUseCase.setVideoId(videoId);
         retrieveCommentsUseCase.setOrder(order);
         retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
@@ -123,6 +139,29 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
 
+    private final class InitializationSubscriber extends DefaultSubscriber<MergedCommentsModel> {
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxErr", e.getLocalizedMessage());
+        }
+
+        @Override
+        public void onNext(MergedCommentsModel mergedCommentsModel) {
+            super.onNext(mergedCommentsModel);
+
+            if (view != null) {
+                view.onInitialized(
+                        mergedCommentsModel.getCommentsWrapper().getComments(),
+                        mergedCommentsModel.getUserIdentifier(),
+                        mergedCommentsModel.getCommentsWrapper().getCommentsOrder(),
+                        mergedCommentsModel.getVideoStatsModel()
+                );
+            }
+        }
+    }
+
     private final class UpdateReplySubscriber extends DefaultSubscriber<ReplyModel> {
         @Override
         public void onError(Throwable e) {
@@ -158,7 +197,7 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
     }
 
-    private final class RetrieveCommentsSubscriber extends DefaultSubscriber<MergedCommentsModel> {
+    private final class RetrieveCommentsSubscriber extends DefaultSubscriber<ThreadCommentsWrapper> {
 
         @Override
         public void onError(Throwable e) {
@@ -167,15 +206,11 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
         }
 
         @Override
-        public void onNext(MergedCommentsModel mergedModel) {
-            super.onNext(mergedModel);
+        public void onNext(ThreadCommentsWrapper threadCommentsWrapper) {
+            super.onNext(threadCommentsWrapper);
 
             if (view != null) {
-                view.displayComments(mergedModel.getCommentsWrapper().getComments(),
-                        mergedModel.getUserIdentifier(),
-                        mergedModel.getCommentsWrapper().getCommentsOrder(),
-                        mergedModel.getVideoStatsModel()
-                );
+                view.onCommentsUpdated(threadCommentsWrapper.getComments(), threadCommentsWrapper.getCommentsOrder());
             }
         }
     }

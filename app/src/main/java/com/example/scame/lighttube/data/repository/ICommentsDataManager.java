@@ -11,7 +11,7 @@ import rx.Observable;
 
 public interface ICommentsDataManager {
 
-    Observable<ThreadCommentsWrapper> getCommentList(String videoId, String order);
+    Observable<ThreadCommentsWrapper> getCommentList(String videoId, String order, int page);
 
     Observable<ThreadCommentModel> postThreadComment(String commentText, String videoId);
 

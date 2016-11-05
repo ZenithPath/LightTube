@@ -7,6 +7,7 @@ import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.FooterInitializationUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
@@ -32,16 +33,24 @@ public class PlayerFooterModule {
 
     @Provides
     @PerActivity
-    IPlayerFooterPresenter<FooterView> provideCommentsPresenter(RetrieveCommentsUseCase retrieveCommentsUseCase,
+    IPlayerFooterPresenter<FooterView> provideCommentsPresenter(FooterInitializationUseCase footerInitializationUseCase,
+                                                                RetrieveCommentsUseCase retrieveCommentsUseCase,
                                                                 DeleteCommentUseCase deleteCommentUseCase,
                                                                 MarkAsSpamUseCase markAsSpamUseCase,
                                                                 UpdateThreadUseCase updateThreadUseCase,
                                                                 PostThreadCommentUseCase postThreadCommentUseCase,
                                                                 UpdateReplyUseCase updateReplyUseCase,
                                                                 @Named("footer")SubscriptionsHandler subscriptionsHandler) {
-        return new PlayerFooterPresenterImp<>(retrieveCommentsUseCase,
+        return new PlayerFooterPresenterImp<>(footerInitializationUseCase,
                 deleteCommentUseCase, markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase,
-                updateReplyUseCase, subscriptionsHandler);
+                updateReplyUseCase, retrieveCommentsUseCase, subscriptionsHandler);
+    }
+
+    @Provides
+    @PerActivity
+    RetrieveCommentsUseCase provideCommentsRetreivingUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                             ICommentsDataManager dataManager) {
+        return new RetrieveCommentsUseCase(subscribeOn, observeOn, dataManager);
     }
 
     @Provides
@@ -95,24 +104,24 @@ public class PlayerFooterModule {
 
     @Provides
     @PerActivity
-    RetrieveCommentsUseCase provideRetrieveCommentsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                           ICommentsDataManager commentsDataManager,
-                                                           IUserChannelDataManager userChannelDataManager,
-                                                           IStatisticsDataManager statisticsDataManager) {
+    FooterInitializationUseCase provideRetrieveCommentsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                               ICommentsDataManager commentsDataManager,
+                                                               IUserChannelDataManager userChannelDataManager,
+                                                               IStatisticsDataManager statisticsDataManager) {
 
-        return new RetrieveCommentsUseCase(subscribeOn, observeOn, commentsDataManager,
+        return new FooterInitializationUseCase(subscribeOn, observeOn, commentsDataManager,
                 statisticsDataManager, userChannelDataManager);
     }
 
     @Provides
     @Named("footer")
     @PerActivity
-    SubscriptionsHandler provideCommentsSubscriptionsHandler(RetrieveCommentsUseCase retrieveCommentsUseCase,
+    SubscriptionsHandler provideCommentsSubscriptionsHandler(FooterInitializationUseCase footerInitializationUseCase,
                                                              DeleteCommentUseCase deleteCommentUseCase,
                                                              MarkAsSpamUseCase markAsSpamUseCase,
                                                              UpdateThreadUseCase updateThreadUseCase,
                                                              PostThreadCommentUseCase postThreadCommentUseCase) {
-        return new SubscriptionsHandler(retrieveCommentsUseCase, deleteCommentUseCase,
+        return new SubscriptionsHandler(footerInitializationUseCase, deleteCommentUseCase,
                 markAsSpamUseCase, updateThreadUseCase, postThreadCommentUseCase);
     }
 }

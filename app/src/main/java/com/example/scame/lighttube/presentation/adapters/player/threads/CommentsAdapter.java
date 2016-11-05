@@ -4,15 +4,18 @@ package com.example.scame.lighttube.presentation.adapters.player.threads;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
+
 import java.util.List;
 
-public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CommentsAdapter extends BaseAdapter {
 
     private CommentsDelegatesManager delegatesManager;
 
     private List<?> dataset;
 
-    public CommentsAdapter(CommentsDelegatesManager delegatesManager, List<?> dataset) {
+    public CommentsAdapter(CommentsDelegatesManager delegatesManager, List<?> dataset, RecyclerView recyclerView) {
+        super(recyclerView, recyclerView.getContext(), dataset);
         this.delegatesManager = delegatesManager;
         this.dataset = dataset;
     }

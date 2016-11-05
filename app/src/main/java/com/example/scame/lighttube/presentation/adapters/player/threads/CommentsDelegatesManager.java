@@ -30,6 +30,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
     static final int VIEW_TYPE_COMMENT_INPUT = 5;
     static final int VIEW_TYPE_EDIT_COMMENT = 6;
     static final int VIEW_TYPE_COMMENTS_COUNT = 7;
+    static final int VIEW_TYPE_PROGRESS = 8;
 
     private static final int HEADER_LAYOUT_POSITION = 0;
     private static final int COMMENTS_COUNT_POSITION = 1;
@@ -52,6 +53,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
         delegates.add(new HeaderDelegate(context, headerModel));
         delegates.add(new EditCommentDelegate(actionListener));
         delegates.add(new CommentsCountDelegate(orderListener));
+        delegates.add(new ProgressDelegate());
     }
 
     @Override
@@ -73,6 +75,8 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
             return VIEW_TYPE_COMMENTS_COUNT;
         } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateCommentObj) {
             return VIEW_TYPE_EDIT_COMMENT;
+        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) == null) {
+            return VIEW_TYPE_PROGRESS;
         } else if (commentModel != null && commentModel.getReplies().size() == 0) {
             return VIEW_TYPE_THREAD_COMMENT;
         } else if (commentModel != null && commentModel.getReplies().size() == 1) {

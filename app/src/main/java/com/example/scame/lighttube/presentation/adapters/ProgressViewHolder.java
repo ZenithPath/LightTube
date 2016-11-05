@@ -19,4 +19,8 @@ public class ProgressViewHolder extends RecyclerView.ViewHolder {
 
         ButterKnife.bind(this, itemView);
     }
+
+    public void bindProgressView() {
+        progressBar.setIndeterminate(true);
+    }
 }

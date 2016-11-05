@@ -4,6 +4,7 @@ package com.example.scame.lighttube.data.repository;
 import android.support.annotation.StringDef;
 
 import com.example.scame.lighttube.PrivateValues;
+import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
@@ -13,6 +14,7 @@ import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.rest.CommentsApi;
+import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
@@ -20,6 +22,8 @@ import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -36,6 +40,10 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
     private static final int MAX_RES = 50;
 
     private static final String TEXT_FORMAT = "plainText";
+
+    @Inject IPageCacheUtility commentsPageUtility;
+
+    @Inject IPageCacheUtility repliesPageUtility;
 
     private CommentsApi commentsApi;
 
@@ -73,13 +81,20 @@ public class CommentsDataManagerImp implements ICommentsDataManager {
         this.replyResponseMapper = replyResponseMapper;
         this.replyUpdateBuilder = replyUpdateBuilder;
         this.threadUpdateBuilder = threadUpdateBuilder;
+
+        LightTubeApp.getAppComponent().inject(this);
+        commentsPageUtility.setPageStringId(R.string.page_number_key);
+        commentsPageUtility.setTokenStringId(R.string.next_page_token_key);
     }
 
     @Override
-    public Observable<ThreadCommentsWrapper> getCommentList(String videoId, @CommentsOrders String order) {
-        return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, order, MAX_RES, null,
-                TEXT_FORMAT, videoId, PrivateValues.API_KEY)
-                .map(commentThreadsEntity -> commentListMapper.convert(commentThreadsEntity, order));
+    public Observable<ThreadCommentsWrapper> getCommentList(String videoId, @CommentsOrders String order, int page) {
+        return commentsApi.getCommentThreads(SNIPPET_AND_REPLIES_PART, order, MAX_RES,
+                commentsPageUtility.getNextPageToken(page), TEXT_FORMAT, videoId, PrivateValues.API_KEY)
+                .doOnNext(commentThreadsEntity -> {
+                    commentsPageUtility.saveCurrentPage(page);
+                    commentsPageUtility.saveNextPageToken(commentThreadsEntity.getNextPageToken());
+                }).map(commentThreadsEntity -> commentListMapper.convert(commentThreadsEntity, order));
     }
 
     @Override
