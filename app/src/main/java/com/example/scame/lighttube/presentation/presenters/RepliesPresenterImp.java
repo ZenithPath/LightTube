@@ -9,10 +9,9 @@ import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
 import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
+import com.example.scame.lighttube.presentation.model.RepliesWrapper;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
-
-import java.util.List;
 
 public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implements IRepliesPresenter<T> {
 
@@ -47,8 +46,9 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
     }
 
     @Override
-    public void getRepliesList(String parentId) {
+    public void getRepliesList(String parentId, int page) {
         retrieveRepliesUseCase.setParentId(parentId);
+        retrieveRepliesUseCase.setPage(page);
         retrieveRepliesUseCase.execute(new RepliesSubscriber());
     }
 
@@ -118,14 +118,14 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
         }
     }
 
-    private final class RepliesSubscriber extends DefaultSubscriber<List<ReplyModel>> {
+    private final class RepliesSubscriber extends DefaultSubscriber<RepliesWrapper> {
 
         @Override
-        public void onNext(List<ReplyModel> repliesList) {
-            super.onNext(repliesList);
+        public void onNext(RepliesWrapper repliesWrapper) {
+            super.onNext(repliesWrapper);
 
             if (view != null) {
-                view.displayReplies(repliesList);
+                view.displayReplies(repliesWrapper.getReplyModels(), repliesWrapper.getPage());
             }
         }
 

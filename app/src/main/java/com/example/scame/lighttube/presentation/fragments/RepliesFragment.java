@@ -42,6 +42,10 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
     private static final int INSERT_REPLY_POS = 1;
 
+    int currentPage;
+    boolean isLoading;
+    boolean isConnectedPreviously = true;
+
     @BindView(R.id.replies_fragment_rv) RecyclerView repliesRv;
 
     @Inject
@@ -88,7 +92,7 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
 
         repliesPresenter.setView(this);
         replyInputPresenter.setView(this);
-        repliesPresenter.getRepliesList(unparceledModel.getThreadId());
+        repliesPresenter.getRepliesList(unparceledModel.getThreadId(), currentPage);
 
         return repliesView;
     }
@@ -98,20 +102,54 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
      */
 
     @Override
-    public void displayReplies(List<ReplyModel> repliesList) {
+    public void displayReplies(List<ReplyModel> repliesList, int page) {
+        if (page == 0) {
+            initializeAdapter(repliesList);
+        } else {
+            updateScrolledList(repliesList);
+        }
+    }
+
+    private void updateScrolledList(List<ReplyModel> repliesList) {
+        replies.remove(replies.size() - 1);
+        repliesAdapter.notifyItemRemoved(replies.size());
+
+        replies.addAll(repliesList);
+        repliesAdapter.notifyItemRangeInserted(repliesAdapter.getItemCount(), repliesList.size());
+
+        repliesAdapter.setLoading(false);
+    }
+
+    private void initializeAdapter(List<ReplyModel> repliesList) {
         this.replies = new ArrayList<>(repliesList);
         replies.add(0, unparceledModel);
 
-        repliesDelegatesManager = new RepliesDelegatesManager(
-                replyText -> replyInputPresenter.postReply(unparceledModel.getThreadId(), replyText),
-                this, userIdentifier
-        );
-        repliesAdapter = new RepliesAdapter(repliesDelegatesManager, replies);
-
+        repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        constructAdapter();
         repliesRv.setHasFixedSize(true);
-        repliesRv.setLayoutManager(new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.VERTICAL, false));
         repliesRv.setAdapter(repliesAdapter);
+    }
+
+    private void constructAdapter() {
+        repliesDelegatesManager = new RepliesDelegatesManager(replyText ->
+                replyInputPresenter.postReply(unparceledModel.getThreadId(), replyText), this, userIdentifier);
+        repliesAdapter = new RepliesAdapter(repliesDelegatesManager, replies, repliesRv);
+
+        repliesAdapter.setCurrentPage(currentPage);
+        repliesAdapter.setConnectedPreviously(isConnectedPreviously);
+        repliesAdapter.setLoading(isLoading);
+
+        setupOnLoadMoreListener();
+    }
+
+    private void setupOnLoadMoreListener() {
+        repliesAdapter.setOnLoadMoreListener((page) -> {
+            replies.add(null);
+            repliesAdapter.notifyItemInserted(replies.size() - 1);
+
+            currentPage = page;
+            repliesPresenter.getRepliesList(unparceledModel.getThreadId(), currentPage);
+        });
     }
 
 

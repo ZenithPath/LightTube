@@ -4,6 +4,7 @@ package com.example.scame.lighttube.data.mappers;
 import com.example.scame.lighttube.data.entities.replies.ReplyEntity;
 import com.example.scame.lighttube.data.entities.replies.ReplyItem;
 import com.example.scame.lighttube.data.entities.replies.ReplySnippet;
+import com.example.scame.lighttube.presentation.model.RepliesWrapper;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class ReplyListMapper {
 
-    public List<ReplyModel> convert(ReplyEntity replyEntity) {
+    public RepliesWrapper convert(ReplyEntity replyEntity, int page) {
         List<ReplyModel> repliesList = new ArrayList<>(replyEntity.getItems().size());
 
         for (ReplyItem replyItem : replyEntity.getItems()) {
@@ -29,6 +30,6 @@ public class ReplyListMapper {
             repliesList.add(replyModel);
         }
 
-        return repliesList;
+        return new RepliesWrapper(repliesList, page);
     }
 }

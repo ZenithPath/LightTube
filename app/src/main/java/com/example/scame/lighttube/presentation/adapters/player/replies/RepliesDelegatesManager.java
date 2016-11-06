@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegate;
 import com.example.scame.lighttube.presentation.adapters.player.AdapterDelegatesManager;
 import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
+import com.example.scame.lighttube.presentation.adapters.player.threads.ProgressDelegate;
 import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 import com.example.scame.lighttube.presentation.fragments.RepliesFragment;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
@@ -17,10 +18,11 @@ import java.util.List;
 
 public class RepliesDelegatesManager implements AdapterDelegatesManager<List<?>> {
 
-    public static final int VIEW_TYPE_REPLY_COMMENT = 0;
     public static final int VIEW_TYPE_REPLY_INPUT = 1;
-    public static final int VIEW_TYPE_EDIT_REPLY = 2;
-    public static final int VIEW_TYPE_HEADER_COMMENT = 3;
+    static final int VIEW_TYPE_REPLY_COMMENT = 0;
+    static final int VIEW_TYPE_EDIT_REPLY = 2;
+    static final int VIEW_TYPE_HEADER_COMMENT = 3;
+    private static final int VIEW_TYPE_PROGRESS = 4;
 
     public static final int NUMBER_OF_VIEW_ABOVE = 1;
 
@@ -38,6 +40,7 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<List<?>>
         delegates.add(new HeaderCommentDelegate(new PopupHandler(commentActionListener, userIdentifier)));
         delegates.add(new RepliesInputDelegate(replyInputListener));
         delegates.add(new EditReplyDelegate(commentActionListener));
+        delegates.add(new ProgressDelegate(VIEW_TYPE_PROGRESS));
     }
 
     public RepliesDelegatesManager() {
@@ -59,6 +62,8 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<List<?>>
             return VIEW_TYPE_EDIT_REPLY;
         } else if (position == REPLY_INPUT_POS) {
             return VIEW_TYPE_REPLY_INPUT;
+        } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) == null) {
+            return VIEW_TYPE_PROGRESS;
         } else if (items.get(position - NUMBER_OF_VIEW_ABOVE) instanceof UpdateReplyObj) {
             return VIEW_TYPE_EDIT_REPLY;
         } else {

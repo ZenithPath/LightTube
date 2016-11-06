@@ -53,7 +53,7 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
         delegates.add(new HeaderDelegate(context, headerModel));
         delegates.add(new EditCommentDelegate(actionListener));
         delegates.add(new CommentsCountDelegate(orderListener));
-        delegates.add(new ProgressDelegate());
+        delegates.add(new ProgressDelegate(VIEW_TYPE_PROGRESS));
     }
 
     @Override

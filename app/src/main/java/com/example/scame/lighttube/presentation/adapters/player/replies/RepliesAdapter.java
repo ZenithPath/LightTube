@@ -4,16 +4,19 @@ package com.example.scame.lighttube.presentation.adapters.player.replies;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
+
 import java.util.List;
 
-// TODO: generify dataset
-public class RepliesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+public class RepliesAdapter extends BaseAdapter {
 
     private RepliesDelegatesManager delegatesManager;
 
     private List<?> dataset;
 
-    public RepliesAdapter(RepliesDelegatesManager delegatesManager, List<?> dataset) {
+    public RepliesAdapter(RepliesDelegatesManager delegatesManager, List<?> dataset, RecyclerView recyclerView) {
+        super(recyclerView, recyclerView.getContext(), dataset);
         this.delegatesManager = delegatesManager;
         this.dataset = dataset;
     }

@@ -1,11 +1,10 @@
 package com.example.scame.lighttube.data.repository;
 
 
+import com.example.scame.lighttube.presentation.model.RepliesWrapper;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
-
-import java.util.List;
 
 import rx.Observable;
 
@@ -17,7 +16,7 @@ public interface ICommentsDataManager {
 
     Observable<ThreadCommentModel> updateThreadComment(String updatedText, String commentId);
 
-    Observable<List<ReplyModel>> getReplyList(String parentId);
+    Observable<RepliesWrapper> getReplyList(String parentId, int page);
 
     Observable<ReplyModel> postReply(String replyText, String parentId);
 

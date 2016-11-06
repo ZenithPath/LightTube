@@ -10,7 +10,7 @@ public interface IRepliesPresenter<T> extends Presenter<T> {
 
     interface RepliesView {
 
-        void displayReplies(List<ReplyModel> repliesList);
+        void displayReplies(List<ReplyModel> repliesList, int page);
 
         void onDeletedComment(String deletedCommentId);
 
@@ -21,7 +21,7 @@ public interface IRepliesPresenter<T> extends Presenter<T> {
         void onUpdatedPrimaryComment(ThreadCommentModel threadCommentModel);
     }
 
-    void getRepliesList(String parentId);
+    void getRepliesList(String parentId, int page);
 
     void deleteComment(String replyId);
 

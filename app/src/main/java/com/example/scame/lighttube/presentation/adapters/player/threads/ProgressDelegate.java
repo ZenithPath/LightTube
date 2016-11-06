@@ -15,6 +15,12 @@ import java.util.List;
 
 public class ProgressDelegate implements AdapterDelegate<List<?>> {
 
+    private int viewType;
+
+    public ProgressDelegate(int viewType) {
+        this.viewType = viewType;
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -31,6 +37,6 @@ public class ProgressDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_PROGRESS;
+        return viewType;
     }
 }
