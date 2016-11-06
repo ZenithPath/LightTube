@@ -140,7 +140,6 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
         this.commentsOrder = commentsOrder;
         this.statsModel = statsModel;
         this.userIdentifier = userIdentifier;
-
         initializeAdapter();
     }
 
@@ -155,9 +154,9 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
     }
 
     private void updateAdapterModels(List<?> commentsList) {
-        modelsList.removeAll(modelsList);
-        addCommentsCountElem();
+        modelsList.clear();
         modelsList.addAll(commentsList);
+        addCommentsCountElem();
         commentsAdapter.notifyDataSetChanged();
     }
 
