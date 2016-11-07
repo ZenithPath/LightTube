@@ -15,7 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
+import com.example.scame.lighttube.data.repository.CommentsRepositoryImp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecoration;
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsAdapter;
@@ -27,8 +27,8 @@ import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.model.VideoStatsModel;
-import com.example.scame.lighttube.presentation.presenters.IPlayerFooterPresenter;
-import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
+import com.example.scame.lighttube.presentation.presenters.PlayerFooterPresenter;
+import com.example.scame.lighttube.presentation.presenters.ReplyInputPresenter;
 import com.example.scame.lighttube.utility.Utility;
 
 import java.util.ArrayList;
@@ -41,19 +41,19 @@ import butterknife.ButterKnife;
 
 // TODO: add thread replies editing
 
-public class PlayerFooterFragment extends Fragment implements IPlayerFooterPresenter.FooterView,
-        CommentActionListener, IReplyInputPresenter.ReplyView {
+public class PlayerFooterFragment extends Fragment implements PlayerFooterPresenter.FooterView,
+        CommentActionListener, ReplyInputPresenter.ReplyView {
 
-    @CommentsDataManagerImp.CommentsOrders
-    private static final String DEFAULT_COMMENTS_ORDER = CommentsDataManagerImp.RELEVANCE_ORDER;
+    @CommentsRepositoryImp.CommentsOrders
+    private static final String DEFAULT_COMMENTS_ORDER = CommentsRepositoryImp.RELEVANCE_ORDER;
 
     private static final int INSERT_COMMENT_POS = 1;
 
     @Inject
-    IPlayerFooterPresenter<IPlayerFooterPresenter.FooterView> footerPresenter;
+    PlayerFooterPresenter<PlayerFooterPresenter.FooterView> footerPresenter;
 
     @Inject
-    IReplyInputPresenter<IReplyInputPresenter.ReplyView> replyInputPresenter;
+    ReplyInputPresenter<ReplyInputPresenter.ReplyView> replyInputPresenter;
 
     @BindView(R.id.player_footer_rv)
     RecyclerView footerRv;
@@ -70,7 +70,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private VideoStatsModel statsModel;
 
-    private @CommentsDataManagerImp.CommentsOrders String commentsOrder;
+    private @CommentsRepositoryImp.CommentsOrders String commentsOrder;
 
     int currentPage;
     boolean isLoading;
@@ -215,7 +215,7 @@ public class PlayerFooterFragment extends Fragment implements IPlayerFooterPrese
 
     private void orderClickHandler(View view) {
         if (view.getTag() instanceof String) {
-            @CommentsDataManagerImp.CommentsOrders String newOrder = (String) view.getTag();
+            @CommentsRepositoryImp.CommentsOrders String newOrder = (String) view.getTag();
             footerPresenter.commentsOrderClick(videoModel.getVideoId(), commentsOrder, newOrder, currentPage);
         }
     }

@@ -5,6 +5,7 @@ import com.example.scame.lighttube.data.mappers.CategoryPairsMapper;
 import com.example.scame.lighttube.data.mappers.ChannelsMapper;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.DurationsCombiner;
+import com.example.scame.lighttube.data.mappers.HomeVideosMapper;
 import com.example.scame.lighttube.data.mappers.IdsMapper;
 import com.example.scame.lighttube.data.mappers.PublishingDateParser;
 import com.example.scame.lighttube.data.mappers.RatingMapper;
@@ -18,7 +19,6 @@ import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
 import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
-import com.example.scame.lighttube.data.mappers.VideoListMapper;
 import com.example.scame.lighttube.data.mappers.VideoStatsMapper;
 
 import javax.inject.Singleton;
@@ -75,8 +75,8 @@ public class MappersModule {
     }
 
     @Singleton @Provides
-    VideoListMapper provideVideoListMapper() {
-        return new VideoListMapper();
+    HomeVideosMapper provideHomeVideosMapper() {
+        return new HomeVideosMapper();
     }
 
     @Singleton @Provides

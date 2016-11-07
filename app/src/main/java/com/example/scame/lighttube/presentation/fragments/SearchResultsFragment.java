@@ -20,7 +20,7 @@ import com.example.scame.lighttube.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.VideoModel;
-import com.example.scame.lighttube.presentation.presenters.ISearchResultsPresenter;
+import com.example.scame.lighttube.presentation.presenters.SearchResultsPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-import static com.example.scame.lighttube.presentation.presenters.ISearchResultsPresenter.SearchResultsView;
+import static com.example.scame.lighttube.presentation.presenters.SearchResultsPresenter.SearchResultsView;
 
 public class SearchResultsFragment extends BaseFragment implements SearchResultsView {
 
@@ -41,7 +41,8 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     @BindView(R.id.search_results_swipe) SwipeRefreshLayout refreshLayout;
 
-    @Inject ISearchResultsPresenter<SearchResultsView> presenter;
+    @Inject
+    SearchResultsPresenter<SearchResultsView> presenter;
 
     @State ArrayList<ModelMarker> searchItems;
 

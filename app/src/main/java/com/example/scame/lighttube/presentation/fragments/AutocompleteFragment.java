@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.adapters.AutocompleteAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
-import com.example.scame.lighttube.presentation.presenters.IAutocompletePresenter;
+import com.example.scame.lighttube.presentation.presenters.AutocompletePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-import static com.example.scame.lighttube.presentation.presenters.IAutocompletePresenter.AutocompleteView;
+import static com.example.scame.lighttube.presentation.presenters.AutocompletePresenter.AutocompleteView;
 
 public class AutocompleteFragment extends BaseFragment implements AutocompleteView {
 
@@ -36,7 +36,7 @@ public class AutocompleteFragment extends BaseFragment implements AutocompleteVi
     @State ArrayList<String> autocompleteList;
 
     @Inject
-    IAutocompletePresenter<AutocompleteView> presenter;
+    AutocompletePresenter<AutocompleteView> presenter;
 
     private AutocompleteAdapter adapter;
 

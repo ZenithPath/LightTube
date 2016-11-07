@@ -3,14 +3,15 @@ package com.example.scame.lighttube.data.mappers;
 import com.example.scame.lighttube.data.entities.search.SearchEntity;
 import com.example.scame.lighttube.data.entities.search.SearchItem;
 import com.example.scame.lighttube.presentation.model.VideoModel;
+import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchListMapper {
 
-    public List<VideoModel> convert(SearchEntity searchEntity) {
-        List<VideoModel> items = new ArrayList<>();
+    public VideoModelsWrapper convert(SearchEntity searchEntity, int page) {
+        List<VideoModel> videoModels = new ArrayList<>();
 
         for (SearchItem searchItem : searchEntity.getItems()) {
             VideoModel videoModel = new VideoModel();
@@ -22,9 +23,9 @@ public class SearchListMapper {
             videoModel.setChannelTitle(searchItem.getSnippet().getChannelTitle());
             videoModel.setChannelId(searchItem.getSnippet().getChannelId());
 
-            items.add(videoModel);
+            videoModels.add(videoModel);
         }
 
-        return items;
+        return new VideoModelsWrapper(videoModels, page);
     }
 }

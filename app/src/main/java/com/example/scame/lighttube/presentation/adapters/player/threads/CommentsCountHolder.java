@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.scame.lighttube.R;
-import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
+import com.example.scame.lighttube.data.repository.CommentsRepositoryImp;
 
 import java.util.List;
 
@@ -34,11 +34,11 @@ public class CommentsCountHolder extends RecyclerView.ViewHolder {
 
         orderPopup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.relevance_option) {
-                view.setTag(CommentsDataManagerImp.RELEVANCE_ORDER);
+                view.setTag(CommentsRepositoryImp.RELEVANCE_ORDER);
                 orderListener.onClick(view);
                 return true;
             } else if (item.getItemId() == R.id.time_option) {
-                view.setTag(CommentsDataManagerImp.TIME_ORDER);
+                view.setTag(CommentsRepositoryImp.TIME_ORDER);
                 orderListener.onClick(view);
                 return true;
             }

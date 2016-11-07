@@ -1,13 +1,13 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
 
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
+import com.example.scame.lighttube.data.repository.AccountRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.CheckLoginUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
 import com.example.scame.lighttube.presentation.navigation.Navigator;
-import com.example.scame.lighttube.presentation.presenters.ITabActivityPresenter;
+import com.example.scame.lighttube.presentation.presenters.TabActivityPresenter;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 import com.example.scame.lighttube.presentation.presenters.TabActivityPresenterImp;
 
@@ -26,7 +26,7 @@ public class TabModule {
     @PerActivity
     @Provides
     CheckLoginUseCase provideSignInCheckUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                IAccountDataManager dataManager) {
+                                                AccountRepository dataManager) {
 
         return new CheckLoginUseCase(subscribeOn, observeOn, dataManager);
     }
@@ -39,8 +39,8 @@ public class TabModule {
 
     @PerActivity
     @Provides
-    ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> provideTabActivityPresenter(CheckLoginUseCase useCase,
-                                                                                              SubscriptionsHandler handler) {
+    TabActivityPresenter<TabActivityPresenter.ITabActivityView> provideTabActivityPresenter(CheckLoginUseCase useCase,
+                                                                                            SubscriptionsHandler handler) {
         return new TabActivityPresenterImp<>(useCase, handler);
     }
 }

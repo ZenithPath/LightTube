@@ -1,7 +1,7 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
-import com.example.scame.lighttube.data.repository.ICommentsDataManager;
+import com.example.scame.lighttube.data.repository.CommentsRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
@@ -10,13 +10,13 @@ import rx.Observable;
 
 public class PostReplyUseCase extends UseCase<ReplyModel> {
 
-    private ICommentsDataManager dataManager;
+    private CommentsRepository dataManager;
 
     private String parentId;
 
     private String replyText;
 
-    public PostReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICommentsDataManager dataManager) {
+    public PostReplyUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, CommentsRepository dataManager) {
         super(subscribeOn, observeOn);
         this.dataManager = dataManager;
     }
@@ -32,5 +32,13 @@ public class PostReplyUseCase extends UseCase<ReplyModel> {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public String getReplyText() {
+        return replyText;
     }
 }

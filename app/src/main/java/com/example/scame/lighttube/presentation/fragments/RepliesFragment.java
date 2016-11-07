@@ -22,8 +22,8 @@ import com.example.scame.lighttube.presentation.adapters.player.replies.ReplyInp
 import com.example.scame.lighttube.presentation.adapters.player.replies.UpdateReplyObj;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
-import com.example.scame.lighttube.presentation.presenters.IRepliesPresenter;
-import com.example.scame.lighttube.presentation.presenters.IReplyInputPresenter;
+import com.example.scame.lighttube.presentation.presenters.RepliesPresenter;
+import com.example.scame.lighttube.presentation.presenters.ReplyInputPresenter;
 import com.example.scame.lighttube.utility.Utility;
 
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ import butterknife.ButterKnife;
 import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.REPLY_INPUT_POS;
 import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_REPLY_INPUT;
 
-public class RepliesFragment extends Fragment implements IRepliesPresenter.RepliesView, CommentActionListener,
-        IReplyInputPresenter.ReplyView {
+public class RepliesFragment extends Fragment implements RepliesPresenter.RepliesView, CommentActionListener,
+        ReplyInputPresenter.ReplyView {
 
     private static final int INSERT_REPLY_POS = 1;
 
@@ -49,10 +49,10 @@ public class RepliesFragment extends Fragment implements IRepliesPresenter.Repli
     @BindView(R.id.replies_fragment_rv) RecyclerView repliesRv;
 
     @Inject
-    IRepliesPresenter<IRepliesPresenter.RepliesView> repliesPresenter;
+    RepliesPresenter<RepliesPresenter.RepliesView> repliesPresenter;
 
     @Inject
-    IReplyInputPresenter<IReplyInputPresenter.ReplyView> replyInputPresenter;
+    ReplyInputPresenter<ReplyInputPresenter.ReplyView> replyInputPresenter;
 
     private RepliesDelegatesManager repliesDelegatesManager;
 

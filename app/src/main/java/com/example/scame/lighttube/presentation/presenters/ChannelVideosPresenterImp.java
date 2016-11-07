@@ -1,45 +1,35 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import com.example.scame.lighttube.domain.usecases.ChannelVideosUseCase;
-import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
+import android.util.Log;
+
+import com.example.scame.lighttube.domain.usecases.GetChannelVideosUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
-import com.example.scame.lighttube.presentation.model.VideoModel;
+import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
 
-import java.util.List;
 
-public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.ChannelsView>
-                                        implements IChannelVideosPresenter<T> {
+public class ChannelVideosPresenterImp<T extends ChannelVideosPresenter.ChannelsView>
+                                        implements ChannelVideosPresenter<T> {
 
     private static final int FIRST_PAGE = 0;
 
-    private int currentPage;
-
     private T view;
 
-    private ChannelVideosUseCase channelVideosUseCase;
-
-    private ContentDetailsUseCase contentDetailsUseCase;
+    private GetChannelVideosUseCase getChannelVideosUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
-    public ChannelVideosPresenterImp(ChannelVideosUseCase channelVideosUseCase,
-                                     ContentDetailsUseCase detailsUseCase,
+    public ChannelVideosPresenterImp(GetChannelVideosUseCase getChannelVideosUseCase,
                                      SubscriptionsHandler subscriptionsHandler) {
-
-        this.channelVideosUseCase = channelVideosUseCase;
-        this.contentDetailsUseCase = detailsUseCase;
-
+        this.getChannelVideosUseCase = getChannelVideosUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
     public void fetchChannelVideos(String channelId, int page) {
-        currentPage = page;
-
-        channelVideosUseCase.setPage(page);
-        channelVideosUseCase.setChannelId(channelId);
-        channelVideosUseCase.execute(new ChannelsSubscriber());
+        getChannelVideosUseCase.setPage(page);
+        getChannelVideosUseCase.setChannelId(channelId);
+        getChannelVideosUseCase.execute(new ChannelsSubscriber());
     }
 
     @Override
@@ -63,28 +53,25 @@ public class ChannelVideosPresenterImp<T extends IChannelVideosPresenter.Channel
         view = null;
     }
 
-    private final class ChannelsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+    private final class ChannelsSubscriber extends DefaultSubscriber<VideoModelsWrapper> {
 
         @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
+        public void onNext(VideoModelsWrapper modelsWrapper) {
+            super.onNext(modelsWrapper);
 
-            contentDetailsUseCase.setVideoModels(videoModels);
-            contentDetailsUseCase.execute(new ContentDetailsSubscriber());
-        }
-    }
-
-    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
-
-        @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
-
-            if (currentPage == FIRST_PAGE) {
-                view.initializeAdapter(videoModels);
-            } else {
-                view.updateAdapter(videoModels);
+            if (view != null) {
+                if (modelsWrapper.getPage() == FIRST_PAGE) {
+                    view.initializeAdapter(modelsWrapper.getVideoModels());
+                } else {
+                    view.updateAdapter(modelsWrapper.getVideoModels());
+                }
             }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxChannelVideosErr", e.getLocalizedMessage());
         }
     }
 }

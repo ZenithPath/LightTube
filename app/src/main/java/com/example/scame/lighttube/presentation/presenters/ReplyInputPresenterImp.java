@@ -7,7 +7,7 @@ import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.PostReplyUseCase;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 
-public class ReplyInputPresenterImp<T extends IReplyInputPresenter.ReplyView> implements IReplyInputPresenter<T> {
+public class ReplyInputPresenterImp<T extends ReplyInputPresenter.ReplyView> implements ReplyInputPresenter<T> {
 
     private SubscriptionsHandler subscriptionsHandler;
 

@@ -5,9 +5,9 @@ import java.util.List;
 
 public class RepliesWrapper {
 
-    private final List<ReplyModel> replyModels;
+    private List<ReplyModel> replyModels;
 
-    private final int page;
+    private int page;
 
     public RepliesWrapper(List<ReplyModel> replyModels, int page) {
         this.replyModels = replyModels;

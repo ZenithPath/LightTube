@@ -11,7 +11,7 @@ import com.example.scame.lighttube.presentation.di.modules.RecentVideosModule;
 import com.example.scame.lighttube.presentation.di.modules.RepliesModule;
 import com.example.scame.lighttube.presentation.di.modules.SearchModule;
 import com.example.scame.lighttube.presentation.di.modules.SignInModule;
-import com.example.scame.lighttube.presentation.di.modules.VideoListModule;
+import com.example.scame.lighttube.presentation.di.modules.HomeModule;
 
 public class ComponentsManager {
 
@@ -19,7 +19,7 @@ public class ComponentsManager {
 
     private SearchComponent searchComponent;
 
-    private VideoListComponent videoListComponent;
+    private HomeComponent homeComponent;
 
     private SignInComponent signInComponent;
 
@@ -44,19 +44,18 @@ public class ComponentsManager {
                     .searchModule(new SearchModule())
                     .build();
         }
-
         return searchComponent;
     }
 
-    public VideoListComponent provideVideoListComponent() {
-        if (videoListComponent == null) {
-            videoListComponent = DaggerVideoListComponent.builder()
+    public HomeComponent provideVideoListComponent() {
+        if (homeComponent == null) {
+            homeComponent = DaggerHomeComponent.builder()
                     .applicationComponent(LightTubeApp.getAppComponent())
-                    .videoListModule(new VideoListModule())
+                    .homeModule(new HomeModule())
                     .build();
         }
 
-        return videoListComponent;
+        return homeComponent;
     }
 
     public SignInComponent provideSignInComponent() {
@@ -66,7 +65,6 @@ public class ComponentsManager {
                     .signInModule(new SignInModule(activity))
                     .build();
         }
-
         return signInComponent;
     }
 
@@ -77,7 +75,6 @@ public class ComponentsManager {
                     .gridModule(new GridModule())
                     .build();
         }
-
         return gridComponent;
     }
 
@@ -88,7 +85,6 @@ public class ComponentsManager {
                     .recentVideosModule(new RecentVideosModule())
                     .build();
         }
-
         return recentVideosComponent;
     }
 
@@ -99,7 +95,6 @@ public class ComponentsManager {
                     .channelVideosModule(new ChannelVideosModule())
                     .build();
         }
-
         return channelVideosComponent;
     }
 
@@ -110,7 +105,6 @@ public class ComponentsManager {
                     .playerFooterModule(new PlayerFooterModule())
                     .build();
         }
-
         return playerFooterComponent;
     }
 
@@ -121,7 +115,6 @@ public class ComponentsManager {
                     .repliesModule(new RepliesModule())
                     .build();
         }
-
         return repliesComponent;
     }
 }

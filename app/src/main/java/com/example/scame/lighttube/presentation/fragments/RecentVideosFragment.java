@@ -22,7 +22,7 @@ import com.example.scame.lighttube.presentation.adapters.ChannelsViewAdapter;
 import com.example.scame.lighttube.presentation.adapters.RecentVideosAdapter;
 import com.example.scame.lighttube.presentation.model.ChannelModel;
 import com.example.scame.lighttube.presentation.model.VideoModel;
-import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
+import com.example.scame.lighttube.presentation.presenters.RecentVideosPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-public class RecentVideosFragment extends BaseFragment implements IRecentVideosPresenter.RecentVideosView {
+public class RecentVideosFragment extends BaseFragment implements RecentVideosPresenter.RecentVideosView {
 
     @BindView(R.id.channels_rv) RecyclerView channelsRv;
     @BindView(R.id.recent_rv) RecyclerView recentVideosRv;
@@ -46,7 +46,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
     @BindView(R.id.recent_swipe) SwipeRefreshLayout refreshLayout;
 
     @Inject
-    IRecentVideosPresenter<IRecentVideosPresenter.RecentVideosView> presenter;
+    RecentVideosPresenter<RecentVideosPresenter.RecentVideosView> presenter;
 
     @State ArrayList<VideoModel> videoModels;
     @State ArrayList<ChannelModel> channelItems;
@@ -93,7 +93,7 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
         presenter.setView(this);
         appBarLayout.setExpanded(false);
 
-        refreshLayout.setOnRefreshListener(() -> presenter.initialize());
+        refreshLayout.setOnRefreshListener(() -> presenter.getRecentVideosList());
 
         progressBar.setVisibility(View.VISIBLE);
         recentVideosRv.setVisibility(View.GONE);
@@ -108,7 +108,8 @@ public class RecentVideosFragment extends BaseFragment implements IRecentVideosP
             populateAdapter(videoModels);
             visualizeChannelsList(channelItems);
         } else {
-            presenter.initialize();
+            presenter.getRecentVideosList();
+            presenter.getChannelsList();
         }
     }
 

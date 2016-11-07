@@ -1,6 +1,6 @@
 package com.example.scame.lighttube.data.interceptors;
 
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
+import com.example.scame.lighttube.data.repository.AccountRepository;
 
 import java.io.IOException;
 
@@ -11,12 +11,12 @@ import okhttp3.Route;
 
 public class TokenAuthenticator implements Authenticator {
 
-    private IAccountDataManager accountDataManager;
+    private AccountRepository accountRepository;
 
     private String newToken;
 
-    public TokenAuthenticator(IAccountDataManager accountDataManager) {
-        this.accountDataManager = accountDataManager;
+    public TokenAuthenticator(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -29,10 +29,10 @@ public class TokenAuthenticator implements Authenticator {
     }
 
     private void updateToken() {
-        accountDataManager.getTokenFromCache()
+        accountRepository.getTokenFromCache()
                 .filter(tokenEntity -> !tokenEntity.getRefreshToken().equals(""))
-                .doOnNext(accountDataManager::refreshToken)
-                .flatMap(refreshedEntity -> accountDataManager.getTokenFromCache())
+                .doOnNext(accountRepository::refreshToken)
+                .flatMap(refreshedEntity -> accountRepository.getTokenFromCache())
                 .subscribe(finalEntity -> newToken = finalEntity.getAccessToken());
     }
 }

@@ -12,7 +12,6 @@ public class IdsMapper {
         for (VideoModel videoModel : videoModels) {
             builder.append(videoModel.getVideoId()).append("%2C");
         }
-
         return builder.toString();
     }
 }

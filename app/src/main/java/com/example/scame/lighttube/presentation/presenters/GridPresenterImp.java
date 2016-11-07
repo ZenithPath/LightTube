@@ -1,27 +1,26 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
+import android.util.Log;
+
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
-import com.example.scame.lighttube.domain.usecases.GridListUseCase;
-import com.example.scame.lighttube.presentation.model.VideoModel;
+import com.example.scame.lighttube.domain.usecases.GetGridVideosUseCase;
+import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
 
-import java.util.List;
 
-public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGridPresenter<V> {
+public class GridPresenterImp<V extends GridPresenter.GridView> implements GridPresenter<V> {
 
     private static final int FIRST_PAGE = 0;
 
     private V view;
 
-    private int page;
-
-    private GridListUseCase useCase;
+    private GetGridVideosUseCase gridUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
-    public GridPresenterImp(GridListUseCase useCase, SubscriptionsHandler subscriptionsHandler) {
+    public GridPresenterImp(GetGridVideosUseCase gridUseCase, SubscriptionsHandler subscriptionsHandler) {
         this.subscriptionsHandler = subscriptionsHandler;
-        this.useCase = useCase;
+        this.gridUseCase = gridUseCase;
     }
 
     @Override
@@ -47,25 +46,32 @@ public class GridPresenterImp<V extends IGridPresenter.GridView> implements IGri
 
     @Override
     public void fetchVideos(String category, String duration, int page) {
-        this.page = page;
-        useCase.setCategory(category);
-        useCase.setDuration(duration);
-        useCase.setPage(page);
+        gridUseCase.setCategory(category);
+        gridUseCase.setDuration(duration);
+        gridUseCase.setPage(page);
 
-        useCase.execute(new GridSubscriber());
+        gridUseCase.execute(new GridSubscriber());
     }
 
-    private final class GridSubscriber extends DefaultSubscriber<List<VideoModel>> {
+    private final class GridSubscriber extends DefaultSubscriber<VideoModelsWrapper> {
 
         @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
+        public void onNext(VideoModelsWrapper videoModelsWrapper) {
+            super.onNext(videoModelsWrapper);
 
-            if (page == FIRST_PAGE) {
-                view.initializeAdapter(videoModels);
-            } else {
-                view.updateAdapter(videoModels);
+            if (view != null) {
+                if (videoModelsWrapper.getPage() == FIRST_PAGE) {
+                    view.initializeAdapter(videoModelsWrapper.getVideoModels());
+                } else {
+                    view.updateAdapter(videoModelsWrapper.getVideoModels());
+                }
             }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxGridErr", e.getLocalizedMessage());
         }
     }
 }

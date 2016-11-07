@@ -1,7 +1,7 @@
 package com.example.scame.lighttube.presentation.model;
 
 
-import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
+import com.example.scame.lighttube.data.repository.CommentsRepositoryImp;
 
 import java.util.List;
 
@@ -11,23 +11,13 @@ public class ThreadCommentsWrapper {
 
     private List<ThreadCommentModel> comments;
 
-    public ThreadCommentsWrapper() { }
-
-    public ThreadCommentsWrapper(@CommentsDataManagerImp.CommentsOrders String commentsOrder,
+    public ThreadCommentsWrapper(@CommentsRepositoryImp.CommentsOrders String commentsOrder,
                                  List<ThreadCommentModel> comments) {
         this.commentsOrder = commentsOrder;
         this.comments = comments;
     }
 
-    public void setCommentsOrder(@CommentsDataManagerImp.CommentsOrders String commentsOrder) {
-        this.commentsOrder = commentsOrder;
-    }
-
-    public void setComments(List<ThreadCommentModel> comments) {
-        this.comments = comments;
-    }
-
-    public @CommentsDataManagerImp.CommentsOrders String getCommentsOrder() {
+    public @CommentsRepositoryImp.CommentsOrders String getCommentsOrder() {
         return commentsOrder;
     }
 

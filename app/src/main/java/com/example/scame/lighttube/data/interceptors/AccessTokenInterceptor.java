@@ -1,6 +1,6 @@
 package com.example.scame.lighttube.data.interceptors;
 
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
+import com.example.scame.lighttube.data.repository.AccountRepository;
 
 import java.io.IOException;
 
@@ -12,10 +12,10 @@ public class AccessTokenInterceptor implements Interceptor {
 
     private String accessToken;
 
-    private IAccountDataManager accountDataManager;
+    private AccountRepository accountRepository;
 
-    public AccessTokenInterceptor(IAccountDataManager accountDataManager) {
-        this.accountDataManager = accountDataManager;
+    public AccessTokenInterceptor(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class AccessTokenInterceptor implements Interceptor {
         Request originalRequest = chain.request();
         Request authorisedRequest;
 
-        accountDataManager.getTokenFromCache()
+        accountRepository.getTokenFromCache()
                 .subscribe(tokenEntity -> accessToken = tokenEntity.getAccessToken());
 
         if (!accessToken.equals("") && !isCommentThreadsRequest(originalRequest)) {

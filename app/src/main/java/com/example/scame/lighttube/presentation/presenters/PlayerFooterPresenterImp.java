@@ -3,15 +3,15 @@ package com.example.scame.lighttube.presentation.presenters;
 
 import android.util.Log;
 
-import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
+import com.example.scame.lighttube.data.repository.CommentsRepositoryImp;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.FooterInitializationUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
-import com.example.scame.lighttube.domain.usecases.PostThreadCommentUseCase;
-import com.example.scame.lighttube.domain.usecases.RetrieveCommentsUseCase;
+import com.example.scame.lighttube.domain.usecases.PostCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.GetCommentsUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateCommentUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
-import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
 import com.example.scame.lighttube.presentation.model.MergedCommentsModel;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
@@ -19,7 +19,7 @@ import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 
 import static android.util.Log.i;
 
-public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterView> implements IPlayerFooterPresenter<T> {
+public class PlayerFooterPresenterImp<T extends PlayerFooterPresenter.FooterView> implements PlayerFooterPresenter<T> {
 
     private FooterInitializationUseCase footerInitializationUseCase;
 
@@ -27,13 +27,13 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     private MarkAsSpamUseCase markAsSpamUseCase;
 
-    private UpdateThreadUseCase updateThreadUseCase;
+    private UpdateCommentUseCase updateCommentUseCase;
 
-    private PostThreadCommentUseCase postCommentUseCase;
+    private PostCommentUseCase postCommentUseCase;
 
     private UpdateReplyUseCase updateReplyUseCase;
 
-    private RetrieveCommentsUseCase retrieveCommentsUseCase;
+    private GetCommentsUseCase getCommentsUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
@@ -42,18 +42,18 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     public PlayerFooterPresenterImp(FooterInitializationUseCase footerInitializationUseCase,
                                     DeleteCommentUseCase deleteCommentUseCase,
                                     MarkAsSpamUseCase markAsSpamUseCase,
-                                    UpdateThreadUseCase updateThreadUseCase,
-                                    PostThreadCommentUseCase postCommentUseCase,
+                                    UpdateCommentUseCase updateCommentUseCase,
+                                    PostCommentUseCase postCommentUseCase,
                                     UpdateReplyUseCase updateReplyUseCase,
-                                    RetrieveCommentsUseCase retrieveCommentsUseCase,
+                                    GetCommentsUseCase getCommentsUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
         this.updateReplyUseCase = updateReplyUseCase;
         this.postCommentUseCase = postCommentUseCase;
         this.markAsSpamUseCase = markAsSpamUseCase;
-        this.retrieveCommentsUseCase = retrieveCommentsUseCase;
+        this.getCommentsUseCase = getCommentsUseCase;
         this.footerInitializationUseCase = footerInitializationUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
-        this.updateThreadUseCase = updateThreadUseCase;
+        this.updateCommentUseCase = updateCommentUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
@@ -66,22 +66,22 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
     }
 
     @Override
-    public void commentsOrderClick(String videoId, @CommentsDataManagerImp.CommentsOrders String previousOrder,
-                                   @CommentsDataManagerImp.CommentsOrders String newOrder, int page) {
+    public void commentsOrderClick(String videoId, @CommentsRepositoryImp.CommentsOrders String previousOrder,
+                                   @CommentsRepositoryImp.CommentsOrders String newOrder, int page) {
         if (!previousOrder.equals(newOrder)) {
-            retrieveCommentsUseCase.setPage(page);
-            retrieveCommentsUseCase.setVideoId(videoId);
-            retrieveCommentsUseCase.setOrder(newOrder);
-            retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
+            getCommentsUseCase.setPage(page);
+            getCommentsUseCase.setVideoId(videoId);
+            getCommentsUseCase.setOrder(newOrder);
+            getCommentsUseCase.execute(new RetrieveCommentsSubscriber());
         }
     }
 
     @Override
-    public void getCommentList(String videoId, @CommentsDataManagerImp.CommentsOrders String order, int page) {
-        retrieveCommentsUseCase.setPage(page);
-        retrieveCommentsUseCase.setVideoId(videoId);
-        retrieveCommentsUseCase.setOrder(order);
-        retrieveCommentsUseCase.execute(new RetrieveCommentsSubscriber());
+    public void getCommentList(String videoId, @CommentsRepositoryImp.CommentsOrders String order, int page) {
+        getCommentsUseCase.setPage(page);
+        getCommentsUseCase.setVideoId(videoId);
+        getCommentsUseCase.setOrder(order);
+        getCommentsUseCase.execute(new RetrieveCommentsSubscriber());
     }
 
     @Override
@@ -98,9 +98,9 @@ public class PlayerFooterPresenterImp<T extends IPlayerFooterPresenter.FooterVie
 
     @Override
     public void updateComment(String commentId, String updatedText) {
-        updateThreadUseCase.setCommentId(commentId);
-        updateThreadUseCase.setUpdatedText(updatedText);
-        updateThreadUseCase.execute(new UpdateThreadSubscriber());
+        updateCommentUseCase.setCommentId(commentId);
+        updateCommentUseCase.setUpdatedText(updatedText);
+        updateCommentUseCase.execute(new UpdateThreadSubscriber());
     }
 
     @Override

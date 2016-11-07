@@ -1,10 +1,10 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
-import com.example.scame.lighttube.data.repository.CommentsDataManagerImp;
-import com.example.scame.lighttube.data.repository.ICommentsDataManager;
-import com.example.scame.lighttube.data.repository.IStatisticsDataManager;
-import com.example.scame.lighttube.data.repository.IUserChannelDataManager;
+import com.example.scame.lighttube.data.repository.CommentsRepository;
+import com.example.scame.lighttube.data.repository.CommentsRepositoryImp;
+import com.example.scame.lighttube.data.repository.StatisticsRepository;
+import com.example.scame.lighttube.data.repository.UserChannelRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.presentation.model.MergedCommentsModel;
@@ -14,11 +14,13 @@ import rx.schedulers.Schedulers;
 
 public class FooterInitializationUseCase extends UseCase<MergedCommentsModel> {
 
-    private ICommentsDataManager commentsDataManager;
+    private CommentsRepository commentsRepository;
 
-    private IStatisticsDataManager statisticsDataManager;
+    private StatisticsRepository statisticsDataManager;
 
-    private IUserChannelDataManager userChannelDataManager;
+    private UserChannelRepository userChannelDataManager;
+
+    private SubscribeOn subscribeOn;
 
     private String videoId;
 
@@ -26,24 +28,26 @@ public class FooterInitializationUseCase extends UseCase<MergedCommentsModel> {
 
     private String order;
 
-    public FooterInitializationUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICommentsDataManager commentsDataManager,
-                                       IStatisticsDataManager statsDataManager, IUserChannelDataManager userChannelDataManager) {
+    public FooterInitializationUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, CommentsRepository commentsRepository,
+                                       StatisticsRepository statsDataManager, UserChannelRepository userChannelDataManager) {
         super(subscribeOn, observeOn);
 
-        this.commentsDataManager = commentsDataManager;
+        this.commentsRepository = commentsRepository;
         this.statisticsDataManager = statsDataManager;
         this.userChannelDataManager = userChannelDataManager;
+        this.subscribeOn = subscribeOn;
     }
 
+    // TODO: should go into repository
     @Override
     protected Observable<MergedCommentsModel> getUseCaseObservable() {
-        return Observable.zip(commentsDataManager.getCommentList(videoId, order, page).subscribeOn(Schedulers.computation()),
-                statisticsDataManager.getVideoStatistics(videoId).subscribeOn(Schedulers.computation()),
-                userChannelDataManager.getUserChannelUrl().subscribeOn(Schedulers.computation()),
+        return Observable.zip(commentsRepository.getCommentList(videoId, order, page).subscribeOn(Schedulers.computation()),
+                statisticsDataManager.getVideoStatistics(videoId).subscribeOn(subscribeOn.getScheduler()),
+                userChannelDataManager.getUserChannelUrl().subscribeOn(subscribeOn.getScheduler()),
                         MergedCommentsModel::new);
     }
 
-    public void setOrder(@CommentsDataManagerImp.CommentsOrders String order) {
+    public void setOrder(@CommentsRepositoryImp.CommentsOrders String order) {
         this.order = order;
     }
 

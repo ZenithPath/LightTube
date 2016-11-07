@@ -5,17 +5,17 @@ import android.util.Log;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.DeleteCommentUseCase;
+import com.example.scame.lighttube.domain.usecases.GetRepliesUseCase;
 import com.example.scame.lighttube.domain.usecases.MarkAsSpamUseCase;
-import com.example.scame.lighttube.domain.usecases.RetrieveRepliesUseCase;
 import com.example.scame.lighttube.domain.usecases.UpdateReplyUseCase;
-import com.example.scame.lighttube.domain.usecases.UpdateThreadUseCase;
+import com.example.scame.lighttube.domain.usecases.UpdateCommentUseCase;
 import com.example.scame.lighttube.presentation.model.RepliesWrapper;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
 
-public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implements IRepliesPresenter<T> {
+public class RepliesPresenterImp<T extends RepliesPresenter.RepliesView> implements RepliesPresenter<T> {
 
-    private RetrieveRepliesUseCase retrieveRepliesUseCase;
+    private GetRepliesUseCase getRepliesUseCase;
 
     private DeleteCommentUseCase deleteCommentUseCase;
 
@@ -23,7 +23,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     private UpdateReplyUseCase updateReplyUseCase;
 
-    private UpdateThreadUseCase updatePrimaryUseCase;
+    private UpdateCommentUseCase updatePrimaryUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
@@ -31,25 +31,25 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
     private T view;
 
-    public RepliesPresenterImp(RetrieveRepliesUseCase retrieveRepliesUseCase,
+    public RepliesPresenterImp(GetRepliesUseCase getRepliesUseCase,
                                DeleteCommentUseCase deleteCommentUseCase,
                                MarkAsSpamUseCase markAsSpamUseCase,
                                UpdateReplyUseCase updateReplyUseCase,
-                               UpdateThreadUseCase updatePrimaryUseCase,
+                               UpdateCommentUseCase updatePrimaryUseCase,
                                SubscriptionsHandler subscriptionsHandler) {
         this.markAsSpamUseCase = markAsSpamUseCase;
         this.updatePrimaryUseCase = updatePrimaryUseCase;
         this.updateReplyUseCase = updateReplyUseCase;
-        this.retrieveRepliesUseCase = retrieveRepliesUseCase;
+        this.getRepliesUseCase = getRepliesUseCase;
         this.deleteCommentUseCase = deleteCommentUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
     public void getRepliesList(String parentId, int page) {
-        retrieveRepliesUseCase.setParentId(parentId);
-        retrieveRepliesUseCase.setPage(page);
-        retrieveRepliesUseCase.execute(new RepliesSubscriber());
+        getRepliesUseCase.setParentId(parentId);
+        getRepliesUseCase.setPage(page);
+        getRepliesUseCase.execute(new RepliesSubscriber());
     }
 
     @Override
@@ -181,7 +181,7 @@ public class RepliesPresenterImp<T extends IRepliesPresenter.RepliesView> implem
 
             if (view != null) {
                 replyModel.setAuthorChannelId(userIdentifier); // again, thanks to Youtube Data API, reply update response
-                view.onUpdatedReply(replyModel);               // doesn't contain authorChannelId, so except setting it by hand
+                view.onUpdatedReply(replyModel);               // doesn't contain authorChannelId, so excluding setting it by hand
             }                                                  // we can get this info only by making an additional request
         }
 

@@ -1,38 +1,30 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
+import android.util.Log;
+
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 import com.example.scame.lighttube.domain.usecases.SearchUseCase;
-import com.example.scame.lighttube.presentation.model.VideoModel;
+import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
 
-import java.util.List;
 
-public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchResultsView>
-                                                    implements ISearchResultsPresenter<V> {
-
+public class SearchResultsPresenterImp<V extends SearchResultsPresenter.SearchResultsView>
+                                                    implements SearchResultsPresenter<V> {
     private static final int FIRST_PAGE = 0;
 
     private SearchUseCase searchUseCase;
-
-    private ContentDetailsUseCase detailsUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
     private V view;
 
-    private int page;
-
-    public SearchResultsPresenterImp(SearchUseCase searchUseCase, ContentDetailsUseCase detailsUseCase,
-                                     SubscriptionsHandler subscriptionsHandler) {
+    public SearchResultsPresenterImp(SearchUseCase searchUseCase, SubscriptionsHandler subscriptionsHandler) {
         this.searchUseCase = searchUseCase;
-        this.detailsUseCase = detailsUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
     public void fetchVideos(int page, String query) {
-        this.page = page;
         searchUseCase.setQuery(query);
         searchUseCase.setPage(page);
         searchUseCase.execute(new SearchResultsSubscriber());
@@ -59,28 +51,25 @@ public class SearchResultsPresenterImp<V extends ISearchResultsPresenter.SearchR
         view = null;
     }
 
-    private final class SearchResultsSubscriber extends DefaultSubscriber<List<VideoModel>> {
+    private final class SearchResultsSubscriber extends DefaultSubscriber<VideoModelsWrapper> {
 
         @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
+        public void onNext(VideoModelsWrapper videoModelsWrapper) {
+            super.onNext(videoModelsWrapper);
 
-            detailsUseCase.setVideoModels(videoModels);
-            detailsUseCase.execute(new ContentDetailsSubscriber());
-        }
-    }
-
-    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
-
-        @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
-
-            if (page == FIRST_PAGE) {
-                view.initializeAdapter(videoModels);
-            } else {
-                view.updateAdapter(videoModels);
+            if (view != null) {
+                if (videoModelsWrapper.getPage() == FIRST_PAGE) {
+                    view.initializeAdapter(videoModelsWrapper.getVideoModels());
+                } else {
+                    view.updateAdapter(videoModelsWrapper.getVideoModels());
+                }
             }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onSearchResErr", e.getLocalizedMessage());
         }
     }
 }

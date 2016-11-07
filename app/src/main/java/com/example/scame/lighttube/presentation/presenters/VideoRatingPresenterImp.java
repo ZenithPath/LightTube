@@ -4,35 +4,32 @@ package com.example.scame.lighttube.presentation.presenters;
 import android.util.Log;
 
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
+import com.example.scame.lighttube.domain.usecases.GetRatingUseCase;
 import com.example.scame.lighttube.domain.usecases.RateVideoUseCase;
-import com.example.scame.lighttube.domain.usecases.RetrieveRatingUseCase;
 import com.example.scame.lighttube.presentation.model.RatingModel;
 
-public class VideoRatingPresenterImp<T extends IVideoRatingPresenter.PlayerView> implements IVideoRatingPresenter<T> {
+public class VideoRatingPresenterImp<T extends VideoRatingPresenter.PlayerView> implements VideoRatingPresenter<T> {
 
     private T view;
 
-    private RetrieveRatingUseCase retrieveRatingUseCase;
+    private GetRatingUseCase getRatingUseCase;
 
     private RateVideoUseCase rateVideoUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
-
-
-    public VideoRatingPresenterImp(RetrieveRatingUseCase retrieveRatingUseCase,
+    public VideoRatingPresenterImp(GetRatingUseCase getRatingUseCase,
                                    RateVideoUseCase rateVideoUseCase,
                                    SubscriptionsHandler subscriptionsHandler) {
-
-        this.retrieveRatingUseCase = retrieveRatingUseCase;
+        this.getRatingUseCase = getRatingUseCase;
         this.rateVideoUseCase = rateVideoUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
     @Override
     public void getVideoRating(String videoId) {
-        retrieveRatingUseCase.setVideoId(videoId);
-        retrieveRatingUseCase.execute(new RetrieveRatingSubscriber());
+        getRatingUseCase.setVideoId(videoId);
+        getRatingUseCase.execute(new RetrieveRatingSubscriber());
     }
 
     @Override
@@ -60,8 +57,8 @@ public class VideoRatingPresenterImp<T extends IVideoRatingPresenter.PlayerView>
     @Override
     public void destroy() {
         subscriptionsHandler.unsubscribe();
+        view = null;
     }
-
 
     private final class RetrieveRatingSubscriber extends DefaultSubscriber<RatingModel> {
 
@@ -76,14 +73,9 @@ public class VideoRatingPresenterImp<T extends IVideoRatingPresenter.PlayerView>
         public void onNext(RatingModel ratingModel) {
             super.onNext(ratingModel);
 
-            view.displayRating(ratingModel.getRating());
-        }
-
-        @Override
-        public void onCompleted() {
-            super.onCompleted();
-
-            Log.i("onxRatingComp", "true");
+            if (view != null) {
+                view.displayRating(ratingModel.getRating());
+            }
         }
     }
 

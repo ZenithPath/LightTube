@@ -1,12 +1,12 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
-import com.example.scame.lighttube.data.repository.ICategoryDataManager;
+import com.example.scame.lighttube.data.repository.CategoryRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.domain.usecases.GridListUseCase;
+import com.example.scame.lighttube.domain.usecases.GetGridVideosUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
+import com.example.scame.lighttube.presentation.presenters.GridPresenter;
 import com.example.scame.lighttube.presentation.presenters.GridPresenterImp;
-import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import dagger.Module;
@@ -17,20 +17,19 @@ public class GridModule {
 
     @PerActivity
     @Provides
-    IGridPresenter<IGridPresenter.GridView> provideGridPresenter(GridListUseCase useCase, SubscriptionsHandler handler) {
+    GridPresenter<GridPresenter.GridView> provideGridPresenter(GetGridVideosUseCase useCase, SubscriptionsHandler handler) {
         return new GridPresenterImp<>(useCase, handler);
     }
 
     @PerActivity
     @Provides
-    SubscriptionsHandler provideSubscriptionsHandler(GridListUseCase gridUseCase) {
+    SubscriptionsHandler provideSubscriptionsHandler(GetGridVideosUseCase gridUseCase) {
         return new SubscriptionsHandler(gridUseCase);
     }
 
     @PerActivity
     @Provides
-    GridListUseCase provideGridUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICategoryDataManager categoryDataManager) {
-
-        return new GridListUseCase(subscribeOn, observeOn, categoryDataManager);
+    GetGridVideosUseCase provideGridUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, CategoryRepository categoryRepository) {
+        return new GetGridVideosUseCase(subscribeOn, observeOn, categoryRepository);
     }
 }

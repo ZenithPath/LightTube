@@ -17,17 +17,17 @@ import com.example.scame.lighttube.presentation.di.components.DaggerTabComponent
 import com.example.scame.lighttube.presentation.di.components.GridComponent;
 import com.example.scame.lighttube.presentation.di.components.RecentVideosComponent;
 import com.example.scame.lighttube.presentation.di.components.SignInComponent;
-import com.example.scame.lighttube.presentation.di.components.VideoListComponent;
+import com.example.scame.lighttube.presentation.di.components.HomeComponent;
 import com.example.scame.lighttube.presentation.di.modules.TabModule;
 import com.example.scame.lighttube.presentation.fragments.ChannelVideosFragment;
 import com.example.scame.lighttube.presentation.fragments.GridFragment;
+import com.example.scame.lighttube.presentation.fragments.HomeFragment;
 import com.example.scame.lighttube.presentation.fragments.NoInternetFragment;
 import com.example.scame.lighttube.presentation.fragments.RecentVideosFragment;
-import com.example.scame.lighttube.presentation.fragments.SignInFragment;
+import com.example.scame.lighttube.presentation.fragments.LoginFragment;
 import com.example.scame.lighttube.presentation.fragments.SurpriseMeFragment;
-import com.example.scame.lighttube.presentation.fragments.VideoListFragment;
 import com.example.scame.lighttube.presentation.model.VideoModel;
-import com.example.scame.lighttube.presentation.presenters.ITabActivityPresenter;
+import com.example.scame.lighttube.presentation.presenters.TabActivityPresenter;
 
 import javax.inject.Inject;
 
@@ -35,9 +35,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-public class TabActivity extends BaseActivity implements VideoListFragment.VideoListActivityListener,
-        ITabActivityPresenter.ITabActivityView,
-        SignInFragment.SignUpListener,
+public class TabActivity extends BaseActivity implements HomeFragment.VideoListActivityListener,
+        TabActivityPresenter.ITabActivityView,
+        LoginFragment.LoginListener,
         SurpriseMeFragment.SurpriseMeListener,
         RecentVideosFragment.RecentVideosListener,
         ChannelVideosFragment.ChannelVideosListener,
@@ -66,7 +66,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
     BottomNavigationBar bottomNavigationBar;
 
     @Inject
-    ITabActivityPresenter<ITabActivityPresenter.ITabActivityView> presenter;
+    TabActivityPresenter<TabActivityPresenter.ITabActivityView> presenter;
 
     // shows how activity was initialized before onDestroy method call
     @State boolean initializedWithoutInternet;
@@ -102,7 +102,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         // happens when an activity was recreated with NoInternetFragment & connection shows up
         // or activity simply wasn't recreated
         if (PREVIOUSLY_SELECTED_TAB == DEFAULT_SELECTED_POSITION) {
-            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+            replaceFragment(R.id.tab_activity_fl, new HomeFragment(), VIDEO_LIST_FRAG_TAG);
         }
 
         presenter.checkLogin();
@@ -138,14 +138,14 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         }
     }
 
-    // called by SignInFragment after user signed in
+    // called by LoginFragment after user signed in
     @Override
     public void signedIn() {
         configSignInBottomBar();
         bottomNavigationBar.setFirstSelectedPosition(ACCOUNT_TAB_SIGN_IN).initialise();
     }
 
-    // called by SignInFragment after user signed out
+    // called by LoginFragment after user signed out
     @Override
     public void signedOut() {
         configSignOutBottomBar();
@@ -220,7 +220,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
         return super.onCreateOptionsMenu(menu);
     }
 
-    public VideoListComponent getVideoListComponent() {
+    public HomeComponent getVideoListComponent() {
         return componentsManager.provideVideoListComponent();
     }
 
@@ -306,7 +306,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 switch (position) {
                     case HOME_TAB:
                         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new HomeFragment(), VIDEO_LIST_FRAG_TAG);
                         }
 
                         break;
@@ -318,7 +318,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
 
                     case ACCOUNT_TAB_SIGN_OUT:
                         if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new LoginFragment(), SIGN_IN_FRAG_TAG);
                         }
 
                         break;
@@ -334,11 +334,11 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
             public void onTabReselected(int position) {
                 switch (position) {
                     case HOME_TAB:
-                        VideoListFragment videoListFragment = (VideoListFragment) getSupportFragmentManager()
+                        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
                                 .findFragmentByTag(VIDEO_LIST_FRAG_TAG);
 
-                        if (videoListFragment != null) {
-                            videoListFragment.scrollToTop();
+                        if (homeFragment != null) {
+                            homeFragment.scrollToTop();
                         }
 
                         break;
@@ -365,7 +365,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                 switch (position) {
                     case HOME_TAB:
                         if (getSupportFragmentManager().findFragmentByTag(VIDEO_LIST_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new VideoListFragment(), VIDEO_LIST_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new HomeFragment(), VIDEO_LIST_FRAG_TAG);
                         }
 
                         break;
@@ -383,7 +383,7 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
                         break;
                     case ACCOUNT_TAB_SIGN_IN:
                         if (getSupportFragmentManager().findFragmentByTag(SIGN_IN_FRAG_TAG) == null) {
-                            replaceFragment(R.id.tab_activity_fl, new SignInFragment(), SIGN_IN_FRAG_TAG);
+                            replaceFragment(R.id.tab_activity_fl, new LoginFragment(), SIGN_IN_FRAG_TAG);
                         }
 
                         break;
@@ -399,11 +399,11 @@ public class TabActivity extends BaseActivity implements VideoListFragment.Video
             public void onTabReselected(int position) {
                 switch (position) {
                     case HOME_TAB:
-                        VideoListFragment videoListFragment = (VideoListFragment) getSupportFragmentManager()
+                        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager()
                                 .findFragmentByTag(VIDEO_LIST_FRAG_TAG);
 
-                        if (videoListFragment != null) {
-                            videoListFragment.scrollToTop();
+                        if (homeFragment != null) {
+                            homeFragment.scrollToTop();
                         }
 
                         break;

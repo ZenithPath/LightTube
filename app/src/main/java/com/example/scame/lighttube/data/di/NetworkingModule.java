@@ -2,7 +2,7 @@ package com.example.scame.lighttube.data.di;
 
 import com.example.scame.lighttube.data.interceptors.AccessTokenInterceptor;
 import com.example.scame.lighttube.data.interceptors.TokenAuthenticator;
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
+import com.example.scame.lighttube.data.repository.AccountRepository;
 import com.example.scame.lighttube.data.rest.ChannelsApi;
 import com.example.scame.lighttube.data.rest.CommentsApi;
 import com.example.scame.lighttube.data.rest.RatingApi;
@@ -106,14 +106,14 @@ public class NetworkingModule {
 
     @Singleton
     @Provides
-    AccessTokenInterceptor provideAccessTokenInterceptor(IAccountDataManager accountDataManager) {
-        return new AccessTokenInterceptor(accountDataManager);
+    AccessTokenInterceptor provideAccessTokenInterceptor(AccountRepository accountRepository) {
+        return new AccessTokenInterceptor(accountRepository);
     }
 
     @Singleton
     @Provides
-    TokenAuthenticator provideTokenAuthenticator(IAccountDataManager accountDataManager) {
-        return new TokenAuthenticator(accountDataManager);
+    TokenAuthenticator provideTokenAuthenticator(AccountRepository accountRepository) {
+        return new TokenAuthenticator(accountRepository);
     }
 
     @Singleton

@@ -1,24 +1,25 @@
 package com.example.scame.lighttube.presentation.presenters;
 
-import com.example.scame.lighttube.domain.usecases.AutocompleteListUseCase;
+import android.util.Log;
+
+import com.example.scame.lighttube.domain.usecases.GetAutocompleteListUseCase;
 import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
 
 import java.util.List;
 
-public class AutocompletePresenterImp<V extends IAutocompletePresenter.AutocompleteView>
-                                            implements IAutocompletePresenter<V> {
+public class AutocompletePresenterImp<V extends AutocompletePresenter.AutocompleteView>
+                                            implements AutocompletePresenter<V> {
 
     private V view;
 
-    private AutocompleteListUseCase useCase;
+    private GetAutocompleteListUseCase useCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
-    public AutocompletePresenterImp(AutocompleteListUseCase useCase, SubscriptionsHandler subscriptionsHandler) {
+    public AutocompletePresenterImp(GetAutocompleteListUseCase useCase, SubscriptionsHandler subscriptionsHandler) {
         this.subscriptionsHandler = subscriptionsHandler;
         this.useCase = useCase;
     }
-
 
     @Override
     public void setView(V view) {
@@ -52,7 +53,15 @@ public class AutocompletePresenterImp<V extends IAutocompletePresenter.Autocompl
         public void onNext(List<String> strings) {
             super.onNext(strings);
 
-            view.updateAutocompleteList(strings);
+            if (view != null) {
+                view.updateAutocompleteList(strings);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxAutocompleteErr", e.getLocalizedMessage());
         }
     }
 }

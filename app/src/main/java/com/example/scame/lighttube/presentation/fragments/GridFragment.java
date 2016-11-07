@@ -23,7 +23,7 @@ import com.example.scame.lighttube.presentation.adapters.GridAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.VideoModel;
-import com.example.scame.lighttube.presentation.presenters.IGridPresenter;
+import com.example.scame.lighttube.presentation.presenters.GridPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-public class GridFragment extends BaseFragment implements IGridPresenter.GridView {
+public class GridFragment extends BaseFragment implements GridPresenter.GridView {
 
     @BindView(R.id.grid_rv) RecyclerView gridRv;
 
@@ -45,7 +45,7 @@ public class GridFragment extends BaseFragment implements IGridPresenter.GridVie
     @BindView(R.id.grid_swipe) SwipeRefreshLayout refreshLayout;
 
     @Inject
-    IGridPresenter<IGridPresenter.GridView> presenter;
+    GridPresenter<GridPresenter.GridView> presenter;
 
     @State ArrayList<ModelMarker> items;
 

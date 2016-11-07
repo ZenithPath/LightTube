@@ -1,75 +1,49 @@
 package com.example.scame.lighttube.presentation.di.modules;
 
-import com.example.scame.lighttube.data.repository.IContentDetailsDataManager;
-import com.example.scame.lighttube.data.repository.IRecentVideosDataManager;
+import com.example.scame.lighttube.data.repository.RecentVideosRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
-import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
-import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
-import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
+import com.example.scame.lighttube.domain.usecases.GetRecentVideosUseCase;
+import com.example.scame.lighttube.domain.usecases.GetSubscriptionsUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
-import com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter;
+import com.example.scame.lighttube.presentation.presenters.RecentVideosPresenter;
 import com.example.scame.lighttube.presentation.presenters.RecentVideosPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 
 import dagger.Module;
 import dagger.Provides;
 
-import static com.example.scame.lighttube.presentation.presenters.IRecentVideosPresenter.RecentVideosView;
+import static com.example.scame.lighttube.presentation.presenters.RecentVideosPresenter.RecentVideosView;
 
 @Module
 public class RecentVideosModule {
 
     @PerActivity
     @Provides
-    IRecentVideosPresenter<RecentVideosView> provideRecentVideosPresenter(SubscriptionsUseCase subscriptionsUseCase,
-                                                                          RecentVideosUseCase recentVideosUseCase,
-                                                                          OrderByDateUseCase orderUseCase,
-                                                                          ContentDetailsUseCase detailsUseCase,
-                                                                          SubscriptionsHandler subscriptionsHandler) {
-
-        return new RecentVideosPresenterImp<>(subscriptionsUseCase, recentVideosUseCase,
-                detailsUseCase, orderUseCase, subscriptionsHandler);
+    RecentVideosPresenter<RecentVideosView> provideRecentVideosPresenter(GetRecentVideosUseCase getRecentVideosUseCase,
+                                                                         GetSubscriptionsUseCase subscriptionsUseCase,
+                                                                         SubscriptionsHandler subscriptionsHandler) {
+        return new RecentVideosPresenterImp<>(getRecentVideosUseCase, subscriptionsUseCase, subscriptionsHandler);
     }
 
     @PerActivity
     @Provides
-    SubscriptionsHandler provideSubscriptionsHandler(ContentDetailsUseCase detailsUseCase, SubscriptionsUseCase subscriptionsUseCase,
-                                                     RecentVideosUseCase recentVideosUseCase, OrderByDateUseCase orderUseCase) {
-
-        return new SubscriptionsHandler(detailsUseCase, subscriptionsUseCase, recentVideosUseCase, orderUseCase);
+    SubscriptionsHandler provideSubscriptionsHandler(GetSubscriptionsUseCase subscriptionsUseCase,
+                                                     GetRecentVideosUseCase getRecentVideosUseCase) {
+        return new SubscriptionsHandler(subscriptionsUseCase, getRecentVideosUseCase);
     }
+
+   @PerActivity
+   @Provides
+   GetSubscriptionsUseCase provideSubscriptionsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                       RecentVideosRepository recentVideosRepository) {
+       return new GetSubscriptionsUseCase(subscribeOn, observeOn, recentVideosRepository);
+   }
 
     @PerActivity
     @Provides
-    ContentDetailsUseCase provideContentDetailsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                       IContentDetailsDataManager dataManager) {
-
-        return new ContentDetailsUseCase(subscribeOn, observeOn, dataManager);
-    }
-
-    @PerActivity
-    @Provides
-    SubscriptionsUseCase provideSubscriptionsUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                     IRecentVideosDataManager recentVideosDataManager) {
-
-        return new SubscriptionsUseCase(subscribeOn, observeOn, recentVideosDataManager);
-    }
-
-    @PerActivity
-    @Provides
-    RecentVideosUseCase provideRecentVideosUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                   IRecentVideosDataManager dataManager) {
-
-        return new RecentVideosUseCase(subscribeOn, observeOn, dataManager);
-    }
-
-    @PerActivity
-    @Provides
-    OrderByDateUseCase provideOrderByDateUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
-                                                 IRecentVideosDataManager dataManager) {
-
-        return new OrderByDateUseCase(subscribeOn, observeOn, dataManager);
+    GetRecentVideosUseCase provideRecentVideosUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                                                      RecentVideosRepository dataManager) {
+        return new GetRecentVideosUseCase(subscribeOn, observeOn, dataManager);
     }
 }

@@ -1,61 +1,46 @@
 package com.example.scame.lighttube.presentation.presenters;
 
 
-import com.example.scame.lighttube.data.entities.search.SearchEntity;
-import com.example.scame.lighttube.data.entities.subscriptions.SubscriptionsEntity;
-import com.example.scame.lighttube.data.mappers.ChannelsMapper;
-import com.example.scame.lighttube.data.mappers.SubscriptionsIdsMapper;
-import com.example.scame.lighttube.domain.usecases.ContentDetailsUseCase;
-import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
-import com.example.scame.lighttube.domain.usecases.OrderByDateUseCase;
-import com.example.scame.lighttube.domain.usecases.RecentVideosUseCase;
-import com.example.scame.lighttube.domain.usecases.SubscriptionsUseCase;
-import com.example.scame.lighttube.presentation.model.ChannelModel;
-import com.example.scame.lighttube.presentation.model.VideoModel;
+import android.util.Log;
 
-import java.util.ArrayList;
+import com.example.scame.lighttube.domain.usecases.GetRecentVideosUseCase;
+import com.example.scame.lighttube.domain.usecases.GetSubscriptionsUseCase;
+import com.example.scame.lighttube.domain.usecases.DefaultSubscriber;
+import com.example.scame.lighttube.presentation.model.ChannelModel;
+import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
+
 import java.util.List;
 
-public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVideosView>
-                                            implements IRecentVideosPresenter<T> {
 
-    private SubscriptionsUseCase subscriptionsUseCase;
+public class RecentVideosPresenterImp<T extends RecentVideosPresenter.RecentVideosView>
+                                            implements RecentVideosPresenter<T> {
 
-    private RecentVideosUseCase recentVideosUseCase;
+    private static final int FIRST_PAGE = 0;
 
-    private OrderByDateUseCase orderUseCase;
-
-    private ContentDetailsUseCase contentDetailsUseCase;
+    private GetRecentVideosUseCase getRecentVideosUseCase;
 
     private SubscriptionsHandler subscriptionsHandler;
 
-    private List<SearchEntity> searchEntities;
-
-    private int subscriptionsNumber;
-    private int subscriptionsCounter;
+    private GetSubscriptionsUseCase channelsUseCase;
 
     private T view;
 
-    public RecentVideosPresenterImp(SubscriptionsUseCase subscriptionsUseCase,
-                                    RecentVideosUseCase recentVideosUseCase,
-                                    ContentDetailsUseCase contentDetailsUseCase,
-                                    OrderByDateUseCase orderUseCase,
+    public RecentVideosPresenterImp(GetRecentVideosUseCase getRecentVideosUseCase,
+                                    GetSubscriptionsUseCase channelsUseCase,
                                     SubscriptionsHandler subscriptionsHandler) {
-
-        this.contentDetailsUseCase = contentDetailsUseCase;
-        this.subscriptionsUseCase = subscriptionsUseCase;
-        this.recentVideosUseCase = recentVideosUseCase;
-        this.orderUseCase = orderUseCase;
-
+        this.getRecentVideosUseCase = getRecentVideosUseCase;
+        this.channelsUseCase = channelsUseCase;
         this.subscriptionsHandler = subscriptionsHandler;
     }
 
-
-    // get a list of subscriptions (channels)
     @Override
-    public void initialize() {
-        subscriptionsCounter = 0; // presenter is a singleton, so we must set a counter to zero
-        subscriptionsUseCase.execute(new SubscriptionsSubscriber());
+    public void getChannelsList() {
+        channelsUseCase.execute(new ChannelsSubscriber());
+    }
+
+    @Override
+    public void getRecentVideosList() {
+        getRecentVideosUseCase.execute(new RecentVideosSubscriber());
     }
 
     @Override
@@ -79,84 +64,43 @@ public class RecentVideosPresenterImp<T extends IRecentVideosPresenter.RecentVid
         view = null;
     }
 
-    private final class SubscriptionsSubscriber extends DefaultSubscriber<SubscriptionsEntity> {
-
-        private SubscriptionsIdsMapper subscriptionsIdsMapper = new SubscriptionsIdsMapper();
-        private ChannelsMapper channelsMapper = new ChannelsMapper();
+    private final class ChannelsSubscriber extends DefaultSubscriber<List<ChannelModel>> {
 
         @Override
-        public void onNext(SubscriptionsEntity subscriptionsEntity) {
-            super.onNext(subscriptionsEntity);
+        public void onNext(List<ChannelModel> channelModels) {
+            super.onNext(channelModels);
 
-            makeRecentVideosRequests(subscriptionsEntity);
-            visualizeChannelList(subscriptionsEntity);
-        }
-
-        private void makeRecentVideosRequests(SubscriptionsEntity subscriptionsEntity) {
-
-            List<String> subscriptionsIds = subscriptionsIdsMapper.convert(subscriptionsEntity);
-
-            subscriptionsNumber = subscriptionsIds.size();
-            searchEntities = new ArrayList<>();
-
-            // to bypass unreusability of CompositeSubscription
-            recentVideosUseCase.createSubscriptiosHolder();
-
-            // make concurrent searches on each channel
-            for (String channelId : subscriptionsIds) {
-                recentVideosUseCase.setChannelId(channelId);
-                recentVideosUseCase.execute(new RecentVideosSubscriber());
+            if (view != null) {
+                view.visualizeChannelsList(channelModels);
             }
         }
 
-        private void visualizeChannelList(SubscriptionsEntity subscriptionsEntity) {
-            List<ChannelModel> channelModels = channelsMapper.convert(subscriptionsEntity);
-            view.visualizeChannelsList(channelModels);
+        @Override
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxChannelsErr", e.getLocalizedMessage());
         }
     }
 
-    private final class RecentVideosSubscriber extends DefaultSubscriber<SearchEntity> {
+    private final class RecentVideosSubscriber extends DefaultSubscriber<VideoModelsWrapper> {
 
         @Override
-        public void onNext(SearchEntity searchEntity) {
-            super.onNext(searchEntity);
+        public void onNext(VideoModelsWrapper videoModelsWrapper) {
+            super.onNext(videoModelsWrapper);
 
-            searchEntities.add(searchEntity);
-        }
-
-        @Override
-        public void onCompleted() {
-            super.onCompleted();
-
-            // when all threads are done, combine & sort search results by publishing date
-            if (++subscriptionsCounter == subscriptionsNumber) {
-                orderUseCase.setSearchEntities(searchEntities);
-                orderUseCase.execute(new OrderSubscriber());
+            if (view != null) {
+                if (videoModelsWrapper.getPage() == FIRST_PAGE) {
+                    view.populateAdapter(videoModelsWrapper.getVideoModels());
+                } else {
+                    view.updateAdapter(videoModelsWrapper.getVideoModels());
+                }
             }
-         }
-    }
-
-    private final class OrderSubscriber extends DefaultSubscriber<List<VideoModel>> {
-
-        @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
-
-            // thanks to YouTube data API we need one more request to get duration of videos
-            contentDetailsUseCase.setVideoModels(videoModels);
-            contentDetailsUseCase.execute(new ContentDetailsSubscriber());
         }
-    }
-
-
-    private final class ContentDetailsSubscriber extends DefaultSubscriber<List<VideoModel>> {
 
         @Override
-        public void onNext(List<VideoModel> videoModels) {
-            super.onNext(videoModels);
-
-            // finally we can display the result
-            view.populateAdapter(videoModels);
+        public void onError(Throwable e) {
+            super.onError(e);
+            Log.i("onxRecentVideosErr", e.getLocalizedMessage());
         }
     }
 }

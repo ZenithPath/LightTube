@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(includes = {DataManagersModule.class, MappersModule.class, NetworkingModule.class})
+@Module(includes = {RepositoriesModule.class, MappersModule.class, NetworkingModule.class})
 public class DataModule {
 
     @Singleton

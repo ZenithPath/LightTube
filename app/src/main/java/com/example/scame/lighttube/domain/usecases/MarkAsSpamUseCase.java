@@ -1,7 +1,7 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
-import com.example.scame.lighttube.data.repository.ICommentsDataManager;
+import com.example.scame.lighttube.data.repository.CommentsRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 
@@ -9,11 +9,11 @@ import rx.Observable;
 
 public class MarkAsSpamUseCase extends UseCase<String> {
 
-    private ICommentsDataManager dataManager;
+    private CommentsRepository dataManager;
 
     private String commentId;
 
-    public MarkAsSpamUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ICommentsDataManager dataManager) {
+    public MarkAsSpamUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, CommentsRepository dataManager) {
         super(subscribeOn, observeOn);
         this.dataManager = dataManager;
     }
@@ -25,5 +25,9 @@ public class MarkAsSpamUseCase extends UseCase<String> {
 
     public void setCommentId(String commentId) {
         this.commentId = commentId;
+    }
+
+    public String getCommentId() {
+        return commentId;
     }
 }

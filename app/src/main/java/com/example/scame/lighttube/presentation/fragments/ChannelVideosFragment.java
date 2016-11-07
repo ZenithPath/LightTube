@@ -21,7 +21,7 @@ import com.example.scame.lighttube.presentation.adapters.ChannelVideosAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.VideoModel;
-import com.example.scame.lighttube.presentation.presenters.IChannelVideosPresenter;
+import com.example.scame.lighttube.presentation.presenters.ChannelVideosPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +32,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-public class ChannelVideosFragment extends BaseFragment implements IChannelVideosPresenter.ChannelsView {
+public class ChannelVideosFragment extends BaseFragment implements ChannelVideosPresenter.ChannelsView {
 
     @Inject
-    IChannelVideosPresenter<IChannelVideosPresenter.ChannelsView> presenter;
+    ChannelVideosPresenter<ChannelVideosPresenter.ChannelsView> presenter;
 
     @BindView(R.id.channels_fragment_rv) RecyclerView recyclerView;
 

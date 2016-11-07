@@ -1,32 +1,30 @@
 package com.example.scame.lighttube.domain.usecases;
 
 
-import com.example.scame.lighttube.data.repository.ISearchDataManager;
+import com.example.scame.lighttube.data.repository.SearchRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
-import com.example.scame.lighttube.presentation.model.VideoModel;
-
-import java.util.List;
+import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
 
 import rx.Observable;
 
-public class SearchUseCase extends UseCase<List<VideoModel>> {
+public class SearchUseCase extends UseCase<VideoModelsWrapper> {
 
-    private ISearchDataManager dataManager;
+    private SearchRepository searchDataManager;
 
     private String query;
 
     private int page;
 
-    public SearchUseCase(SubscribeOn subscribeOn, ObserveOn observeOn, ISearchDataManager dataManager) {
+    public SearchUseCase(SubscribeOn subscribeOn, ObserveOn observeOn,
+                         SearchRepository searchDataManager) {
         super(subscribeOn, observeOn);
-
-        this.dataManager = dataManager;
+        this.searchDataManager = searchDataManager;
     }
 
     @Override
-    protected Observable<List<VideoModel>> getUseCaseObservable() {
-        return dataManager.search(query, page);
+    protected Observable<VideoModelsWrapper> getUseCaseObservable() {
+        return searchDataManager.search(query, page);
     }
 
     public void setQuery(String query) {
@@ -35,5 +33,13 @@ public class SearchUseCase extends UseCase<List<VideoModel>> {
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public int getPage() {
+        return page;
     }
 }

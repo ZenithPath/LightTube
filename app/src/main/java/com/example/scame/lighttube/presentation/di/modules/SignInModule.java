@@ -3,16 +3,16 @@ package com.example.scame.lighttube.presentation.di.modules;
 import android.app.Activity;
 
 import com.example.scame.lighttube.PrivateValues;
-import com.example.scame.lighttube.data.repository.IAccountDataManager;
+import com.example.scame.lighttube.data.repository.AccountRepository;
 import com.example.scame.lighttube.domain.schedulers.ObserveOn;
 import com.example.scame.lighttube.domain.schedulers.SubscribeOn;
 import com.example.scame.lighttube.domain.usecases.CheckLoginUseCase;
 import com.example.scame.lighttube.domain.usecases.SignInUseCase;
 import com.example.scame.lighttube.domain.usecases.SignOutUseCase;
 import com.example.scame.lighttube.presentation.di.PerActivity;
-import com.example.scame.lighttube.presentation.fragments.SignInFragment;
-import com.example.scame.lighttube.presentation.presenters.ISignInPresenter;
-import com.example.scame.lighttube.presentation.presenters.SignInPresenterImp;
+import com.example.scame.lighttube.presentation.fragments.LoginFragment;
+import com.example.scame.lighttube.presentation.presenters.LoginPresenter;
+import com.example.scame.lighttube.presentation.presenters.LoginPresenterImp;
 import com.example.scame.lighttube.presentation.presenters.SubscriptionsHandler;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -43,8 +43,8 @@ public class SignInModule {
     GoogleSignInOptions provideGoogleSignInOptions() {
         return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(
-                        new Scope(SignInFragment.YOUTUBE_UPLOAD_SCOPE),
-                        new Scope(SignInFragment.YOUTUBE_FORCE_SSL_SCOPE))
+                        new Scope(LoginFragment.YOUTUBE_UPLOAD_SCOPE),
+                        new Scope(LoginFragment.YOUTUBE_FORCE_SSL_SCOPE))
                 .requestServerAuthCode(PrivateValues.CLIENT_ID, true)
                 .requestEmail()
                 .build();
@@ -52,21 +52,21 @@ public class SignInModule {
 
     @PerActivity
     @Provides
-    SignInUseCase provideSignInUseCase(IAccountDataManager dataManager,
+    SignInUseCase provideSignInUseCase(AccountRepository dataManager,
                                        ObserveOn observeOn, SubscribeOn subscribeOn) {
         return new SignInUseCase(dataManager, subscribeOn, observeOn);
     }
 
     @PerActivity
     @Provides
-    SignOutUseCase provideSignOutUseCase(IAccountDataManager dataManager,
+    SignOutUseCase provideSignOutUseCase(AccountRepository dataManager,
                                          ObserveOn observeOn, SubscribeOn subscribeOn) {
         return new SignOutUseCase(dataManager, subscribeOn, observeOn);
     }
 
     @PerActivity
     @Provides
-    CheckLoginUseCase provideSignInCheckUseCase(IAccountDataManager dataManager,
+    CheckLoginUseCase provideSignInCheckUseCase(AccountRepository dataManager,
                                                 ObserveOn observeOn, SubscribeOn subscribeOn) {
         return new CheckLoginUseCase(subscribeOn, observeOn, dataManager);
     }
@@ -81,11 +81,10 @@ public class SignInModule {
 
     @PerActivity
     @Provides
-    ISignInPresenter<ISignInPresenter.SignInView> provideSignInPresenter(SignInUseCase signInUseCase,
-                                                                         SignOutUseCase signOutUseCase,
-                                                                         CheckLoginUseCase checkLoginUseCase,
-                                                                         SubscriptionsHandler subscriptionsHandler) {
-
-        return new SignInPresenterImp<>(signInUseCase, signOutUseCase, checkLoginUseCase, subscriptionsHandler);
+    LoginPresenter<LoginPresenter.LoginView> provideSignInPresenter(SignInUseCase signInUseCase,
+                                                                    SignOutUseCase signOutUseCase,
+                                                                    CheckLoginUseCase checkLoginUseCase,
+                                                                    SubscriptionsHandler subscriptionsHandler) {
+        return new LoginPresenterImp<>(signInUseCase, signOutUseCase, checkLoginUseCase, subscriptionsHandler);
     }
 }

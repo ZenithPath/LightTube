@@ -13,7 +13,7 @@ import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.model.HeaderModel;
-import com.example.scame.lighttube.presentation.presenters.IVideoRatingPresenter;
+import com.example.scame.lighttube.presentation.presenters.VideoRatingPresenter;
 
 import javax.inject.Inject;
 
@@ -21,14 +21,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HeaderHolder extends RecyclerView.ViewHolder implements IVideoRatingPresenter.PlayerView {
+public class HeaderHolder extends RecyclerView.ViewHolder implements VideoRatingPresenter.PlayerView {
 
     private static final String LIKE = "like";
     private static final String DISLIKE = "dislike";
     private static final String NONE = "none";
 
     @Inject
-    IVideoRatingPresenter<IVideoRatingPresenter.PlayerView> presenter;
+    VideoRatingPresenter<VideoRatingPresenter.PlayerView> presenter;
 
     @BindView(R.id.like_btn) ImageButton likeButton;
 
