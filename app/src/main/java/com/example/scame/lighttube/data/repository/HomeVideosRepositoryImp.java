@@ -1,14 +1,12 @@
 package com.example.scame.lighttube.data.repository;
 
 
+import android.util.Log;
+
 import com.example.scame.lighttube.PrivateValues;
-import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.mappers.HomeVideosMapper;
 import com.example.scame.lighttube.data.rest.VideoListApi;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -21,16 +19,13 @@ public class HomeVideosRepositoryImp implements HomeVideosRepository {
     private HomeVideosMapper homeVideosMapper;
     private VideoListApi videoListApi;
 
-    @Inject
-    PaginationUtility paginationUtility;
+    private PaginationUtility paginationUtility;
 
-    public HomeVideosRepositoryImp(HomeVideosMapper homeVideosMapper, VideoListApi videoListApi) {
+    public HomeVideosRepositoryImp(HomeVideosMapper homeVideosMapper, VideoListApi videoListApi,
+                                   PaginationUtility paginationUtility) {
         this.homeVideosMapper = homeVideosMapper;
         this.videoListApi = videoListApi;
-
-        LightTubeApp.getAppComponent().inject(this);
-        paginationUtility.setTokenStringId(R.string.next_page_general);
-        paginationUtility.setPageStringId(R.string.page_number_general);
+        this.paginationUtility = paginationUtility;
     }
 
     @Override
@@ -39,6 +34,7 @@ public class HomeVideosRepositoryImp implements HomeVideosRepository {
                 CHART, PrivateValues.API_KEY, PART, MAX_RESULTS)
                 .doOnNext(videoEntityList -> {
                     paginationUtility.saveNextPageToken(videoEntityList.getNextPageToken());
+                    Log.i("onxSavingToken", videoEntityList.getNextPageToken());
                     paginationUtility.saveCurrentPage(page);
                 }).map(videosEntity -> homeVideosMapper.convert(videosEntity, page));
     }

@@ -4,6 +4,7 @@ package com.example.scame.lighttube.data.repository;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.StringRes;
+import android.util.Pair;
 
 public class PaginationUtilityImp implements PaginationUtility {
 
@@ -17,9 +18,12 @@ public class PaginationUtilityImp implements PaginationUtility {
     @StringRes
     private int tokenStringId;
 
-    public PaginationUtilityImp(SharedPreferences sharedPreferences, Context context) {
+    public PaginationUtilityImp(SharedPreferences sharedPreferences, Context context,
+                                Pair<Integer, Integer> keysPair) {
         this.sharedPreferences = sharedPreferences;
         this.context = context;
+        this.tokenStringId = keysPair.first;
+        this.pageStringId = keysPair.second;
     }
 
     @Override

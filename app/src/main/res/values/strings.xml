@@ -27,6 +27,7 @@
     <string name="search_page_number">searchPageNumber</string>
     <string name="page_number_general">pageNumberGen</string>
 
+    <string name="next_page_token_general">nextPageTokenGenKey</string>
     <string name="replies_next_page_token">repliesNextPage</string>
     <string name="comments_next_page_token">nextPageKey</string>
     <string name="next_page_token_list">listNextPage</string>

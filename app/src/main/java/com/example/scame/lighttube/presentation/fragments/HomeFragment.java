@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +47,10 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
 
     @Inject
     HomePresenter<HomePresenter.VideoListView> presenter;
+
+    @Inject
+    @Named("general")
+    PaginationUtility paginationUtility;
 
     // these variables represent adapter state
     @State int currentPage;
@@ -144,6 +150,7 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
         adapter.setCurrentPage(currentPage);
         adapter.setConnectedPreviously(isConnectedPreviously);
         adapter.setLoading(isLoading);
+        adapter.setPaginationUtility(paginationUtility);
 
         setupRetryListener();
         setupOnVideoClickListener();

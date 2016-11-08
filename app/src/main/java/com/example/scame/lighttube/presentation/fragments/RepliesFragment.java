@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.replies.RepliesAdapter;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,6 +55,10 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
 
     @Inject
     ReplyInputPresenter<ReplyInputPresenter.ReplyView> replyInputPresenter;
+
+    @Inject
+    @Named("replies")
+    PaginationUtility paginationUtility;
 
     private RepliesDelegatesManager repliesDelegatesManager;
 
@@ -138,6 +144,7 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
         repliesAdapter.setCurrentPage(currentPage);
         repliesAdapter.setConnectedPreviously(isConnectedPreviously);
         repliesAdapter.setLoading(isLoading);
+        repliesAdapter.setPaginationUtility(paginationUtility);
 
         setupOnLoadMoreListener();
     }

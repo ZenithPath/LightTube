@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.example.scame.lighttube.data.repository.PaginationUtility;
+
 import java.util.List;
 
 public abstract class BaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -86,5 +88,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setOnRetryClickListener(NoConnectionViewHolder.OnRetryClickListener onRetryClickListener) {
         this.onRetryClickListener = onRetryClickListener;
+    }
+
+    public void setPaginationUtility(PaginationUtility paginationUtility) {
+        scrollListener.setPaginationUtility(paginationUtility);
     }
 }

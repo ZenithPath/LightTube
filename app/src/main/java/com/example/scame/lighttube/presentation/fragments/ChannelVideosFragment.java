@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +38,10 @@ public class ChannelVideosFragment extends BaseFragment implements ChannelVideos
 
     @Inject
     ChannelVideosPresenter<ChannelVideosPresenter.ChannelsView> presenter;
+
+    @Inject
+    @Named("general")
+    PaginationUtility paginationUtility;
 
     @BindView(R.id.channels_fragment_rv) RecyclerView recyclerView;
 
@@ -135,6 +141,7 @@ public class ChannelVideosFragment extends BaseFragment implements ChannelVideos
         channelAdapter.setCurrentPage(currentPage);
         channelAdapter.setConnectedPreviously(isConnectedPreviously);
         channelAdapter.setLoading(isLoading);
+        channelAdapter.setPaginationUtility(paginationUtility);
 
         setupRetryListener();
         setupOnVideoClickListener();

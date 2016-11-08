@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +45,10 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
 
     @Inject
     SearchResultsPresenter<SearchResultsView> presenter;
+
+    @Inject
+    @Named("general")
+    PaginationUtility paginationUtility;
 
     @State ArrayList<ModelMarker> searchItems;
 
@@ -124,6 +130,7 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         adapter.setCurrentPage(currentPage);
         adapter.setConnectedPreviously(isConnectedPreviously);
         adapter.setLoading(isLoading);
+        adapter.setPaginationUtility(paginationUtility);
 
         setupRetryListener();
         setupOnVideoClickListener();

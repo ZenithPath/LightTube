@@ -9,10 +9,7 @@ import com.example.scame.lighttube.data.entities.search.SearchEntity;
 import com.example.scame.lighttube.data.mappers.AutocompleteDeserializer;
 import com.example.scame.lighttube.data.mappers.SearchListMapper;
 import com.example.scame.lighttube.data.rest.SearchApi;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.VideoModelsWrapper;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -27,9 +24,6 @@ public class SearchRepositoryImp implements SearchRepository {
 
     private static final String TYPE = "video";
 
-    @Inject
-    PaginationUtility paginationUtility;
-
     private ContentDetailsRepository detailsDataManager;
 
     private AutocompleteDeserializer deserializer;
@@ -40,18 +34,18 @@ public class SearchRepositoryImp implements SearchRepository {
 
     private Context context;
 
+    private PaginationUtility paginationUtility;
+
     public SearchRepositoryImp(SearchApi searchApi, SearchListMapper searchListMapper,
                                AutocompleteDeserializer deserializer, Context context,
-                               ContentDetailsRepository detailsDataManager) {
+                               ContentDetailsRepository detailsDataManager,
+                               PaginationUtility paginationUtility) {
         this.detailsDataManager = detailsDataManager;
         this.searchListMapper = searchListMapper;
         this.deserializer = deserializer;
         this.searchApi = searchApi;
         this.context = context;
-
-        LightTubeApp.getAppComponent().inject(this);
-        paginationUtility.setPageStringId(R.string.page_number_general);
-        paginationUtility.setTokenStringId(R.string.next_page_general);
+        this.paginationUtility = paginationUtility;
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 
 public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
@@ -18,6 +19,8 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
     private int currentPage;
 
     private LinearLayoutManager layoutManager;
+
+    private PaginationUtility paginationUtility;
 
     private OnLoadMoreListener onLoadMoreListener;
 
@@ -47,27 +50,28 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
         totalItemCount = layoutManager.getItemCount();
         lastVisibleItem = layoutManager.findLastVisibleItemPosition();
 
-        if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold) &&
-                ConnectivityReceiver.isConnected() && connectedPreviously) {
-
+        if (checkLoadingCondition() && ConnectivityReceiver.isConnected()) {
             if (onLoadMoreListener != null) {
                 onLoadMoreListener.onLoadMore(++currentPage);
             }
 
             loading = true;
-        } else if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold) &&
-                !ConnectivityReceiver.isConnected() && connectedPreviously) {
-
+        } else if (checkLoadingCondition() && !ConnectivityReceiver.isConnected()) {
             if (noConnectionListener != null) {
                 noConnectionListener.onNoConnection();
             }
-
             connectedPreviously = false;
         }
     }
 
-    private void notifyScrollDirection(int dx, int dy) {
+    private boolean checkLoadingCondition() {
+        return !loading && totalItemCount <= (lastVisibleItem + visibleThreshold)
+                && paginationUtility != null
+                && paginationUtility.getNextPageToken(paginationUtility.getSavedPage() + 1) != null
+                && connectedPreviously;
+    }
 
+    private void notifyScrollDirection(int dx, int dy) {
         if (directionScrollListener != null) {
             if (dy < 0) { // scrolled up
                 directionScrollListener.onDirectionScroll(true);
@@ -75,6 +79,10 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
                 directionScrollListener.onDirectionScroll(false);
             }
         }
+    }
+
+    public void setPaginationUtility(PaginationUtility paginationUtility) {
+        this.paginationUtility = paginationUtility;
     }
 
     public void setDirectionScrollListener(DirectionScrollListener directionScrollListener) {
@@ -111,6 +119,10 @@ public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
     public int getCurrentPage() {
         return currentPage;
+    }
+
+    public PaginationUtility getPaginationUtility() {
+        return paginationUtility;
     }
 }
 

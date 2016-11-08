@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +48,10 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
 
     @Inject
     GridPresenter<GridPresenter.GridView> presenter;
+
+    @Inject
+    @Named("general")
+    PaginationUtility paginationUtility;
 
     @State ArrayList<ModelMarker> items;
 
@@ -141,6 +147,7 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         gridAdapter.setCurrentPage(currentPage);
         gridAdapter.setConnectedPreviously(isConnectedPreviously);
         gridAdapter.setLoading(isLoading);
+        gridAdapter.setPaginationUtility(paginationUtility);
 
         setupRetryListener();
         setupOnVideoClickListener();

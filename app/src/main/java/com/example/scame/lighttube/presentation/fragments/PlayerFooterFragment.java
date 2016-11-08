@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.repository.CommentsRepositoryImp;
+import com.example.scame.lighttube.data.repository.PaginationUtility;
 import com.example.scame.lighttube.presentation.activities.PlayerActivity;
 import com.example.scame.lighttube.presentation.adapters.player.DividerItemDecoration;
 import com.example.scame.lighttube.presentation.adapters.player.threads.CommentsAdapter;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +56,10 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
 
     @Inject
     ReplyInputPresenter<ReplyInputPresenter.ReplyView> replyInputPresenter;
+
+    @Inject
+    @Named("comments")
+    PaginationUtility paginationUtility;
 
     @BindView(R.id.player_footer_rv)
     RecyclerView footerRv;
@@ -194,6 +200,7 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
         commentsAdapter.setCurrentPage(currentPage);
         commentsAdapter.setConnectedPreviously(isConnectedPreviously);
         commentsAdapter.setLoading(isLoading);
+        commentsAdapter.setPaginationUtility(paginationUtility);
 
         setupOnLoadMoreListener();
     }

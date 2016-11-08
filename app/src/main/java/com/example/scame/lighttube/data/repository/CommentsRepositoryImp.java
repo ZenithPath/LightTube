@@ -4,7 +4,6 @@ package com.example.scame.lighttube.data.repository;
 import android.support.annotation.StringDef;
 
 import com.example.scame.lighttube.PrivateValues;
-import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.mappers.CommentListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyListMapper;
 import com.example.scame.lighttube.data.mappers.ReplyPostBuilder;
@@ -14,7 +13,6 @@ import com.example.scame.lighttube.data.mappers.ThreadPostBuilder;
 import com.example.scame.lighttube.data.mappers.ThreadResponseMapper;
 import com.example.scame.lighttube.data.mappers.ThreadUpdateBuilder;
 import com.example.scame.lighttube.data.rest.CommentsApi;
-import com.example.scame.lighttube.presentation.LightTubeApp;
 import com.example.scame.lighttube.presentation.model.RepliesWrapper;
 import com.example.scame.lighttube.presentation.model.ReplyModel;
 import com.example.scame.lighttube.presentation.model.ThreadCommentModel;
@@ -22,8 +20,6 @@ import com.example.scame.lighttube.presentation.model.ThreadCommentsWrapper;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -40,12 +36,6 @@ public class CommentsRepositoryImp implements CommentsRepository {
     private static final int MAX_RES = 50;
 
     private static final String TEXT_FORMAT = "plainText";
-
-    @Inject
-    PaginationUtility commentsPaginationUtility;
-
-    @Inject
-    PaginationUtility repliesPaginationUtility;
 
     private CommentsApi commentsApi;
 
@@ -65,6 +55,10 @@ public class CommentsRepositoryImp implements CommentsRepository {
 
     private ThreadUpdateBuilder threadUpdateBuilder;
 
+    private PaginationUtility commentsPaginationUtility;
+
+    private PaginationUtility repliesPaginationUtility;
+
     @StringDef ({RELEVANCE_ORDER, TIME_ORDER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CommentsOrders { }
@@ -73,7 +67,8 @@ public class CommentsRepositoryImp implements CommentsRepository {
                                  ReplyListMapper replyListMapper, ThreadResponseMapper threadResponseMapper,
                                  ThreadPostBuilder threadPostBuilder, ReplyPostBuilder replyPostBuilder,
                                  ReplyResponseMapper replyResponseMapper, ReplyUpdateBuilder replyUpdateBuilder,
-                                 ThreadUpdateBuilder threadUpdateBuilder) {
+                                 ThreadUpdateBuilder threadUpdateBuilder, PaginationUtility commentsPaginationUtility,
+                                 PaginationUtility repliesPaginationUtility) {
         this.commentListMapper = commentListMapper;
         this.replyListMapper = replyListMapper;
         this.commentsApi = commentsApi;
@@ -84,11 +79,8 @@ public class CommentsRepositoryImp implements CommentsRepository {
         this.replyUpdateBuilder = replyUpdateBuilder;
         this.threadUpdateBuilder = threadUpdateBuilder;
 
-        LightTubeApp.getAppComponent().inject(this);
-        commentsPaginationUtility.setPageStringId(R.string.comments_page_number);
-        commentsPaginationUtility.setTokenStringId(R.string.comments_next_page_token);
-        repliesPaginationUtility.setPageStringId(R.string.replies_page_number);
-        repliesPaginationUtility.setTokenStringId(R.string.comments_next_page_token);
+        this.commentsPaginationUtility = commentsPaginationUtility;
+        this.repliesPaginationUtility = repliesPaginationUtility;
     }
 
     @Override
