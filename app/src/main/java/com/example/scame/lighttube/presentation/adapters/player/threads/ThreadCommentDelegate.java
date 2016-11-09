@@ -19,9 +19,12 @@ public class ThreadCommentDelegate implements AdapterDelegate<List<?>> {
 
     private String identifier;
 
-    public ThreadCommentDelegate(CommentActionListener actionListener, String identifier) {
+    private int viewType;
+
+    public ThreadCommentDelegate(CommentActionListener actionListener, String identifier, int viewType) {
         this.actionListener = actionListener;
         this.identifier = identifier;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -40,6 +43,6 @@ public class ThreadCommentDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_THREAD_COMMENT;
+        return viewType;
     }
 }

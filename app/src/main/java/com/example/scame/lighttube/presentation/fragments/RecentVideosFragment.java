@@ -169,7 +169,6 @@ public class RecentVideosFragment extends BaseFragment implements RecentVideosPr
         recentVideosAdapter.setupOnItemClickListener((itemView, position) ->
                 recentVideosListener.onVideoClick(videoModels.get(position)));
 
-
         recentVideosAdapter.setDirectionScrollListener(scrollToTop ->
                 recentVideosListener.onScrolled(scrollToTop));
     }

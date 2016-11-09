@@ -40,13 +40,11 @@ import static com.example.scame.lighttube.presentation.adapters.player.replies.R
 import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_REPLY_INPUT;
 
 public class RepliesFragment extends Fragment implements RepliesPresenter.RepliesView, CommentActionListener,
-        ReplyInputPresenter.ReplyView {
+        ReplyInputPresenter.ReplyView, ScrollingHelperListener {
 
     private static final int INSERT_REPLY_POS = 1;
 
-    int currentPage;
-    boolean isLoading;
-    boolean isConnectedPreviously = true;
+    private static final int FIRST_PAGE_INDEX = 0;
 
     @BindView(R.id.replies_fragment_rv) RecyclerView repliesRv;
 
@@ -64,11 +62,15 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
 
     private RepliesAdapter repliesAdapter;
 
-    private List<Object> replies;
+    private ArrayList<Object> replies;
 
     private ThreadCommentModel unparceledModel;
 
     private String userIdentifier;
+
+    private RecyclerScrollingHelper scrollingHelper;
+
+    private Bundle savedInstanceState;
 
     public interface RepliesListener {
 
@@ -91,6 +93,7 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View repliesView = inflater.inflate(R.layout.replies_fragment, container, false);
 
+        this.savedInstanceState = savedInstanceState;
         ButterKnife.bind(this, repliesView);
         ((PlayerActivity) getActivity()).getRepliesComponent().inject(this);
         this.unparceledModel = getArguments().getParcelable(RepliesFragment.class.getCanonicalName());
@@ -98,9 +101,14 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
 
         repliesPresenter.setView(this);
         replyInputPresenter.setView(this);
-        repliesPresenter.getRepliesList(unparceledModel.getThreadId(), currentPage);
+        repliesPresenter.getRepliesList(unparceledModel.getThreadId(), FIRST_PAGE_INDEX);
 
         return repliesView;
+    }
+
+    @Override
+    public void onPageChange(int pageNumber) {
+        repliesPresenter.getRepliesList(unparceledModel.getThreadId(), pageNumber);
     }
 
     /**
@@ -109,7 +117,7 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
 
     @Override
     public void displayReplies(List<ReplyModel> repliesList, int page) {
-        if (page == 0) {
+        if (page == FIRST_PAGE_INDEX) {
             initializeAdapter(repliesList);
         } else {
             updateScrolledList(repliesList);
@@ -140,23 +148,19 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
         repliesDelegatesManager = new RepliesDelegatesManager(replyText ->
                 replyInputPresenter.postReply(unparceledModel.getThreadId(), replyText), this, userIdentifier);
         repliesAdapter = new RepliesAdapter(repliesDelegatesManager, replies, repliesRv);
-
-        repliesAdapter.setCurrentPage(currentPage);
-        repliesAdapter.setConnectedPreviously(isConnectedPreviously);
-        repliesAdapter.setLoading(isLoading);
         repliesAdapter.setPaginationUtility(paginationUtility);
 
-        setupOnLoadMoreListener();
+        initializeScrollingHelper();
+        scrollingHelper.setupOnLoadMoreListener();
     }
 
-    private void setupOnLoadMoreListener() {
-        repliesAdapter.setOnLoadMoreListener((page) -> {
-            replies.add(null);
-            repliesAdapter.notifyItemInserted(replies.size() - 1);
+    private void initializeScrollingHelper() {
+        scrollingHelper = new RecyclerScrollingHelper(replies, repliesAdapter, null, this);
+        scrollingHelper.setPaginationUtility(paginationUtility);
 
-            currentPage = page;
-            repliesPresenter.getRepliesList(unparceledModel.getThreadId(), currentPage);
-        });
+        if (savedInstanceState != null) {
+            scrollingHelper.onRestoreInstanceState(savedInstanceState);
+        }
     }
 
 
@@ -291,6 +295,14 @@ public class RepliesFragment extends Fragment implements RepliesPresenter.Replie
     @Override
     public void onActionMarkAsSpamClick(String commentId) {
         repliesPresenter.markAsSpam(commentId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (scrollingHelper != null) {
+            scrollingHelper.onSaveInstanceState(outState);
+        }
     }
 
     @Override

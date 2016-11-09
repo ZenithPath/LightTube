@@ -13,14 +13,15 @@ import com.example.scame.lighttube.presentation.adapters.player.PopupHandler;
 
 import java.util.List;
 
-import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_REPLY_COMMENT;
-
 public class RepliesViewDelegate implements AdapterDelegate<List<?>> {
 
     private PopupHandler popupHandler;
 
-    public RepliesViewDelegate(PopupHandler popupHandler) {
+    private int viewType;
+
+    public RepliesViewDelegate(PopupHandler popupHandler, int viewType) {
         this.popupHandler = popupHandler;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -39,6 +40,6 @@ public class RepliesViewDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return VIEW_TYPE_REPLY_COMMENT;
+        return viewType;
     }
 }

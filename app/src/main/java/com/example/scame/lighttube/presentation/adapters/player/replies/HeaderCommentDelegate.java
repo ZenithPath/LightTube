@@ -16,10 +16,13 @@ import java.util.List;
 
 public class HeaderCommentDelegate implements AdapterDelegate<List<?>> {
 
+    private int viewType;
+
     private PopupHandler popupHandler;
 
-    public HeaderCommentDelegate(PopupHandler popupHandler) {
+    public HeaderCommentDelegate(PopupHandler popupHandler, int viewType) {
         this.popupHandler = popupHandler;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -39,6 +42,6 @@ public class HeaderCommentDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return RepliesDelegatesManager.VIEW_TYPE_HEADER_COMMENT;
+        return viewType;
     }
 }

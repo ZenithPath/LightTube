@@ -22,11 +22,15 @@ public class MultipleRepliesDelegate implements AdapterDelegate<List<?>> {
 
     private String userIdentifier;
 
+    private int viewType;
+
     public MultipleRepliesDelegate(PlayerFooterFragment.PlayerFooterListener footerListener,
-                                   CommentActionListener actionListener, String userIdentifier) {
+                                   CommentActionListener actionListener, String userIdentifier,
+                                   int viewType) {
         this.footerListener = footerListener;
         this.actionListener = actionListener;
         this.userIdentifier = userIdentifier;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -45,6 +49,6 @@ public class MultipleRepliesDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_ALL_REPLIES;
+        return viewType;
     }
 }

@@ -19,8 +19,11 @@ public class EditCommentDelegate implements AdapterDelegate<List<?>> {
 
     private CommentActionListener commentActionListener;
 
-    public EditCommentDelegate(CommentActionListener commentActionListener) {
+    private int viewType;
+
+    public EditCommentDelegate(CommentActionListener commentActionListener, int viewType) {
         this.commentActionListener = commentActionListener;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -53,6 +56,6 @@ public class EditCommentDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_EDIT_COMMENT;
+        return viewType;
     }
 }

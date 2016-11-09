@@ -34,6 +34,8 @@ import icepick.State;
 
 public class HomeFragment extends BaseFragment implements HomePresenter.VideoListView, ScrollingHelperListener {
 
+    private static final int FIRST_PAGE_INDEX = 0;
+
     @BindView(R.id.videolist_rv) RecyclerView recyclerView;
 
     @BindView(R.id.videolist_toolbar) Toolbar toolbar;
@@ -115,7 +117,7 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
         if (savedInstanceState != null && items != null) {
             initializeAdapter(items);
         } else {
-            presenter.fetchVideos(0);
+            presenter.fetchVideos(FIRST_PAGE_INDEX);
         }
     }
 
@@ -128,10 +130,10 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (scrollingHelper != null) {
             scrollingHelper.onSaveInstanceState(outState);
         }
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -210,7 +212,6 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         presenter.destroy();
     }
 }

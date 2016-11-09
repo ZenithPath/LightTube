@@ -41,10 +41,11 @@ import javax.inject.Named;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-// TODO: add thread replies editing
 
 public class PlayerFooterFragment extends Fragment implements PlayerFooterPresenter.FooterView,
-        CommentActionListener, ReplyInputPresenter.ReplyView {
+        CommentActionListener, ReplyInputPresenter.ReplyView, ScrollingHelperListener {
+
+    private static final int FIRST_PAGE_INDEX = 0;
 
     @CommentsRepositoryImp.CommentsOrders
     private static final String DEFAULT_COMMENTS_ORDER = CommentsRepositoryImp.RELEVANCE_ORDER;
@@ -78,9 +79,9 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
 
     private @CommentsRepositoryImp.CommentsOrders String commentsOrder;
 
-    int currentPage;
-    boolean isLoading;
-    boolean isConnectedPreviously = true;
+    private RecyclerScrollingHelper scrollingHelper;
+
+    private Bundle savedInstanceState;
 
     public interface PlayerFooterListener {
 
@@ -115,6 +116,7 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.player_footer_fragment, container, false);
 
+        this.savedInstanceState = savedInstanceState;
         videoModel = getArguments().getParcelable(PlayerFooterFragment.class.getCanonicalName());
         ((PlayerActivity) getActivity()).getPlayerFooterComponent().inject(this);
         ButterKnife.bind(this, fragmentView);
@@ -127,10 +129,15 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
         return fragmentView;
     }
 
+    @Override
+    public void onPageChange(int pageNumber) {
+        footerPresenter.getCommentList(videoModel.getVideoId(), commentsOrder, pageNumber);
+    }
+
     private void initFragment() {
         if (modelsList == null) {
             footerPresenter.setView(this);
-            footerPresenter.initializeFooter(videoModel.getVideoId(), DEFAULT_COMMENTS_ORDER, currentPage);
+            footerPresenter.initializeFooter(videoModel.getVideoId(), DEFAULT_COMMENTS_ORDER, FIRST_PAGE_INDEX);
         } else {
             initializeAdapter();
         }
@@ -196,23 +203,19 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
                 this::orderClickHandler);
 
         commentsAdapter = new CommentsAdapter(delegatesManager, modelsList, footerRv);
-
-        commentsAdapter.setCurrentPage(currentPage);
-        commentsAdapter.setConnectedPreviously(isConnectedPreviously);
-        commentsAdapter.setLoading(isLoading);
         commentsAdapter.setPaginationUtility(paginationUtility);
 
-        setupOnLoadMoreListener();
+        initializeScrollingHelper();
+        scrollingHelper.setupOnLoadMoreListener();
     }
 
-    private void setupOnLoadMoreListener() {
-        commentsAdapter.setOnLoadMoreListener((page) -> {
-            modelsList.add(null);
-            commentsAdapter.notifyItemInserted(modelsList.size() - 1);
+    private void initializeScrollingHelper() {
+        scrollingHelper = new RecyclerScrollingHelper(modelsList, commentsAdapter, null, this);
+        scrollingHelper.setPaginationUtility(paginationUtility);
 
-            currentPage = page;
-            footerPresenter.getCommentList(videoModel.getVideoId(), commentsOrder, page);
-        });
+        if (savedInstanceState != null) {
+            scrollingHelper.onSaveInstanceState(savedInstanceState);
+        }
     }
 
     private void initializeFooterRecycler() {
@@ -223,7 +226,7 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
     private void orderClickHandler(View view) {
         if (view.getTag() instanceof String) {
             @CommentsRepositoryImp.CommentsOrders String newOrder = (String) view.getTag();
-            footerPresenter.commentsOrderClick(videoModel.getVideoId(), commentsOrder, newOrder, currentPage);
+            footerPresenter.commentsOrderClick(videoModel.getVideoId(), commentsOrder, newOrder, FIRST_PAGE_INDEX);
         }
     }
 
@@ -374,5 +377,13 @@ public class PlayerFooterFragment extends Fragment implements PlayerFooterPresen
         super.onDestroy();
         footerPresenter.destroy();
         replyInputPresenter.destroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (scrollingHelper != null) {
+            scrollingHelper.onSaveInstanceState(savedInstanceState);
+        }
     }
 }

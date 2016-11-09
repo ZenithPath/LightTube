@@ -19,18 +19,18 @@ import java.util.List;
 
 public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>> {
 
-    public static final int NUMBER_OF_VIEW_ABOVE_COUNTS = 1;
     public static final int NUMBER_OF_VIEW_ABOVE = 2;
+    static final int NUMBER_OF_VIEW_ABOVE_COUNTS = 1;
 
-    static final int VIEW_TYPE_HEADER = 0;
-    static final int VIEW_TYPE_THREAD_COMMENT = 1;
-    static final int VIEW_TYPE_ONE_REPLY = 2;
-    static final int VIEW_TYPE_TWO_REPLIES = 3;
-    static final int VIEW_TYPE_ALL_REPLIES = 4;
-    static final int VIEW_TYPE_COMMENT_INPUT = 5;
-    static final int VIEW_TYPE_EDIT_COMMENT = 6;
-    static final int VIEW_TYPE_COMMENTS_COUNT = 7;
-    static final int VIEW_TYPE_PROGRESS = 8;
+    private static final int VIEW_TYPE_HEADER = 0;
+    private static final int VIEW_TYPE_THREAD_COMMENT = 1;
+    private static final int VIEW_TYPE_ONE_REPLY = 2;
+    private static final int VIEW_TYPE_TWO_REPLIES = 3;
+    private static final int VIEW_TYPE_ALL_REPLIES = 4;
+    private static final int VIEW_TYPE_COMMENT_INPUT = 5;
+    private static final int VIEW_TYPE_EDIT_COMMENT = 6;
+    private static final int VIEW_TYPE_COMMENTS_COUNT = 7;
+    private static final int VIEW_TYPE_PROGRESS = 8;
 
     private static final int HEADER_LAYOUT_POSITION = 0;
     private static final int COMMENTS_COUNT_POSITION = 1;
@@ -45,14 +45,14 @@ public class CommentsDelegatesManager implements AdapterDelegatesManager<List<?>
                                     View.OnClickListener orderListener) {
         delegates = new ArrayList<>();
 
-        delegates.add(new CommentInputDelegate(postedCommentListener));
-        delegates.add(new ThreadCommentDelegate(actionListener, userIdentifier));
-        delegates.add(new SingleReplyDelegate(actionListener, userIdentifier));
-        delegates.add(new CoupleRepliesDelegate(actionListener, userIdentifier));
-        delegates.add(new MultipleRepliesDelegate(footerListener, actionListener, userIdentifier));
-        delegates.add(new HeaderDelegate(context, headerModel));
-        delegates.add(new EditCommentDelegate(actionListener));
-        delegates.add(new CommentsCountDelegate(orderListener));
+        delegates.add(new CommentInputDelegate(postedCommentListener, VIEW_TYPE_COMMENT_INPUT));
+        delegates.add(new ThreadCommentDelegate(actionListener, userIdentifier, VIEW_TYPE_THREAD_COMMENT));
+        delegates.add(new SingleReplyDelegate(actionListener, userIdentifier, VIEW_TYPE_ONE_REPLY));
+        delegates.add(new CoupleRepliesDelegate(actionListener, userIdentifier, VIEW_TYPE_TWO_REPLIES));
+        delegates.add(new MultipleRepliesDelegate(footerListener, actionListener, userIdentifier, VIEW_TYPE_ALL_REPLIES));
+        delegates.add(new HeaderDelegate(context, headerModel, VIEW_TYPE_HEADER));
+        delegates.add(new EditCommentDelegate(actionListener, VIEW_TYPE_EDIT_COMMENT));
+        delegates.add(new CommentsCountDelegate(orderListener, VIEW_TYPE_COMMENTS_COUNT));
         delegates.add(new ProgressDelegate(VIEW_TYPE_PROGRESS));
     }
 

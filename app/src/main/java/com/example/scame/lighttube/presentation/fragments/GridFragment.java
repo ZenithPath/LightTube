@@ -17,12 +17,9 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.repository.PaginationUtility;
-import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
 import com.example.scame.lighttube.presentation.adapters.GridAdapter;
-import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
-import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.GridPresenter;
 
@@ -36,7 +33,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-public class GridFragment extends BaseFragment implements GridPresenter.GridView {
+public class GridFragment extends BaseFragment implements GridPresenter.GridView, ScrollingHelperListener {
+
+    private static final int FIRST_PAGE_INDEX = 0;
 
     @BindView(R.id.grid_rv) RecyclerView gridRv;
 
@@ -53,12 +52,7 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
     @Named("general")
     PaginationUtility paginationUtility;
 
-    @State ArrayList<ModelMarker> items;
-
-    // these variables represent adapter state
-    @State int currentPage;
-    @State boolean isLoading;
-    @State boolean isConnectedPreviously = true;
+    @State ArrayList<Object> items;
 
     private BaseAdapter gridAdapter;
 
@@ -66,6 +60,10 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
     private String category;
 
     private GridFragmentListener gridFragmentListener;
+
+    private RecyclerScrollingHelper scrollingHelper;
+
+    private Bundle savedInstanceState;
 
     public interface GridFragmentListener {
 
@@ -86,8 +84,12 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         ((AppCompatActivity) getActivity()).setSupportActionBar(gridToolbar);
+    }
+
+    @Override
+    public void onPageChange(int pageNumber) {
+        presenter.fetchVideos(category, duration, pageNumber);
     }
 
     @Nullable
@@ -96,12 +98,11 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         View fragmentView = inflater.inflate(R.layout.grid_fragment, container, false);
 
         inject();
+        this.savedInstanceState = savedInstanceState;
         ButterKnife.bind(this, fragmentView);
         presenter.setView(this);
 
         parseVideosSpecification();
-
-        setupRefreshListener();
 
         progressBar.setVisibility(View.VISIBLE);
         gridRv.setVisibility(View.GONE);
@@ -115,10 +116,9 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         if (savedInstanceState != null && items != null){
             initializeAdapter(items);
         } else {
-            presenter.fetchVideos(category, duration, currentPage);
+            presenter.fetchVideos(category, duration, FIRST_PAGE_INDEX);
         }
     }
-
 
     private void parseVideosSpecification() {
         Bundle args = getArguments();
@@ -133,9 +133,8 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         }
     }
 
-
     @Override
-    public void initializeAdapter(List<? extends ModelMarker> newItems) {
+    public void initializeAdapter(List<?> newItems) {
         items = new ArrayList<>(newItems);
 
         progressBar.setVisibility(View.GONE);
@@ -144,20 +143,31 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         gridRv.setLayoutManager(buildLayoutManager());
 
         gridAdapter = new GridAdapter(getContext(), items, gridRv);
-        gridAdapter.setCurrentPage(currentPage);
-        gridAdapter.setConnectedPreviously(isConnectedPreviously);
-        gridAdapter.setLoading(isLoading);
         gridAdapter.setPaginationUtility(paginationUtility);
 
-        setupRetryListener();
-        setupOnVideoClickListener();
-        setupOnLoadMoreListener();
-        setupNoConnectionListener();
-        setupDirectionScrollListener();
+        initializeScrollingHelper();
+        setupListeners();
 
         gridRv.setAdapter(gridAdapter);
+        refreshLayout.setRefreshing(false);
+    }
 
-        stopRefreshing();
+    private void initializeScrollingHelper() {
+        scrollingHelper = new RecyclerScrollingHelper(items, gridAdapter, refreshLayout, this);
+        scrollingHelper.setPaginationUtility(paginationUtility);
+
+        if (savedInstanceState != null) {
+            scrollingHelper.onRestoreInstanceState(savedInstanceState);
+        }
+    }
+
+    private void setupListeners() {
+        scrollingHelper.setupRetryListener();
+        scrollingHelper.setupOnLoadMoreListener();
+        scrollingHelper.setupNoConnectionListener();
+
+        setupOnVideoClickListener();
+        setupDirectionScrollListener();
     }
 
     private void setupDirectionScrollListener() {
@@ -175,63 +185,8 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         }
     }
 
-    private void setupNoConnectionListener() {
-        gridAdapter.setNoConnectionListener(() -> {
-            items.add(new NoConnectionMarker());
-            gridAdapter.notifyItemInserted(items.size() - 1);
-        });
-    }
-
-    private void setupRetryListener() {
-        gridAdapter.setOnRetryClickListener(() -> {
-
-            if (ConnectivityReceiver.isConnected()) {
-                stopRefreshing();
-
-                items.remove(items.size() - 1);
-                gridAdapter.notifyItemRemoved(items.size());
-
-                items.add(null);
-                gridAdapter.notifyItemInserted(items.size() - 1);
-
-                ++currentPage;
-                gridAdapter.setLoading(true);
-                gridAdapter.setConnectedPreviously(true);
-                gridAdapter.setCurrentPage(currentPage);
-                presenter.fetchVideos(category, duration, currentPage);
-            }
-        });
-    }
-
-    private void setupOnLoadMoreListener() {
-        gridAdapter.setOnLoadMoreListener(page -> {
-            items.add(null);
-            gridAdapter.notifyItemInserted(items.size() - 1);
-
-            currentPage = page;
-            presenter.fetchVideos(category, duration, page);
-        });
-    }
-
-    private void stopRefreshing() {
-        if (refreshLayout.isRefreshing()) {
-            refreshLayout.setRefreshing(false);
-        }
-    }
-
-    private void setupRefreshListener() {
-        refreshLayout.setOnRefreshListener(() -> {
-
-            currentPage = 0;
-            isLoading = false;
-            isConnectedPreviously = true;
-
-            presenter.fetchVideos(category, duration, currentPage);
-        });
-    }
-
     @Override
-    public void updateAdapter(List<? extends ModelMarker> newItems) {
+    public void updateAdapter(List<?> newItems) {
         items.remove(items.size() - 1);
         gridAdapter.notifyItemRemoved(items.size());
 
@@ -272,16 +227,12 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
         return gridLayoutManager;
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
-        if (gridAdapter != null) {
-            isLoading = gridAdapter.isLoading();
-            isConnectedPreviously = gridAdapter.isConnectedPreviously();
-        }
-
         super.onSaveInstanceState(outState);
+        if (scrollingHelper != null) {
+            scrollingHelper.onSaveInstanceState(outState);
+        }
     }
 
     public void scrollToTop() {
@@ -291,7 +242,6 @@ public class GridFragment extends BaseFragment implements GridPresenter.GridView
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         presenter.destroy();
     }
 }

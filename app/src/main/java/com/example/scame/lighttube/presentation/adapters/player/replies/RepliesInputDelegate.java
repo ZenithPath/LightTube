@@ -17,12 +17,15 @@ public class RepliesInputDelegate implements AdapterDelegate<List<?>> {
 
     private RepliesFragment.RepliesListener replyInputListener;
 
+    private int viewType;
+
     private boolean asReply;
 
     private String authorName;
 
-    public RepliesInputDelegate(RepliesFragment.RepliesListener replyInputListener) {
+    public RepliesInputDelegate(RepliesFragment.RepliesListener replyInputListener, int viewType) {
         this.replyInputListener = replyInputListener;
+        this.viewType = viewType;
     }
 
     public void setModeFields(boolean asReply, String authorName) {
@@ -48,6 +51,6 @@ public class RepliesInputDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return RepliesDelegatesManager.VIEW_TYPE_REPLY_INPUT;
+        return viewType;
     }
 }

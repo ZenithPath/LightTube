@@ -14,12 +14,9 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.repository.PaginationUtility;
-import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
-import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
 import com.example.scame.lighttube.presentation.adapters.SearchResultsAdapter;
 import com.example.scame.lighttube.presentation.di.components.SearchComponent;
-import com.example.scame.lighttube.presentation.model.ModelMarker;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.SearchResultsPresenter;
 
@@ -35,7 +32,9 @@ import icepick.State;
 
 import static com.example.scame.lighttube.presentation.presenters.SearchResultsPresenter.SearchResultsView;
 
-public class SearchResultsFragment extends BaseFragment implements SearchResultsView {
+public class SearchResultsFragment extends BaseFragment implements SearchResultsView, ScrollingHelperListener {
+
+    private static final int FIRST_PAGE_INDEX = 0;
 
     @BindView(R.id.search_results_rv) RecyclerView recyclerView;
 
@@ -50,18 +49,17 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     @Named("general")
     PaginationUtility paginationUtility;
 
-    @State ArrayList<ModelMarker> searchItems;
-
-    // these variables represent adapter state
-    @State int currentPage;
-    @State boolean isLoading;
-    @State boolean isConnectedPreviously = true;
+    @State ArrayList<Object> searchItems;
 
     private BaseAdapter adapter;
 
     private SearchResultsListener listener;
 
     private String query;
+
+    private RecyclerScrollingHelper scrollingHelper;
+
+    private Bundle savedInstanceState;
 
     public interface SearchResultsListener {
 
@@ -77,18 +75,22 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         }
     }
 
+    @Override
+    public void onPageChange(int pageNumber) {
+        presenter.fetchVideos(pageNumber, query);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.search_results_fragment, container, false);
 
+        this.savedInstanceState = savedInstanceState;
         ButterKnife.bind(this, fragmentView);
         getComponent(SearchComponent.class).inject(this);
         parseSearchQuery();
 
         presenter.setView(this);
-
-        setupRefreshListener();
 
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
@@ -102,23 +104,20 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         if (savedInstanceState != null && searchItems != null) {
             initializeAdapter(searchItems);
         } else {
-            presenter.fetchVideos(currentPage, query);
+            presenter.fetchVideos(FIRST_PAGE_INDEX, query);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
-        if (adapter != null) {
-            isLoading = adapter.isLoading();
-            isConnectedPreviously = adapter.isConnectedPreviously();
-        }
-
         super.onSaveInstanceState(outState);
+        if (scrollingHelper != null) {
+            scrollingHelper.onSaveInstanceState(outState);
+        }
     }
 
     @Override
-    public void initializeAdapter(List<? extends ModelMarker> items) {
+    public void initializeAdapter(List<?> items) {
         searchItems = new ArrayList<>(items);
 
         progressBar.setVisibility(View.GONE);
@@ -127,23 +126,33 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         recyclerView.setLayoutManager(buildLayoutManager());
 
         adapter = new SearchResultsAdapter(searchItems, getContext(), recyclerView);
-        adapter.setCurrentPage(currentPage);
-        adapter.setConnectedPreviously(isConnectedPreviously);
-        adapter.setLoading(isLoading);
         adapter.setPaginationUtility(paginationUtility);
 
-        setupRetryListener();
-        setupOnVideoClickListener();
-        setupOnLoadMoreListener();
-        setupNoConnectionListener();
+        initializeScrollingHelper();
+        setupListeners();
 
         recyclerView.setAdapter(adapter);
+        refreshLayout.setRefreshing(false);
+    }
 
-        stopRefreshing();
+    private void initializeScrollingHelper() {
+        scrollingHelper = new RecyclerScrollingHelper(searchItems, adapter, refreshLayout, this);
+        scrollingHelper.setPaginationUtility(paginationUtility);
+
+        if (savedInstanceState != null) {
+            scrollingHelper.onRestoreInstanceState(savedInstanceState);
+        }
+    }
+
+    private void setupListeners() {
+        scrollingHelper.setupRetryListener();
+        scrollingHelper.setupOnLoadMoreListener();
+        scrollingHelper.setupNoConnectionListener();
+        setupOnVideoClickListener();
     }
 
     @Override
-    public void updateAdapter(List<? extends ModelMarker> newItems) {
+    public void updateAdapter(List<?> newItems) {
         searchItems.remove(searchItems.size() - 1);
         adapter.notifyItemRemoved(searchItems.size());
 
@@ -151,34 +160,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
         adapter.notifyItemRangeInserted(adapter.getItemCount(), newItems.size());
 
         adapter.setLoading(false);
-    }
-
-    private void setupRetryListener() {
-        adapter.setOnRetryClickListener(() -> {
-
-            if (ConnectivityReceiver.isConnected()) {
-                stopRefreshing();
-
-                searchItems.remove(searchItems.size() - 1);
-                adapter.notifyItemRemoved(searchItems.size());
-
-                searchItems.add(null);
-                adapter.notifyItemInserted(searchItems.size() - 1);
-
-                ++currentPage;
-                adapter.setLoading(true);
-                adapter.setConnectedPreviously(true);
-                adapter.setCurrentPage(currentPage);
-                presenter.fetchVideos(currentPage, query);
-            }
-        });
-    }
-
-    private void setupNoConnectionListener() {
-        adapter.setNoConnectionListener(() -> {
-            searchItems.add(new NoConnectionMarker());
-            adapter.notifyItemInserted(searchItems.size() - 1);
-        });
     }
 
     private void setupOnVideoClickListener() {
@@ -189,33 +170,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
                 listener.onVideoClick(videoModel);
             });
         }
-    }
-
-    private void setupOnLoadMoreListener() {
-        adapter.setOnLoadMoreListener(page -> {
-            searchItems.add(null);
-            adapter.notifyItemInserted(searchItems.size() - 1);
-
-            currentPage = page;
-            presenter.fetchVideos(currentPage, query);
-        });
-    }
-
-    private void stopRefreshing() {
-        if (refreshLayout.isRefreshing()) {
-            refreshLayout.setRefreshing(false);
-        }
-    }
-
-    private void setupRefreshListener() {
-        refreshLayout.setOnRefreshListener(() -> {
-
-            currentPage = 0;
-            isLoading = false;
-            isConnectedPreviously = true;
-
-            presenter.fetchVideos(currentPage, query);
-        });
     }
 
     private void parseSearchQuery() {
@@ -234,7 +188,6 @@ public class SearchResultsFragment extends BaseFragment implements SearchResults
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         presenter.destroy();
     }
 }

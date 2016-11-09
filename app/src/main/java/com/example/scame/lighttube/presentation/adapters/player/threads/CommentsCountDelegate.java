@@ -19,8 +19,11 @@ public class CommentsCountDelegate implements AdapterDelegate<List<?>> {
 
     private View.OnClickListener orderListener;
 
-    public CommentsCountDelegate(View.OnClickListener orderListener) {
+    private int viewType;
+
+    public CommentsCountDelegate(View.OnClickListener orderListener, int viewType) {
         this.orderListener = orderListener;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -40,6 +43,6 @@ public class CommentsCountDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_COMMENTS_COUNT;
+        return viewType;
     }
 }

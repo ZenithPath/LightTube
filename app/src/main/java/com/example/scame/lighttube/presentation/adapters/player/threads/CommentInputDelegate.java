@@ -17,8 +17,11 @@ public class CommentInputDelegate implements AdapterDelegate<List<?>> {
 
     private PlayerFooterFragment.PostedCommentListener postedCommentListener;
 
-    public CommentInputDelegate(PlayerFooterFragment.PostedCommentListener postedCommentListener) {
+    private int viewType;
+
+    public CommentInputDelegate(PlayerFooterFragment.PostedCommentListener postedCommentListener, int viewType) {
         this.postedCommentListener = postedCommentListener;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -35,6 +38,6 @@ public class CommentInputDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_COMMENT_INPUT;
+        return viewType;
     }
 }

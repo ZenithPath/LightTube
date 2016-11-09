@@ -18,17 +18,17 @@ import java.util.List;
 
 public class RepliesDelegatesManager implements AdapterDelegatesManager<List<?>> {
 
-    public static final int VIEW_TYPE_REPLY_INPUT = 1;
-    static final int VIEW_TYPE_REPLY_COMMENT = 0;
-    static final int VIEW_TYPE_EDIT_REPLY = 2;
-    static final int VIEW_TYPE_HEADER_COMMENT = 3;
-    private static final int VIEW_TYPE_PROGRESS = 4;
-
     public static final int NUMBER_OF_VIEW_ABOVE = 1;
 
     public static final int REPLY_INPUT_POS = 1;
 
     public static final int HEADER_COMMENT_POS = 0;
+
+    public static final int VIEW_TYPE_REPLY_INPUT = 1;
+    private static final int VIEW_TYPE_REPLY_COMMENT = 0;
+    private static final int VIEW_TYPE_EDIT_REPLY = 2;
+    private static final int VIEW_TYPE_HEADER_COMMENT = 3;
+    private static final int VIEW_TYPE_PROGRESS = 4;
 
     private List<AdapterDelegate<List<?>>> delegates;
 
@@ -36,10 +36,10 @@ public class RepliesDelegatesManager implements AdapterDelegatesManager<List<?>>
                                    CommentActionListener commentActionListener,
                                    String userIdentifier) {
         delegates = new ArrayList<>();
-        delegates.add(new RepliesViewDelegate(new PopupHandler(commentActionListener, userIdentifier)));
-        delegates.add(new HeaderCommentDelegate(new PopupHandler(commentActionListener, userIdentifier)));
-        delegates.add(new RepliesInputDelegate(replyInputListener));
-        delegates.add(new EditReplyDelegate(commentActionListener));
+        delegates.add(new RepliesViewDelegate(new PopupHandler(commentActionListener, userIdentifier), VIEW_TYPE_REPLY_COMMENT));
+        delegates.add(new HeaderCommentDelegate(new PopupHandler(commentActionListener, userIdentifier), VIEW_TYPE_HEADER_COMMENT));
+        delegates.add(new RepliesInputDelegate(replyInputListener, VIEW_TYPE_REPLY_INPUT));
+        delegates.add(new EditReplyDelegate(commentActionListener, VIEW_TYPE_EDIT_REPLY));
         delegates.add(new ProgressDelegate(VIEW_TYPE_PROGRESS));
     }
 

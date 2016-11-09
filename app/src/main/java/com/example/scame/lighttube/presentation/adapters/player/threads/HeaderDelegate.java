@@ -20,9 +20,12 @@ public class HeaderDelegate implements AdapterDelegate<List<?>> {
 
     private HeaderModel headerModel;
 
-    public HeaderDelegate(Context context, HeaderModel headerModel) {
+    private int viewType;
+
+    public HeaderDelegate(Context context, HeaderModel headerModel, int viewType) {
         this.context = context;
         this.headerModel = headerModel;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -39,6 +42,6 @@ public class HeaderDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return CommentsDelegatesManager.VIEW_TYPE_HEADER;
+        return viewType;
     }
 }

@@ -13,14 +13,15 @@ import com.example.scame.lighttube.presentation.fragments.CommentActionListener;
 
 import java.util.List;
 
-import static com.example.scame.lighttube.presentation.adapters.player.replies.RepliesDelegatesManager.VIEW_TYPE_EDIT_REPLY;
-
 public class EditReplyDelegate implements AdapterDelegate<List<?>> {
+
+    private int viewType;
 
     private CommentActionListener commentActionListener;
 
-    public EditReplyDelegate (CommentActionListener commentActionListener) {
+    public EditReplyDelegate (CommentActionListener commentActionListener, int viewType) {
         this.commentActionListener = commentActionListener;
+        this.viewType = viewType;
     }
 
     @NonNull
@@ -45,6 +46,6 @@ public class EditReplyDelegate implements AdapterDelegate<List<?>> {
 
     @Override
     public int getViewType() {
-        return VIEW_TYPE_EDIT_REPLY;
+        return viewType;
     }
 }
