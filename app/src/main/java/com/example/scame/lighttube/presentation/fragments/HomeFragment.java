@@ -16,12 +16,9 @@ import android.widget.ProgressBar;
 
 import com.example.scame.lighttube.R;
 import com.example.scame.lighttube.data.repository.PaginationUtility;
-import com.example.scame.lighttube.presentation.ConnectivityReceiver;
 import com.example.scame.lighttube.presentation.activities.TabActivity;
 import com.example.scame.lighttube.presentation.adapters.BaseAdapter;
-import com.example.scame.lighttube.presentation.adapters.NoConnectionMarker;
-import com.example.scame.lighttube.presentation.adapters.VideoListAdapter;
-import com.example.scame.lighttube.presentation.model.ModelMarker;
+import com.example.scame.lighttube.presentation.adapters.HomeVideosAdapter;
 import com.example.scame.lighttube.presentation.model.VideoModel;
 import com.example.scame.lighttube.presentation.presenters.HomePresenter;
 
@@ -35,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.State;
 
-public class HomeFragment extends BaseFragment implements HomePresenter.VideoListView {
+public class HomeFragment extends BaseFragment implements HomePresenter.VideoListView, ScrollingHelperListener {
 
     @BindView(R.id.videolist_rv) RecyclerView recyclerView;
 
@@ -52,16 +49,15 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
     @Named("general")
     PaginationUtility paginationUtility;
 
-    // these variables represent adapter state
-    @State int currentPage;
-    @State boolean isLoading;
-    @State boolean isConnectedPreviously = true;
-
-    @State ArrayList<ModelMarker> items;
+    @State ArrayList<Object> items;
 
     private BaseAdapter adapter;
 
     private VideoListActivityListener listActivityListener;
+
+    private RecyclerScrollingHelper scrollingHelper;
+
+    private Bundle savedInstanceState;
 
     public interface VideoListActivityListener {
 
@@ -94,6 +90,11 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
         }
     }
 
+    @Override
+    public void onPageChange(int pageNumber) {
+        presenter.fetchVideos(pageNumber);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -101,8 +102,7 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
 
         ButterKnife.bind(this, fragmentView);
 
-        setupRefreshListener();
-
+        this.savedInstanceState = savedInstanceState;
         recyclerView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -115,7 +115,7 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
         if (savedInstanceState != null && items != null) {
             initializeAdapter(items);
         } else {
-            presenter.fetchVideos(currentPage);
+            presenter.fetchVideos(0);
         }
     }
 
@@ -128,69 +128,55 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
-        if (adapter != null) {
-            isLoading = adapter.isLoading();
-            isConnectedPreviously = adapter.isConnectedPreviously();
+        if (scrollingHelper != null) {
+            scrollingHelper.onSaveInstanceState(outState);
         }
-
         super.onSaveInstanceState(outState);
     }
 
-
     @Override
-    public void initializeAdapter(List<? extends ModelMarker> newItems) {
+    public void initializeAdapter(List<?> newItems) {
         items = new ArrayList<>(newItems);
 
         recyclerView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
         recyclerView.setLayoutManager(buildLayoutManager());
-        adapter = new VideoListAdapter(items, getContext(), recyclerView);
-        adapter.setCurrentPage(currentPage);
-        adapter.setConnectedPreviously(isConnectedPreviously);
-        adapter.setLoading(isLoading);
-        adapter.setPaginationUtility(paginationUtility);
+        adapter = new HomeVideosAdapter(items, getContext(), recyclerView);
 
-        setupRetryListener();
-        setupOnVideoClickListener();
-        setupOnLoadMoreListener();
-        setupNoConnectionListener();
-        setupDirectionScrollListener();
+        initializeScrollingHelper();
+        setupListeners();
 
         recyclerView.setAdapter(adapter);
+        refreshLayout.setRefreshing(false);
+    }
 
-        stopRefreshing();
+    private void initializeScrollingHelper() {
+        scrollingHelper = new RecyclerScrollingHelper(items, adapter, refreshLayout, this);
+        scrollingHelper.setPaginationUtility(paginationUtility);
+
+        if (savedInstanceState != null) {
+            scrollingHelper.onRestoreInstanceState(savedInstanceState);
+        }
+    }
+
+    private void setupListeners() {
+        scrollingHelper.setupRetryListener();
+        scrollingHelper.setupOnLoadMoreListener();
+        scrollingHelper.setupNoConnectionListener();
+        scrollingHelper.setupRefreshListener();
+
+        setupOnVideoClickListener();
+        setupDirectionScrollListener();
     }
 
     private void setupDirectionScrollListener() {
         adapter.setDirectionScrollListener(scrollToTop -> listActivityListener.onScrolled(scrollToTop));
     }
 
-    private void setupRetryListener() {
-        adapter.setOnRetryClickListener(() -> {
-
-            if (ConnectivityReceiver.isConnected()) {
-                stopRefreshing();
-
-                items.remove(items.size() - 1);
-                adapter.notifyItemRemoved(items.size());
-
-                items.add(null);
-                adapter.notifyItemInserted(items.size() - 1);
-
-                ++currentPage;
-                adapter.setLoading(true);
-                adapter.setConnectedPreviously(true);
-                adapter.setCurrentPage(currentPage);
-                presenter.fetchVideos(currentPage);
-            }
-        });
-    }
-
     private void setupOnVideoClickListener() {
-        if (adapter instanceof VideoListAdapter) {
-            VideoListAdapter videoAdapter = (VideoListAdapter) adapter;
+        if (adapter instanceof HomeVideosAdapter) {
+            HomeVideosAdapter videoAdapter = (HomeVideosAdapter) adapter;
             videoAdapter.setupOnItemClickListener((itemView, position) -> {
                 VideoModel videoModel = ((VideoModel) items.get(position));
                 listActivityListener.onVideoClick(videoModel);
@@ -198,42 +184,8 @@ public class HomeFragment extends BaseFragment implements HomePresenter.VideoLis
         }
     }
 
-    private void setupNoConnectionListener() {
-        adapter.setNoConnectionListener(() -> {
-            items.add(new NoConnectionMarker());
-            adapter.notifyItemInserted(items.size() - 1);
-        });
-    }
-
-    private void setupOnLoadMoreListener() {
-        adapter.setOnLoadMoreListener((page) -> {
-            items.add(null);
-            adapter.notifyItemInserted(items.size() - 1);
-
-            currentPage = page;
-            presenter.fetchVideos(page);
-        });
-    }
-
-    private void stopRefreshing() {
-        if (refreshLayout.isRefreshing()) {
-            refreshLayout.setRefreshing(false);
-        }
-    }
-
-    private void setupRefreshListener() {
-        refreshLayout.setOnRefreshListener(() -> {
-
-            currentPage = 0;
-            isLoading = false;
-            isConnectedPreviously = true;
-
-            presenter.fetchVideos(currentPage);
-        });
-    }
-
     @Override
-    public void updateAdapter(List<? extends ModelMarker> newItems) {
+    public void updateAdapter(List<?> newItems) {
         items.remove(items.size() - 1);
         adapter.notifyItemRemoved(items.size());
 

@@ -2,6 +2,7 @@ package com.example.scame.lighttube.presentation.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class VideoListAdapter extends BaseAdapter {
+public class HomeVideosAdapter extends BaseAdapter {
 
     private static OnItemClickListener listener;
 
-    public VideoListAdapter(List<?> items, Context context, RecyclerView recyclerView) {
+    public HomeVideosAdapter(List<?> items, Context context, RecyclerView recyclerView) {
         super(recyclerView, context, items);
     }
 
@@ -47,13 +48,17 @@ public class VideoListAdapter extends BaseAdapter {
     @Override
     public int getItemViewType(int position) {
         if (items.get(position) instanceof NoConnectionMarker) {
+            Log.i("onxNoConnection", position + "");
             return VIEW_TYPE_NO_CONNECTION;
         } else if (items.get(position) instanceof VideoModel) {
+            Log.i("onxVideoModel", position + "");
             return VIEW_TYPE_VIDEO;
         } else if (items.get(position) == null) {
+            Log.i("onxProgress", position + "");
             return VIEW_TYPE_PROGRESS;
         }
 
+        Log.i("onxNothing", position + "");
         return -1;
     }
 
@@ -102,6 +107,6 @@ public class VideoListAdapter extends BaseAdapter {
     }
 
     public void setupOnItemClickListener(OnItemClickListener listener) {
-        VideoListAdapter.listener = listener;
+        HomeVideosAdapter.listener = listener;
     }
 }

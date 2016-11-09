@@ -113,4 +113,8 @@
     <string name="category_video_header">Category</string>
     <string name="license_video_header">License</string>
 
+    <string name="adapter_page_key">adapterPageKey</string>
+    <string name="connected_previously_key">connectedPreviouslyKey</string>
+    <string name="is_loading_key">isLoadingKey</string>
+    
 </resources>
